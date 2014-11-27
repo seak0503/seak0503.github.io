@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Apache | seak0503 Blog]]></title>
+  <link href="http://blog.seak.jp.net/blog/categories/apache/atom.xml" rel="self"/>
+  <link href="http://blog.seak.jp.net/"/>
+  <updated>2014-11-28T08:26:19+09:00</updated>
+  <id>http://blog.seak.jp.net/</id>
+  <author>
+    <name><![CDATA[seak0503]]></name>
+    <email><![CDATA[seak0503.gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[ApacheでPOSTデータをログに記録したい]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/05/20/apache-mod-dumpio/"/>
+    <updated>2014-05-20T07:34:49+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/05/20/apache-mod-dumpio</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+
+
+<h2>目次</h2>
+
+
+<p><ul>
+ <li><ul>
+  <li><a href="#L............">はじめに</a></li>
+  <li><a href="#L..................">環境について</a></li>
+  <li><a href="#mod_dumpio..................">mod_dumpioインストール</a></li>
+ </ul></li>
+ <li><a href="#httpd.-M..grep.dumpio">httpd -M |grep dumpio</a></li>
+ <li><a href="#httpd.-M..grep.dumpio">httpd -M |grep dumpio</a></li>
+ <li><a href="#cd....Apache...............modules.debug.">cd /..Apacheのソース../modules/debug/</a></li>
+ <li><a href="#apxs.-i.-a.-c.mod_dumpio.c">apxs -i -a -c mod_dumpio.c</a></li>
+ <li><ul>
+  <li><a href="#Apache.....................httpd.conf.........">Apacheの設定ファイルhttpd.confを編集</a></li>
+ </ul></li>
+</ul>
+
+</p>
+
+<a name="L............"></a>
+<h2>はじめに</h2>
+
+<p>Apacheのデフォルトの設定ではaccessログにはPOSTデータの
+内容は表示されません。
+というか、ユーザの機密情報をログに残さないことが目的の一つで
+POSTメソッドを使っているので、それで正しい思います。</p>
+
+<p>ただ、開発中の検証などで、POSTデータをログに記録したいことが
+あると思いますので、その方法を説明します。</p>
+
+<p>もっとも、自分はPOSTするようなWEBアプリケーションを作るときはWEBフレームワークを
+使っていて、だいたいのフレームワークはdebugモードにすると、POSTのデータを
+見ることができるので、めったに使うことはないと思いますが、、、</p>
+
+<a name="L.................."></a>
+<h2>環境について</h2>
+
+<p>下記の環境で設定をしました。</p>
+
+<ul>
+<li><p>OS: CentOS6.4 x86_64</p></li>
+<li><p>Apache: Apache 2.2.25 (ソースからインストールしたもの)</p></li>
+</ul>
+
+
+<a name="mod_dumpio.................."></a>
+<h2>mod_dumpioインストール</h2>
+
+<p>POSTデータをログに残すためには、<code>mod_dumpio</code>というモジュールが必要になります。</p>
+
+<p>まず、これがインストールされているかチェックします。</p>
+
+<p>インストールされている場合:</p>
+
+<p>```bash</p>
+
+<a name="httpd.-M..grep.dumpio"></a>
+<h1>httpd -M |grep dumpio</h1>
+
+<p>dumpio_module (shared)
+Syntax OK
+```</p>
+
+<p>インストールされていない場合:</p>
+
+<p>```bash</p>
+
+<a name="httpd.-M..grep.dumpio"></a>
+<h1>httpd -M |grep dumpio</h1>
+
+<p>Syntax OK
+```</p>
+
+<p><code>mod_dumpio</code>がインストールされていない場合は、インストールします。
+下記は拡張モジュールをソースからインストールする方法です。</p>
+
+<p>mod_dumpioモジュールがある、Apacheのソースアーカイブに移動:</p>
+
+<p>```bash</p>
+
+<a name="cd....Apache...............modules.debug."></a>
+<h1>cd /..Apacheのソース../modules/debug/</h1>
+
+<p>```</p>
+
+<p>apxsコマンドを使ってモジュールをインストール:</p>
+
+<p>```bash</p>
+
+<a name="apxs.-i.-a.-c.mod_dumpio.c"></a>
+<h1>apxs -i -a -c mod_dumpio.c</h1>
+
+<p>```</p>
+
+<a name="Apache.....................httpd.conf........."></a>
+<h2>Apacheの設定ファイルhttpd.confを編集</h2>
+
+<p><code>apxs</code>コマンドの<code>-a</code>オプションで、<code>httpd.conf</code>に下記が追記されていることを確認:</p>
+
+<p><code>bash
+LoadModule dumpio_module      modules/mod_dumpio.so
+</code></p>
+
+<p>サーバ設定ファイルにDumpIOInputディレクティブを追記:</p>
+
+<p><strong>これにより、HTTPリクエストのヘッダやボディの内容がerrorログに表示されるようになります</strong></p>
+
+<p><code>bash
+DumpIOInput On
+</code></p>
+
+<p>サーバ設定ファイルにDumpIOOutputディレクティブを追記:</p>
+
+<p><strong>これにより、HTTPレスポンスのヘッダとボディの内容がerrorログに表示されるようになります</strong></p>
+
+<p><code>bash
+DumpIOOutput On
+</code></p>
+
+<p>ログレベルを<code>dubug</code>にする:</p>
+
+<p><code>bash
+LogLevel debug
+</code></p>
+
+<p>以上でApacheのerrorログにPOSTの内容が表示されるようになります。</p>
+
+<p>私は最初勘違いしてaccessログ見てました、、、</p>
+]]></content>
+  </entry>
+  
+</feed>

@@ -1,0 +1,480 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Java | seak0503 Blog]]></title>
+  <link href="http://blog.seak.jp.net/blog/categories/java/atom.xml" rel="self"/>
+  <link href="http://blog.seak.jp.net/"/>
+  <updated>2014-11-28T08:26:19+09:00</updated>
+  <id>http://blog.seak.jp.net/</id>
+  <author>
+    <name><![CDATA[seak0503]]></name>
+    <email><![CDATA[seak0503.gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[javaアクセス制御一覧]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/09/12/java-access/"/>
+    <updated>2014-09-12T06:09:24+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/09/12/java-access</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+
+
+<h2>目次</h2>
+
+
+<p><ul>
+ <li><ul>
+  <li><a href="#L...............................................................">クラスとインタフェースに対するアクセス制御</a></li>
+  <li><a href="#L........................................................................">クラスのメソッドとフィールドに対するアクセス制御</a></li>
+  <li><a href="#L....................................................................................">インタフェースのメソッドとフィールドに対するアクセス制御</a></li>
+ </ul></li>
+</ul>
+
+</p>
+
+<a name="L..............................................................."></a>
+<h2>クラスとインタフェースに対するアクセス制御</h2>
+
+<table>
+<thead>
+<tr>
+<th align="left">なし </th>
+<th align="left"> public</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">同じパッケージからのみ使える </td>
+<td align="left"> 他のパッケージから使える</td>
+</tr>
+</tbody>
+</table>
+
+
+<ul>
+<li>覚えるポイント:
+
+<ul>
+<li>アクセス制御は<code>なし</code>か<code>public</code>の2種類</li>
+</ul>
+</li>
+</ul>
+
+
+<a name="L........................................................................"></a>
+<h2>クラスのメソッドとフィールドに対するアクセス制御</h2>
+
+<table>
+<thead>
+<tr>
+<th align="left"> </th>
+<th align="left"> publicなしクラス </th>
+<th align="left"> publicありクラス</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">private </td>
+<td align="left"> クラス内でのみ使える </td>
+<td align="left"> クラス内でのみ使える</td>
+</tr>
+<tr>
+<td align="left">なし </td>
+<td align="left"> 同じパッケージからのみ使える </td>
+<td align="left"> 同じパッケージからのみ使える</td>
+</tr>
+<tr>
+<td align="left">protected </td>
+<td align="left"> 同じパッケージからのみ使える </td>
+<td align="left"> 同じパッケージとサブクラスからのみ使える</td>
+</tr>
+<tr>
+<td align="left">public </td>
+<td align="left"> 同じパッケージからのみ使える </td>
+<td align="left"> 他のパッケージから使える</td>
+</tr>
+</tbody>
+</table>
+
+
+<ul>
+<li>覚えるポイント:
+
+<ul>
+<li>クラスのアクセス制御　と　メソッド(フィールド)のアクセス制御のうち、制約が厳しい方が優先させる</li>
+<li>制約の厳しさ比較
+
+<ul>
+<li>public &lt; protected &lt; なし &lt; private</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+<a name="L...................................................................................."></a>
+<h2>インタフェースのメソッドとフィールドに対するアクセス制御</h2>
+
+<table>
+<thead>
+<tr>
+<th align="left"> </th>
+<th align="left"> publicなしインタフェース </th>
+<th align="left"> publicありインタフェース</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">なし </td>
+<td align="left"> 同じパッケージからのみ使える </td>
+<td align="left"> 他のパッケージから使える</td>
+</tr>
+<tr>
+<td align="left">public </td>
+<td align="left"> 同じパッケージからのみ使える </td>
+<td align="left"> 他のパッケージから使える</td>
+</tr>
+</tbody>
+</table>
+
+
+<ul>
+<li>覚えるポイント:
+
+<ul>
+<li>アクセス制御は<code>なし</code>か<code>public</code>の2種類</li>
+<li>インタフェースのアクセス制御　と　メソッド(フィールド)のアクセス制御のうち、インタフェースの
+アクセス制御が優先される
+
+<ul>
+<li>publicなしインタフェースのメソッド(フィールド): <code>同じパッケージからのみ使える</code>パターンのみ</li>
+<li>publicありインタフェースのメソッド(フィールド): <code>他のパッケージから使える</code>パターンのみ</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[メソッドをオーバーライドする時のシグネチャにおける注意点]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/07/16/java-override/"/>
+    <updated>2014-07-16T09:30:59+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/07/16/java-override</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+
+
+<h2>目次</h2>
+
+
+<p><ul>
+ <li><a href="#L............">はじめに</a></li>
+ <li><a href="#L............................................................">シグネチャを合わせて正しくオーバーライド</a></li>
+ <li><a href="#L............................................................">引数の数を増やしたり、減らしたりしてみる</a></li>
+ <li><a href="#L.........">まとめ</a></li>
+</ul>
+
+</p>
+
+<a name="L............"></a>
+<h1>はじめに</h1>
+
+<p>Javaでメソッドをオーバーライドする時は、サブクラスのメソッドはスーパークラスの
+メソッドのシグネチャ(メソッド名と引数列の型)に合わせる必要があります。</p>
+
+<p>引数列の型が同じである必要があるということは知っていましたが、引数の数が
+違うとどうなるか?</p>
+
+<p>コンパイラに怒られることはわかっていつつ、試してみました。</p>
+
+<p>例として、スーパークラスのメソッドは下記のように定義します。</p>
+
+<p>```java
+class Papa {</p>
+
+<pre><code>...
+int calParameter(int x, int y) {
+    int sum_parameter = x + y;
+    return sum_parameter;
+}
+...
+</code></pre>
+
+<p>}
+```</p>
+
+<a name="L............................................................"></a>
+<h1>シグネチャを合わせて正しくオーバーライド</h1>
+
+<p>説明するまでもありませんが、下記のようにオーバーライドすると、当然正常に
+コンパイルできます。</p>
+
+<p>```java
+class MySon extends Papa {</p>
+
+<pre><code>...
+@Override
+int calParameter(int x, int y) {
+    int diff_parameter = x - y;
+    return diff_parameter;
+}
+...
+</code></pre>
+
+<p>}
+```</p>
+
+<a name="L............................................................"></a>
+<h1>引数の数を増やしたり、減らしたりしてみる</h1>
+
+<p>引数の数を増やす:
+```java
+class MySon extends Papa {</p>
+
+<pre><code>...
+@Override
+int calParameter(int x, int y, int z) {
+    int diff_parameter = (x - y) * z;
+    return diff_parameter;
+}
+...
+</code></pre>
+
+<p>}
+```</p>
+
+<p>引数の数を減らす:
+```java
+class MySon extends Papa {</p>
+
+<pre><code>...
+@Override
+int calParameter(int x) {
+    int diff_parameter = x;
+    return diff_parameter;
+}
+...
+</code></pre>
+
+<p>}
+```</p>
+
+<p>上記二つのパターンでコンパイルすると、いずれも下記のように怒られました。</p>
+
+<p><code>bash
+$ javac MySon.java
+MySon.java:18: エラー: メソッドはスーパータイプのメソッドをオーバーライドまたは実装しません
+</code></p>
+
+<a name="L........."></a>
+<h1>まとめ</h1>
+
+<p>今回のケースは想像はついてましたが、まとめると</p>
+
+<p><strong>メソッドをオーバーライドするには</strong></p>
+
+<ul>
+<li>メソッドの名前が等しく、かつ</li>
+<li>引数列の型と、引数の数が等しいこと</li>
+</ul>
+
+
+<p>となります。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Javaのsuper()を書く場所に注意]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/07/10/java-super/"/>
+    <updated>2014-07-10T06:35:19+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/07/10/java-super</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<p>Javaでサブクラスをつくった場合、特に何か書かなくてもスーパークラスの
+<strong>引数なし</strong>のコンストラクタはコンパイラによって、自動的に挿入されます。</p>
+
+<p>例えば下記のような、RectangleクラスのサブクラスNamedRectangleクラスをつくった場合
+<code>NamedRectangle()</code>コンストラクタのところに、スーパークラスのコンストラクタ呼び出しは
+書いていません。
+```java
+class NamedRectangle extends Rectangle {</p>
+
+<pre><code>String name;
+NamedRectangle() {
+    name = "NO NAME";
+}
+</code></pre>
+
+<p>```</p>
+
+<p>この場合、コンパイル時に<code>super()</code>が自動的に挿入され、下記のように
+スーパークラスの引数なしのコンストラクタが呼び出せるようになっています。
+```java
+class NamedRectangle extends Rectangle {</p>
+
+<pre><code>String name;
+NamedRectangle() {
+    super(); &lt;-これ
+    name = "NO NAME";
+}
+</code></pre>
+
+<p>```</p>
+
+<p>ではスーパークラスの<strong>引数付き</strong>のコンストラクタを呼び出す場合はどうでしょうか?
+そうです、明示的に書いてやる必要があります。
+例えば下記のような感じ
+```java
+class NamedRectangle extends Rectangle {</p>
+
+<pre><code>String name;
+NamedRectangle() {
+    super(200, 32);
+    name = "NO NAME";
+}
+</code></pre>
+
+<p>```</p>
+
+<p>大変前置きが長かったですが、この<code>super()</code>を書く位置をずらしてコンパイルすると
+どうなってしまうでしょうか?
+```java
+class NamedRectangle extends Rectangle {</p>
+
+<pre><code>String name;
+NamedRectangle() {
+    name = "NO NAME";
+    super(200, 32); &lt;-このように一行したに入れる
+}
+</code></pre>
+
+<p>```</p>
+
+<p>コンパイルすると、、、
+```bash
+$ javac PlacedRectangle.java
+PlacedRectangle.java:12: エラー: superの呼出しはコンストラクタの先頭文である必要があります</p>
+
+<pre><code>    super(width, height);
+         ^
+</code></pre>
+
+<p>エラー1個
+```</p>
+
+<p><code>superの呼出しはコンストラクタの先頭文である必要があります</code>と怒られてしまいました。</p>
+
+<p>Javaを書く方には「当然のこと!」と怒られそうですが、ちょっと気になってためした結果を
+せっかくですので、ブログにおこしました。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[メソッドの仮引数名をフィールド名と同じにできるか?]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/06/27/java-method-arg-name/"/>
+    <updated>2014-06-27T06:11:59+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/06/27/java-method-arg-name</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<p>Javaで下記のようなプログラムを書いた場合について考えます。</p>
+
+<p>```java
+class Rectangle {</p>
+
+<pre><code>int width;
+int height;
+Rectangle(int w, int h) {
+    width = w;
+    height = h;
+}
+... このあたりは省略
+</code></pre>
+
+<p>}
+```</p>
+
+<p>上記の場合、コンストラクタを呼び出す際、引数<code>w</code>と<code>h</code>で指定した値は
+正しく<code>width</code>と<code>height</code>フィールドに代入されます。</p>
+
+<p>しかし、下記のように仮引数名を変更した場合どうなるでしょうか?</p>
+
+<p>```java
+class Rectangle {</p>
+
+<pre><code>int width;
+int height;
+void Rectangle(int width, int height) {
+    width = w;
+    height = h;
+}
+... このあたりは省略
+</code></pre>
+
+<p>}
+```</p>
+
+<p>コンパイル時はエラーになりませんが、インスタンスを作成してコンストラクタが呼び出されると
+<code>width</code>と<code>height</code>フィールドには指定した値が代入されず、0になってしまいます。</p>
+
+<p>このように、<strong>メソッドの仮引数名をフィールド名と同じ</strong>にする場合、<code>this</code>を
+使って次のように書く必要があります。</p>
+
+<p>```java
+class Rectangle {</p>
+
+<pre><code>int width;
+int height;
+void Rectangle(int width, int height) {
+    this.width = w; &lt;- ここを変更
+    this.height = h; &lt;- ここを変更
+}
+... このあたりは省略
+</code></pre>
+
+<p>}
+```</p>
+
+<p>例えばpythonの場合、クラスを宣言した場合、クラス内の
+メソッドの第一引数には明示的に<code>self</code>と書き、フィールドの
+宣言の時も、<code>self.width = w</code>のように書きますね。</p>
+
+<p>例えばpythonで上記と同じプログラムを書くときは下記のようになります。</p>
+
+<p>```python
+class Rectange(object):</p>
+
+<pre><code>def __init__(self, width, height):
+   self.width = width
+   self.height = height
+</code></pre>
+
+<p>```</p>
+
+<p>javaの場合、pythonでいう<code>self</code>である<code>this</code>は、pythonとは異なり、メソッド宣言の中では
+省略可能です。</p>
+
+<p>これは、コンパイラによって自動的に<code>this</code>を補完してくれるからです。</p>
+
+<p>ただし、今回の例のように、メソッドの仮引数名をフィールド名と同じにした場合、<code>this</code>を
+省略すると、意図したとおりにプログラムが動きません。</p>
+
+<p>私は最初に覚えたオブジェクト指向言語はpythonなので、<code>this</code>を省略するのは違和感が
+あります。</p>
+
+<p>私はpythonをメインに仕事をしていますので、javaを書くときも混乱しないように<code>this</code>を
+省略しないで書こうと思っています。</p>
+]]></content>
+  </entry>
+  
+</feed>

@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: 
+
+Sitemap: http://blog.seak.jp.net/sitemap.xml 

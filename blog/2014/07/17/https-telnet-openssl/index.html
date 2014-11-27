@@ -5,11 +5,14 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>seak0503 Blog</title>
+  <title>HTTPSのサイトをtelnetでページ表示できない - seak0503 Blog</title>
   <meta name="author" content="seak0503">
 
   
-  <meta name="description" content="">
+  <meta name="description" content="開発とか、日常の運用業務でhttpサイトにtelnetでアクセスすることが
+よくあると思います。 例えば 1
+telnet www.yahoo.co.jp 80 上記のようにtelnetしてから、GETメソッドとかでHTTPリクエストを
+出しますよね。 でも、 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +21,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.seak.jp.net/">
+  <link rel="canonical" href="http://blog.seak.jp.net/blog/2014/07/17/https-telnet-openssl/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -63,15 +66,12 @@
 </nav>
   <div id="main">
     <div id="content">
-      <div class="blog-index">
+      <div>
+<article class="hentry" role="article">
   
-  
-  
-    <article>
-      
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2014/11/26/dev-octopress/">Octopressの環境移設</a></h1>
+      <h1 class="entry-title">HTTPSのサイトをtelnetでページ表示できない</h1>
     
     
       <p class="meta">
@@ -87,383 +87,103 @@
   
 
 
-<time datetime="2014-11-26T14:23:42+09:00" pubdate data-updated="true">2014-11-26</time>
+<time datetime="2014-07-17T10:54:58+09:00" pubdate data-updated="true">2014-07-17</time>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"></div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/11/26/dev-octopress/">つづきを読む</a>
-    </footer>
-  
+<div class="entry-content"><!-- more -->
 
 
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/11/07/sublimetextmacterminal/">Sublime Textから素早くiTermを開く</a></h1>
-    
-    
-      <p class="meta">
-        
+<p>開発とか、日常の運用業務でhttpサイトにtelnetでアクセスすることが
+よくあると思います。</p>
 
+<p>例えば</p>
 
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>telnet www.yahoo.co.jp 80
+</span></code></pre></td></tr></table></div></figure>
 
 
+<p>上記のように<code>telnet</code>してから、GETメソッドとかでHTTPリクエストを
+出しますよね。</p>
 
+<p>でも、HTTPSのサイトだとtelnetができません。</p>
 
+<p>そんな時は<code>openssl</code>コマンドの出番です。</p>
 
+<p>例えば下記のような感じ</p>
 
-  
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>openssl s_client -connect www.goole.co.jp:443
+</span></code></pre></td></tr></table></div></figure>
 
 
-<time datetime="2014-11-07T14:33:28+09:00" pubdate data-updated="true">2014-11-07</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"></div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/11/07/sublimetextmacterminal/">つづきを読む</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/11/04/sublimetextthemecursor/">Sublime Text 3のカーソルを変更する手順</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-11-04T14:42:57+09:00" pubdate data-updated="true">2014-11-04</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"></div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/11/04/sublimetextthemecursor/">つづきを読む</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/11/04/sublimetextthemeitg/">Themeのカラースキームを編集する</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-11-04T14:25:57+09:00" pubdate data-updated="true">2014-11-04</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"></div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/11/04/sublimetextthemeitg/">つづきを読む</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/10/17/sublimetextvim/">sublimeText3でVimライクな操作を可能にさせる</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-10-17T15:33:59+09:00" pubdate data-updated="true">2014-10-17</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"></div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/10/17/sublimetextvim/">つづきを読む</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/09/25/chef-berks-install/">Berks Install時のエラー</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-09-25T06:01:57+09:00" pubdate data-updated="true">2014-09-25</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"></div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/09/25/chef-berks-install/">つづきを読む</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/09/24/ruby-bundler/">Bundleコマンドのパスを通す方法</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-09-24T06:40:21+09:00" pubdate data-updated="true">2014-09-24</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"></div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/09/24/ruby-bundler/">つづきを読む</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/09/15/chef-attribute/">ChefのAttributeの優先順位</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-09-15T22:05:47+09:00" pubdate data-updated="true">2014-09-15</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"></div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/09/15/chef-attribute/">つづきを読む</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/09/12/java-access/">Javaアクセス制御一覧</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-09-12T06:09:24+09:00" pubdate data-updated="true">2014-09-12</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"></div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/09/12/java-access/">つづきを読む</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/07/26/http-margin/">Marginの相殺について</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-07-26T08:56:05+09:00" pubdate data-updated="true">2014-07-26</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"></div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/07/26/http-margin/">つづきを読む</a>
-    </footer>
-  
-
-
-    </article>
-  
-  <div class="pagination">
-    
-      <a class="prev" href="/blog/page/2/">&larr; Older</a>
-    
-    <a href="/blog/archives">Blog Archives</a>
-    
-  </div>
+<p>上記でアクセスできたら、後は通常通りGETメソッドとかでHTTPリクエストが出せます。</p>
 </div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">seak0503</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-07-17T10:54:58+09:00" pubdate data-updated="true">2014-07-17</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/linux/'>Linux</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.seak.jp.net/blog/2014/07/17/https-telnet-openssl/" data-via="" data-counturl="http://blog.seak.jp.net/blog/2014/07/17/https-telnet-openssl/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/07/16/java-override/" title="Previous Post: メソッドをオーバーライドする時のシグネチャにおける注意点">&laquo; メソッドをオーバーライドする時のシグネチャにおける注意点</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/07/26/http-margin/" title="Next Post: marginの相殺について">marginの相殺について &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
 <aside class="sidebar">
   
     <section>
@@ -500,7 +220,7 @@
 <section>
   <h1>GitHub Repos</h1>
   <ul id="gh_repos">
-    <li class="loading">Status updating&#8230;</li>
+    <li class="loading">Status updating...</li>
   </ul>
   
   <a href="https://github.com/seak0503">@seak0503</a> on GitHub
@@ -533,6 +253,7 @@
   
 </aside>
 
+
     </div>
   </div>
   <footer role="contentinfo"><p>
@@ -547,7 +268,10 @@
       var disqus_shortname = 'seak0503';
       
         
-        var disqus_script = 'count.js';
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.seak.jp.net/blog/2014/07/17/https-telnet-openssl/';
+        var disqus_url = 'http://blog.seak.jp.net/blog/2014/07/17/https-telnet-openssl/';
+        var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

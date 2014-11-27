@@ -1,0 +1,468 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Linux | seak0503 Blog]]></title>
+  <link href="http://blog.seak.jp.net/blog/categories/linux/atom.xml" rel="self"/>
+  <link href="http://blog.seak.jp.net/"/>
+  <updated>2014-11-28T08:26:19+09:00</updated>
+  <id>http://blog.seak.jp.net/</id>
+  <author>
+    <name><![CDATA[seak0503]]></name>
+    <email><![CDATA[seak0503.gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[HTTPSのサイトをtelnetでページ表示できない]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/07/17/https-telnet-openssl/"/>
+    <updated>2014-07-17T10:54:58+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/07/17/https-telnet-openssl</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<p>開発とか、日常の運用業務でhttpサイトにtelnetでアクセスすることが
+よくあると思います。</p>
+
+<p>例えば
+<code>bash
+telnet www.yahoo.co.jp 80
+</code></p>
+
+<p>上記のように<code>telnet</code>してから、GETメソッドとかでHTTPリクエストを
+出しますよね。</p>
+
+<p>でも、HTTPSのサイトだとtelnetができません。</p>
+
+<p>そんな時は<code>openssl</code>コマンドの出番です。</p>
+
+<p>例えば下記のような感じ</p>
+
+<p><code>bash
+openssl s_client -connect www.goole.co.jp:443
+</code></p>
+
+<p>上記でアクセスできたら、後は通常通りGETメソッドとかでHTTPリクエストが出せます。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[iptables 1レコードで複数ポートを定義する方法]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/06/24/linux-iptables-multiport/"/>
+    <updated>2014-06-24T14:32:04+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/06/24/linux-iptables-multiport</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<p>例えばApacheをたてて、iptablesを書く場合、たいてい<code>--dport</code>は80と443に
+して、通信を許可すると思います。</p>
+
+<p>その場合、私は今まで下記のように2レコードのiptablesを書いていました。</p>
+
+<p><code>bash
+-A INPUT -m state --state NEW -m tcp -p tcp --dport 80 -j ACCEPT
+-A INPUT -m state --state NEW -m tcp -p tcp --dport 443 -j ACCEPT
+</code></p>
+
+<p>しかし、<code>-m multiport</code>を使用すると、<code>--dports</code>オプションが利用できるようになり、
+これにより1レコードで複数のポートを指定できるようになります。</p>
+
+<p>例えば下記のような感じです。</p>
+
+<p><code>bash
+-A INPUT -m state --state NEW -m multiport -p tcp --dports 80,443 -j ACCEPT
+</code></p>
+
+<p>私はついiptablesの行数を多くしてしまいがちなんで、重宝しそうです。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[.bash_profileと.bashrcについて]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/06/12/linux-profile/"/>
+    <updated>2014-06-12T13:31:39+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/06/12/linux-profile</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+
+
+<h2>目次</h2>
+
+
+<p><ul>
+ <li><ul>
+  <li><a href="#L............">はじめに</a></li>
+  <li><a href="#L.bash_profile....bashrc">.bash_profileと.bashrc</a></li>
+  <li><a href="#L.bash_profile....bashrc...........................">.bash_profileと.bashrcの使い分けについて</a></li>
+ </ul></li>
+ <li><a href="#L.bash_profile">.bash_profile</a></li>
+ <li><a href="#Get.the.aliases.and.functions">Get the aliases and functions</a></li>
+ <li><ul>
+  <li><a href="#L.........">テスト</a></li>
+ </ul></li>
+ <li><a href="#L.........">テスト</a></li>
+ <li><a href="#L.........">テスト</a></li>
+ <li><ul>
+  <li><a href="#L.bash_profile....bashrc.........">.bash_profileや.bashrcの大元</a></li>
+ </ul></li>
+</ul>
+
+</p>
+
+<a name="L............"></a>
+<h2>はじめに</h2>
+
+<p><code>.bash_profile</code>と<code>.bashrc</code>でユーザ環境のカスタマイズはよくやってますが、
+その使い分けについてまじめに確認したことがなかったのでメモをしておきます。</p>
+
+<a name="L.bash_profile....bashrc"></a>
+<h2>.bash_profileと.bashrc</h2>
+
+<p>ユーザがLinuxにログインすると、ホームディレクトリにある<code>.bash_profile</code>と
+<code>.bashrc</code>が実行されるようになっています。</p>
+
+<p>ユーザは、これらの中に環境変数やコマンドのエイリアスの設定を自由に追加できます。</p>
+
+<a name="L.bash_profile....bashrc..........................."></a>
+<h2>.bash_profileと.bashrcの使い分けについて</h2>
+
+<p>sshでログインすると、<code>.bash_profile</code> -> <code>bashrc</code>の順に実行されます。
+これは<code>.bash_profile</code>のソースの上のあたりを見るとすぐにわかります。</p>
+
+<p>``` bash</p>
+
+<a name="L.bash_profile"></a>
+<h1>.bash_profile</h1>
+
+<a name="Get.the.aliases.and.functions"></a>
+<h1>Get the aliases and functions</h1>
+
+<p>if [ -f ~/.bashrc ]; then</p>
+
+<pre><code>    . ~/.bashrc
+</code></pre>
+
+<p>fi</p>
+
+<p><strong><em>以下略</em></strong>
+```</p>
+
+<p>しかし、すでにログインしている状況で、新たにシェル(bash)を起動した際は
+<code>.bashrc</code>だけが実行されます。</p>
+
+<p>とくに、Linuxデスクトップ環境では、テスクトップ上で新しいコマンド端末を開いた際は
+<code>.bashrc</code>のみが実行されます。</p>
+
+<p>つまり、</p>
+
+<ul>
+<li><p>ログイン時に一回だけ実行したい時</p>
+
+<p>-> <code>.bash_profile</code>に記載</p></li>
+<li><p>シェルを起動する度に実行したい時(一般的な設定)</p>
+
+<p>-> <code>.bashrc</code>に記載</p></li>
+</ul>
+
+
+<a name="L........."></a>
+<h2>テスト</h2>
+
+<p>上記のことを確かめるために簡単なテストをしました。</p>
+
+<p><code>.bash_profile</code>に下記を追記</p>
+
+<p>```bash</p>
+
+<a name="L........."></a>
+<h1>テスト</h1>
+
+<p>echo '.bash_profileに記載されたechoです'
+```</p>
+
+<p><code>.bashrc</code>に下記を追記</p>
+
+<p>```bash</p>
+
+<a name="L........."></a>
+<h1>テスト</h1>
+
+<p>echo '.bashrcに記載されたechoです'
+```</p>
+
+<p>ターミナルソフトで対象のサーバにsshログインすると、<code>.bashrc</code>に書いたものと
+<code>.bash_profile</code>に書いたものが表示されました。</p>
+
+<p><code>.bashrc</code>に書いたものが先に表示されているのは、<code>.bash_profile</code>内で<code>.bashrc</code>が
+呼び出された後の行に<code>echo '.bash_profileに記載されたechoです'</code>を書いている
+ためです。</p>
+
+<p><code>bash
+Last login: Thu Jun 12 13:51:12 2014 from office-gw01.bbtower.co.jp
+.bashrcに記載されたechoです
+.bash_profileに記載されたechoです
+[testuser@www ~]$
+</code></p>
+
+<p>ログインした後に、<code>bash</code>コマンドをたたくと、<code>.bashrc</code>の内容のみが表示されます。
+<code>bash
+[testuser@www ~]$ bash
+.bashrcに記載されたechoです
+</code></p>
+
+<p>ちなみに<code>su</code>コマンドに<code>-</code>をつけるかつけないで挙動が変わります。
+<code>-</code>をつけると、ログインシェルが呼び出されます。</p>
+
+<p>この違いも一応見てみると、下記のとおり</p>
+
+<p>```bash
+[testuser@www ~]$ su testuser
+パスワード:
+.bashrcに記載されたechoです</p>
+
+<p>[testuser@www ~]$ su - testuser
+パスワード:
+.bashrcに記載されたechoです
+.bash_profileに記載されたechoです
+```</p>
+
+<a name="L.bash_profile....bashrc........."></a>
+<h2>.bash_profileや.bashrcの大元</h2>
+
+<p><code>.bash_profile</code>や<code>.bashrc</code>の大元は<code>/etc/skel</code>にあります。
+つまり、<code>useradd</code>コマンドでユーザを作成すると、このディレクトリ内の
+ファイルがサブディレクトリを含めて、作成したユーザのホームディレクトリに
+コピーされます。</p>
+
+<p><code>bash
+$ ls -la /etc/skel/
+合計 36
+drwxr-xr-x.   4 root root  4096  5月  9 20:21 2014 .
+drwxr-xr-x. 114 root root 12288  6月 12 13:50 2014 ..
+-rw-r--r--    1 root root    18  7月 18 22:19 2013 .bash_logout
+-rw-r--r--    1 root root   176  7月 18 22:19 2013 .bash_profile
+-rw-r--r--    1 root root   124  7月 18 22:19 2013 .bashrc
+</code></p>
+
+<p>以上のことから、すべてのユーザのホームディレクトリに共通に配布したい
+ファイルがある場合は、事前に<code>/etc/skel</code>内においておくと、確実です。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Zeroconfを使用しないようにする]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/06/10/zeroconf/"/>
+    <updated>2014-06-10T16:45:49+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/06/10/zeroconf</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+
+
+<h2>目次</h2>
+
+
+<p><ul>
+ <li><ul>
+  <li><a href="#L............">はじめに</a></li>
+ </ul></li>
+ <li><a href="#netstat.-rn">netstat -rn</a></li>
+ <li><ul>
+  <li><a href="#Zeroconf..............">Zeroconfとは(引用)</a></li>
+  <li><a href="#APIPA..............">APIPAとは(引用)</a></li>
+  <li><a href="#Zeroconf............">Zeroconfを無効に</a></li>
+ </ul></li>
+ <li><a href="#vi..etc.sysconfig.network">vi /etc/sysconfig/network</a></li>
+ <li><a href="#service.network.restart">service network restart</a></li>
+ <li><a href="#netstat.-rn">netstat -rn</a></li>
+</ul>
+
+</p>
+
+<a name="L............"></a>
+<h2>はじめに</h2>
+
+<p>RHEL6やCentOS6を普通にインストールして、ルーティングテーブルを
+見ると下記のような感じになっています。</p>
+
+<p>```bash</p>
+
+<a name="netstat.-rn"></a>
+<h1>netstat -rn</h1>
+
+<p>Kernel IP routing table
+Destination     Gateway         Genmask         Flags   MSS Window  irtt Iface
+10.0.0.0        0.0.0.0         255.255.255.0   U         0 0          0 eth0
+169.254.0.0     0.0.0.0         255.255.0.0     U         0 0          0 eth0
+0.0.0.0         10.0.0.254      0.0.0.0         UG        0 0          0 eth0
+```</p>
+
+<p>169.254.0.0/16のルーティングテーブルがありますが、これは何だろう?</p>
+
+<p>これはZeroconfによって自動的に作られたものだそうです。</p>
+
+<a name="Zeroconf.............."></a>
+<h2>Zeroconfとは(引用)</h2>
+
+<blockquote><p>動的ホスト構成プロトコル(DHCP)が見つからなかった時(IPアドレスを取得できなかった時)に、
+TCP/IPがプライベートIPアドレスを自動的に割り当てる機能<strong>(APIPA:Automatic Private IP Address)</strong>を実装しています。
+この為、ルーティングに「169.254.0.0」が登録されています。</p></blockquote>
+
+<a name="APIPA.............."></a>
+<h2>APIPAとは(引用)</h2>
+
+<blockquote><p>ネットワーク機器に対して、IPアドレスを自動的に割り当て、利用するための機能。</p>
+
+<p>　TCP/IPを実装したネットワーク機器やシステムでは、それぞれのシステムに対して、
+重複しない固有のIPアドレスを割り当てておかなければお互いに通信することはできない。
+しかしネットワークに詳しい管理者がいなかったり、DHCPサーバも用意されていないような
+小規模なネットワークでは、IPアドレスを秩序立てて割り当てたり管理するのは困難である。
+そこで考案されたのがAPIPAというIPアドレスの自動的な割り当て、管理機能である。</p>
+
+<p>　APIPAを実装したシステムでは、最初に自分のシステムに割り当てるIPアドレスを
+「169.254.1.0～169.254.254.255」の範囲内からランダムに1つ選択する。
+そして、ARP要求をネットワークにブロードキャストすることによって、そのIPアドレスがほかの
+システムで利用されていないかどうかを確認する。もしどこかのシステムからARPの応答が返ってくれば、
+そのIPアドレスは使用中であるとみなし、別のIPアドレスで再試行する。このようにして
+未使用のIPアドレスを見つけ、それを自分のシステムに割り当てることによって、
+IPアドレスが重複しないことを保障する。
+「169.254.<em>.</em>」というIPアドレスはLINKLOCALアドレスといい、一般的なプライベートIPアドレスではないが、
+どこの組織にも割り当てられていないことが保証された、APIPAでのみ有効な、特別なIPアドレスである。</p>
+
+<p>　このように、APIPAを利用することにより、ユーザーはネットワークのIPアドレスをまったく意識することなく、
+ネットワーク上のほかのシステムと通信をすることができる。</p>
+
+<p>　ただしAPIPAは、小規模なネットワークで使うことを前提としているため、複数のネットワークをまたいで使うことはできない。
+APIPAで割り当てられたIPアドレスを持つパケットは、ルータでルーティングしてはいけないことになっている。
+そのため通信できる範囲は同一のネットワーク（ブロードキャストが届く範囲）に限定されることになる。
+インターネットへ接続するのではなく、ローカルのLAN上でファイル共有やプリンタ共有しか使わないという用途にはこれでも十分である。</p>
+
+<p>　APIPAは、最近のWindowsやMacintoshシステムなどで実装されている。これらのシステムでは、最初にDHCPなどでIPアドレスの
+取得を試みるが、それが失敗するとAPIPAによってランダムなIPアドレスを割り当てるようになっている。
+だがハブが壊れるなど、何らかの事情でネットワークが利用できない場合でも、自動的にランダムなIPアドレスが割り当てられたまま
+システムが起動してしまうことになるので、一見するとネットワークが正常に機能しているようにみえることがある。
+そのため、トラブルの原因を究明するのが困難になることもある。</p></blockquote>
+
+<a name="Zeroconf............"></a>
+<h2>Zeroconfを無効に</h2>
+
+<p>結局のところサーバ用途ではほぼ不要と思われるので、これを無効化します。</p>
+
+<p>```bash</p>
+
+<a name="vi..etc.sysconfig.network"></a>
+<h1>vi /etc/sysconfig/network</h1>
+
+<p>NOZEROCONF=yes &lt;-これを追記する
+```</p>
+
+<p>ネットワークを再起動して、再びルーティングテーブルを確認すると、無効化されることが
+確認できますね。</p>
+
+<p>```bash</p>
+
+<a name="service.network.restart"></a>
+<h1>service network restart</h1>
+
+<a name="netstat.-rn"></a>
+<h1>netstat -rn</h1>
+
+<p>Kernel IP routing table
+Destination     Gateway         Genmask         Flags   MSS Window  irtt Iface
+10.0.0.0        0.0.0.0         255.255.255.0   U         0 0          0 eth0
+0.0.0.0         10.0.0.254      0.0.0.0         UG        0 0          0 eth0
+```</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[UIDとGIDについて]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/06/10/linux-uid-gid/"/>
+    <updated>2014-06-10T13:41:39+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/06/10/linux-uid-gid</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+
+
+<h2>目次</h2>
+
+
+<p><ul>
+ <li><ul>
+  <li><a href="#L............">はじめに</a></li>
+  <li><a href="#UID">UID</a></li>
+  <li><a href="#GID">GID</a></li>
+ </ul></li>
+</ul>
+
+</p>
+
+<a name="L............"></a>
+<h2>はじめに</h2>
+
+<p>RHEL6、CentOS6におけるUIDとGIDの割り当て範囲をマトリクスに
+しました。</p>
+
+<a name="UID"></a>
+<h2>UID</h2>
+
+<table>
+<thead>
+<tr>
+<th align="center">ユーザの種類   </th>
+<th align="center"> ユーザの機能                     </th>
+<th align="left"> UIDの範囲  </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">rootユーザ     </td>
+<td align="center"> 特権ユーザ                       </td>
+<td align="left"> 0</td>
+</tr>
+<tr>
+<td align="center">システムユーザ </td>
+<td align="center"> アプリケーションを実行するユーザ </td>
+<td align="left"> 1 - 499</td>
+</tr>
+<tr>
+<td align="center">個人ユーザ     </td>
+<td align="center"> Linux上で作業を行うユーザ        </td>
+<td align="left"> 500 - 60000</td>
+</tr>
+</tbody>
+</table>
+
+
+<a name="GID"></a>
+<h2>GID</h2>
+
+<table>
+<thead>
+<tr>
+<th align="center">グループの種類   </th>
+<th align="left"> UIDの範囲  </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">rootグループ     </td>
+<td align="left"> 0</td>
+</tr>
+<tr>
+<td align="center">システムグループ </td>
+<td align="left"> 1 - 499</td>
+</tr>
+<tr>
+<td align="center">個人グループ     </td>
+<td align="left"> 500 - 60000</td>
+</tr>
+</tbody>
+</table>
+
+]]></content>
+  </entry>
+  
+</feed>

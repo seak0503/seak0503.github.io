@@ -1,0 +1,2908 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[seak0503 Blog]]></title>
+  <link href="http://blog.seak.jp.net/atom.xml" rel="self"/>
+  <link href="http://blog.seak.jp.net/"/>
+  <updated>2014-11-28T08:26:19+09:00</updated>
+  <id>http://blog.seak.jp.net/</id>
+  <author>
+    <name><![CDATA[seak0503]]></name>
+    <email><![CDATA[seak0503.gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Octopressの環境移設]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/11/26/dev-octopress/"/>
+    <updated>2014-11-26T14:23:42+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/11/26/dev-octopress</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+
+
+<h2>目次</h2>
+
+
+<p><ul>
+ <li><a href="#L............">はじめに</a></li>
+ <li><a href="#L......">前提</a></li>
+ <li><a href="#L......">手順</a></li>
+</ul>
+
+</p>
+
+<a name="L............"></a>
+<h1>はじめに</h1>
+
+<p>Git Pagesを使った、Octopressの環境、というかブログの原稿を書くローカルリポジトリの再構築の仕方に
+ついて説明します。</p>
+
+<p>手持ちのPCを買いかえたり、オフィスのPCと自宅のPCの両方から、ブログ記事を書きたい時に
+使える手順になります。</p>
+
+<a name="L......"></a>
+<h1>前提</h1>
+
+<ul>
+<li><p>すべてのソースコードをリモートのリポジトリで管理していること</p></li>
+<li><p>ローカル環境にはRuby, gitがインストールされていること</p></li>
+</ul>
+
+
+<a name="L......"></a>
+<h1>手順</h1>
+
+<p>ソースコードを管理しているリモートリポジトリから<code>git clone</code>する:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git clone git@bitbucket.org:username/username.github.io.git
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>セットアップ</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>gem install bundler
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>bundle install
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>bundle <span class="nb">exec </span>rake install
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>GitHubに作成済みのリポジトリを登録する</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>bundle <span class="nb">exec </span>rake setup_github_pages
+</span><span class='line'>Enter the <span class="nb">read</span>/write url <span class="k">for </span>your repository
+</span><span class='line'><span class="o">(</span>For example, <span class="s1">&#39;git@github.com:your_username/your_username.github.io.git)</span>
+</span><span class='line'><span class="s1">           or &#39;</span>https://github.com/your_username/your_username.github.io<span class="err">&#39;</span><span class="o">)</span>
+</span><span class='line'>Repository url: git@github.com:username/username.github.io.git
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>日本語タイトルのソースコードがあると<code>rake preview</code>や<code>rake generate</code>時に</p>
+
+<p><code>Liquid Exception: incompatible character encodings: UTF-8 and ASCII-8BIT in atom.xml</code></p>
+
+<p>というエラーになってしまうため、これを修正する</p>
+
+<p>下記は、rbenvでruby2.1.1をインストールしている場合の例</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>vim ./.rbenv/versions/2.1.1/lib/ruby/gems/2.1.0/gems/jekyll-0.12.0/lib/jekyll/converters/markdown.rb
+</span><span class='line'>～略～
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>           <span class="k">if </span>rd.generate_toc and html.include?<span class="o">(</span>@config<span class="o">[</span><span class="s1">&#39;rdiscount&#39;</span><span class="o">][</span><span class="s1">&#39;toc_token&#39;</span><span class="o">])</span>
+</span><span class='line'>-            html.gsub!<span class="o">(</span>@config<span class="o">[</span><span class="s1">&#39;rdiscount&#39;</span><span class="o">][</span><span class="s1">&#39;toc_token&#39;</span><span class="o">]</span>, rd.toc_content<span class="o">)</span>
+</span><span class='line'>+            html.gsub!<span class="o">(</span>@config<span class="o">[</span><span class="s1">&#39;rdiscount&#39;</span><span class="o">][</span><span class="s1">&#39;toc_token&#39;</span><span class="o">]</span>, rd.toc_content.force_encoding<span class="o">(</span><span class="s1">&#39;utf-8&#39;</span><span class="o">))</span>
+</span><span class='line'>           end
+</span><span class='line'>           html
+</span><span class='line'>～略～
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>テーマをデフォルトから変更している場合には、テーマを再インストールする</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span><span class="nb">pwd</span>
+</span><span class='line'><span class="o">[</span>Octopressのソースコードをcloneしたディレクトリ<span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git clone https://github.com/wallace/justin-kelly-theme.git .themes/justin-kelly-theme
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>bundle <span class="nb">exec </span>rake install<span class="o">[</span><span class="s1">&#39;justin-kelly-theme&#39;</span><span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>あとは通常どおり使用できます。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Sublime Textから素早くiTermを開く]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/11/07/sublimetextmacterminal/"/>
+    <updated>2014-11-07T14:33:28+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/11/07/sublimetextmacterminal</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+
+
+<h2>目次</h2>
+
+
+<p><ul>
+ <li><ul>
+  <li><a href="#L............">はじめに</a></li>
+  <li><a href="#L........................">インストール手順</a></li>
+  <li><a href="#L............">設定手順</a></li>
+  <li><a href="#L............">利用手順</a></li>
+ </ul></li>
+</ul>
+
+</p>
+
+<a name="L............"></a>
+<h2>はじめに</h2>
+
+<p>Sublime Textを使っていると、記述したスクリプトをターミナル上ですぐに実行したい
+場合が多々あると思います。</p>
+
+<p>Sublime Textの拡張パッケージである<code>MacTerminal</code>を使うと、Sublime Textで開いている
+ファイルのディレクトリをカレンとディレクトリとしてターミナルが立ち上がるので
+めちゃめちゃ便利です。</p>
+
+<p>ちなみに、これに似たパッケージに<code>Terminal</code>をいうものがありますが、<code>MacTerminal</code>は
+複数ターミナルを開くと、iTermのタブで開かれるのに対し、<code>Terminal</code>は新規にiTermを
+立ち上げてしまうので、<code>MacTerminal</code>の方が便利だと思います。</p>
+
+<a name="L........................"></a>
+<h2>インストール手順</h2>
+
+<p>Package Controlで<code>MacTerminal</code>を検索して、インストール</p>
+
+<a name="L............"></a>
+<h2>設定手順</h2>
+
+<p>デフォルト設定だと、Macデフォルトのターミナルが開いてしまうので
+設定設定変更する必要があります。</p>
+
+<ol>
+<li><p>Sublime Textから<code>Preferences</code> -> <code>Package Settings</code> -> <code>MacTerminal</code> -> <code>Settings-User</code>を開く</p></li>
+<li><p>下記の設定を入れる</p></li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">{</span>
+</span><span class='line'>  <span class="s2">&quot;directory_mode&quot;</span> : <span class="s2">&quot;project&quot;</span>,
+</span><span class='line'>  <span class="s2">&quot;terminal&quot;</span>   :  <span class="s2">&quot;iterm&quot;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ol>
+<li>Sublime Textを再起動する</li>
+</ol>
+
+
+<a name="L............"></a>
+<h2>利用手順</h2>
+
+<ol>
+<li><p>ファイルを新規作成するか、既存ファイルの編集を行う</p></li>
+<li><p>ショートカットキー`ctrl + command + t&#8217;を押すと、iTermが開く</p></li>
+</ol>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Sublime Text 3のカーソルを変更する手順]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/11/04/sublimetextthemecursor/"/>
+    <updated>2014-11-04T14:42:57+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/11/04/sublimetextthemecursor</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+
+
+<h2>目次</h2>
+
+
+<p><ul>
+ <li><a href="#L............">はじめに</a></li>
+ <li><a href="#L......">環境</a></li>
+ <li><a href="#L......">手順</a></li>
+</ul>
+
+</p>
+
+<a name="L............"></a>
+<h1>はじめに</h1>
+
+<p>Sublime Textのカーソルはブロックになっていないため、見失いやすかったり
+検索した時に、HITした場所がわかりづらかったりします。</p>
+
+<p>ここではSublime Text 3のカーソルを変更する手順を説明します。</p>
+
+<a name="L......"></a>
+<h1>環境</h1>
+
+<p>OS: Mac
+Sublime Text: バージョン3
+Theme: itg</p>
+
+<a name="L......"></a>
+<h1>手順</h1>
+
+<ol>
+<li><p>コマンドパレットを開く</p></li>
+<li><p><code>Package Control: Add Repository</code>コマンドを叩く</p></li>
+<li><p><code>https://github.com/jlangston/BlockCursorEverywhere.git</code>をリポジトリとして追加する</p></li>
+<li><p>コマンドパレットを開く</p></li>
+<li><p><code>Package Control: install Package</code>コマンドを叩く</p></li>
+<li><p><code>BlockCursorEverywhere</code>をインストールする</p></li>
+<li><p>下記を<code>~/Library/Application\ Support/Sublime\ Text\ 3/Packages/User/itg.dark.tmTheme</code>に追加する</p></li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;dict&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;key&gt;</span>name<span class="nt">&lt;/key&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;string&gt;</span>Block Cursor<span class="nt">&lt;/string&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;key&gt;</span>scope<span class="nt">&lt;/key&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;string&gt;</span>block_cursor<span class="nt">&lt;/string&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;key&gt;</span>settings<span class="nt">&lt;/key&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;dict&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;key&gt;</span>foreground<span class="nt">&lt;/key&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;string&gt;</span>#000000<span class="nt">&lt;/string&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;key&gt;</span>background<span class="nt">&lt;/key&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;string&gt;</span>#0df505<span class="nt">&lt;/string&gt;</span> <span class="err">&lt;</span>--ここを好きな色にするとカーソルに色が変わる
+</span><span class='line'>  <span class="nt">&lt;/dict&gt;</span>
+</span><span class='line'><span class="nt">&lt;/dict&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Themeのカラースキームを編集する]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/11/04/sublimetextthemeitg/"/>
+    <updated>2014-11-04T14:25:57+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/11/04/sublimetextthemeitg</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+
+
+<h2>目次</h2>
+
+
+<p><ul>
+ <li><a href="#L............">はじめに</a></li>
+ <li><a href="#L......">環境</a></li>
+ <li><a href="#L...................................................">カスタマイズ用のファイルを準備する</a></li>
+</ul>
+
+</p>
+
+<a name="L............"></a>
+<h1>はじめに</h1>
+
+<p>Sublime Textでは有志の方が公開しているThemeに変更することが
+できます。
+Themeを変更したものの、カーソルの色などを変更したいなど
+カラースキームを調整したくなることもあると思います。</p>
+
+<p>ここでは、<code>Theme – itg.flat</code>を例に、Themeのカラースキームを
+調整するための準備について説明します。</p>
+
+<a name="L......"></a>
+<h1>環境</h1>
+
+<ul>
+<li>OS: Mac</li>
+<li>Sublime Text: バージョン3</li>
+<li>Theme: Theme - itg.flat</li>
+</ul>
+
+
+<a name="L..................................................."></a>
+<h1>カスタマイズ用のファイルを準備する</h1>
+
+<p>Theme - itg.flatのパッケージを適当なところにコピーする。
+拡張子は<code>.zip</code>にする</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>cp ~/Library/Application<span class="se">\ </span>Support/Sublime<span class="se">\ </span>Text<span class="se">\ </span>3/Installed<span class="se">\ </span>Packages/Theme<span class="se">\ </span>-<span class="se">\ </span>itg.flat.sublime-package /tmp/Theme<span class="se">\ </span>-<span class="se">\ </span>itg.flat.sublime-package.zip
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>解凍する</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>unzip /tmp/Theme<span class="se">\ </span>-<span class="se">\ </span>itg.flat.sublime-package.zip
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>必要なファイルをコピーする</p>
+
+<p><strong>ここではitgのカラースキームにitg.darkを使用するものとします</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>cp itg.dark.tmTheme ~/Library/Application<span class="se">\ </span>Support/Sublime<span class="se">\ </span>Text<span class="se">\ </span>3/Packages/User/
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>以下の手順でSublime Textのカラースキームを変更する</p>
+
+<p><code>Preferences -&gt; Color Scheme -&gt; User -&gt; itg.dark</code>の順で選択する</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[sublimeText3でVimライクな操作を可能にさせる]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/10/17/sublimetextvim/"/>
+    <updated>2014-10-17T15:33:59+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/10/17/sublimetextvim</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<ol>
+<li><p>Sublime TextのPackage Controlから<code>Vintageous</code>をインストールする。</p>
+
+<p>これを入れると、%sでの置換なども出来るようになります。</p></li>
+<li><p>Sublime Textのユーザ設定ファイルに下記を追記する。</p></li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="s2">&quot;vintage_ctrl_keys&quot;</span>: <span class="nb">true</span>,
+</span><span class='line'><span class="s2">&quot;vintage_start_in_command_mode&quot;</span>: <span class="nb">true</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><p><code>"vintage_ctrl_keys": true</code>は、ctrl キーを使用する vim のショートカットが使えるようにする設定</p></li>
+<li><p><code>"vintage_start_in_command_mode": true</code>は、ファイルを開いた時にコマンドモードで始まるようにする設定</p></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[berks install時のエラー]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/09/25/chef-berks-install/"/>
+    <updated>2014-09-25T06:01:57+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/09/25/chef-berks-install</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<p><code>bundle exec berks install --path ./cookbooks</code>を実行したら下記のように
+怒られました。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>bundle <span class="nb">exec </span>berks install --path ./cookbooks
+</span><span class='line'>DEPRECATED: <span class="sb">`</span>berks install --path <span class="o">[</span>PATH<span class="o">}</span><span class="sb">`</span> has been replaced by <span class="sb">`</span>berks vendor<span class="sb">`</span>.
+</span><span class='line'>DEPRECATED: Re-run your <span class="nb">command </span>as <span class="sb">`</span>berks vendor <span class="o">[</span>PATH<span class="o">]</span><span class="sb">`</span> or see <span class="sb">`</span>berks <span class="nb">help </span>vendor<span class="sb">`</span>.
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Berkshelfのバージョンを調べたところ</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>berks -v
+</span><span class='line'>3.1.5
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>現在のバージョンでは下記のように書くらしいです。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>bundle <span class="nb">exec </span>berks vendor cookbooks
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>気をとりなおして、<code>bunlde exec berks vendor cookbooks</code>を実行するとまたも怒られました。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>bundle <span class="nb">exec </span>berks vendor cookbooks
+</span><span class='line'>DEPRECATED: Your Berksfile contains a site location pointing to the Opscode Community Site <span class="o">(</span>site :opscode<span class="o">)</span>. Site locations have been replaced by the <span class="nb">source </span>location. Change this to: <span class="s1">&#39;source &quot;https://supermarket.getchef.com&quot;&#39;</span> to remove this warning. For more information visit https://github.com/berkshelf/berkshelf/wiki/deprecated-locations
+</span><span class='line'>Resolving cookbooks dependencies...
+</span><span class='line'>Fetching <span class="s1">&#39;nginx&#39;</span> from <span class="nb">source </span>at site-cookbooks/nginx
+</span><span class='line'>Fetching cookbooks index from https://supermarket.getchef.com...
+</span><span class='line'>Using nginx <span class="o">(</span>0.1.0<span class="o">)</span> from <span class="nb">source </span>at site-cookbooks/nginx
+</span><span class='line'>Using yum <span class="o">(</span>3.3.2<span class="o">)</span>
+</span><span class='line'>Using yum-epel <span class="o">(</span>0.5.1<span class="o">)</span>
+</span><span class='line'>Vendoring nginx <span class="o">(</span>0.1.0<span class="o">)</span> to /home/dev/study/chef/6/cookbooks/nginx
+</span><span class='line'>Vendoring yum <span class="o">(</span>3.3.2<span class="o">)</span> to /home/dev/study/chef/6/cookbooks/yum
+</span><span class='line'>Vendoring yum-epel <span class="o">(</span>0.5.1<span class="o">)</span> to /home/dev/study/chef/6/cookbooks/yum-epel
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>一応クックブックは作ってくれたようですが、Berkshelfの2系以降はBerksfileの1行目は
+<code>site :opscode</code>ではなく<code>source "https://supermarket.getchef.com"</code>と書くようです。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[bundleコマンドのパスを通す方法]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/09/24/ruby-bundler/"/>
+    <updated>2014-09-24T06:40:21+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/09/24/ruby-bundler</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+
+
+<h2>目次</h2>
+
+
+<p><ul>
+ <li><ul>
+  <li><a href="#L............">はじめに</a></li>
+  <li><a href="#bundle...............PATH...............">bundleコマンドのPATHを通す方法</a></li>
+  <li><a href="#PATH.........">PATHを通す</a></li>
+ </ul></li>
+</ul>
+
+</p>
+
+<a name="L............"></a>
+<h2>はじめに</h2>
+
+<p>bundlerをインストール後にGemfileを書いて、必要なライブラリをインストールするために<code>bundle</code>コマンドを
+実行する必要がありますが、<code>bundle</code>コマンドのPATHが通っていない場合があります。
+ここではその対処法をメモしています。</p>
+
+<a name="bundle...............PATH..............."></a>
+<h2>bundleコマンドのPATHを通す方法</h2>
+
+<p>bundlerをインストールする:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>gem install bundler
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>EXECUTABLE DIRECTORYのPATHを確認する</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>gem environment
+</span><span class='line'>RubyGems Environment:
+</span><span class='line'>  - RUBYGEMS VERSION: 2.0.14
+</span><span class='line'>  - RUBY VERSION: 2.0.0 <span class="o">(</span>2013-11-22 patchlevel 353<span class="o">)</span> <span class="o">[</span>x86_64-linux<span class="o">]</span>
+</span><span class='line'>  - INSTALLATION DIRECTORY: /home/dev/.rbenv/versions/2.0.0-p353/lib/ruby/gems/2.0.0
+</span><span class='line'>  - RUBY EXECUTABLE: /home/dev/.rbenv/versions/2.0.0-p353/bin/ruby
+</span><span class='line'>  - EXECUTABLE DIRECTORY: /home/dev/.rbenv/versions/2.0.0-p353/bin &lt;-ここ
+</span><span class='line'>  - RUBYGEMS PLATFORMS:
+</span><span class='line'>    - ruby
+</span><span class='line'>    - x86_64-linux
+</span><span class='line'>  - GEM PATHS:
+</span><span class='line'>     - /home/dev/.rbenv/versions/2.0.0-p353/lib/ruby/gems/2.0.0
+</span><span class='line'>     - /home/dev/.gem/ruby/2.0.0
+</span><span class='line'>  - GEM CONFIGURATION:
+</span><span class='line'>     - :update_sources <span class="o">=</span>&gt; <span class="nb">true</span>
+</span><span class='line'>     - :verbose <span class="o">=</span>&gt; <span class="nb">true</span>
+</span><span class='line'>     - :backtrace <span class="o">=</span>&gt; <span class="nb">false</span>
+</span><span class='line'>     - :bulk_threshold <span class="o">=</span>&gt; 1000
+</span><span class='line'>  - REMOTE SOURCES:
+</span><span class='line'>     - https://rubygems.org/
+</span></code></pre></td></tr></table></div></figure>
+
+
+<a name="PATH........."></a>
+<h2>PATHを通す</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span><span class="nb">echo</span> <span class="nv">$HOME</span>
+</span><span class='line'>/home/dev
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span><span class="nb">echo</span> <span class="s1">&#39;export PATH=&quot;$HOME/.rbenv/versions/2.0.0-p353/bin:$PATH&quot;&#39;</span> &gt;&gt; ~/.bash_profile
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span><span class="nb">source</span> ~/.bash_profile
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>bundle -v
+</span><span class='line'>Bundler version 1.7.3
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ChefのAttributeの優先順位]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/09/15/chef-attribute/"/>
+    <updated>2014-09-15T22:05:47+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/09/15/chef-attribute</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<p>ChefにはAttributeの値を定義できる場所が複数あります。
+同名のAttributeを定義した場合、優先度の高いAttributeの値が
+最終的に利用されることになります。</p>
+
+<p>下の表では、下から上に優先度が高くなっています。</p>
+
+<p>また、リポジトリのディレクトリを例として<code>/tmp/chef_repo</code>、クックブックの
+ディレクトリを<code>/tmp/chef_repo/site-cookbooks/test_cookbook</code>としています。</p>
+
+<table>
+<thead>
+<tr>
+<th align="center">優先度 </th>
+<th align="left"> 定義場所 </th>
+<th align="left"> ディレクトリフルパス</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">1 </td>
+<td align="left"> Nodeオブジェクト </td>
+<td align="left"> /tmp/chef_repo/nodes/node01.json</td>
+</tr>
+<tr>
+<td align="center">2 </td>
+<td align="left"> ロール </td>
+<td align="left"> /tmp/chef_repo/web.json</td>
+</tr>
+<tr>
+<td align="center">3 </td>
+<td align="left"> Environments </td>
+<td align="left"> /tmp/chef_repo/environments/development.json</td>
+</tr>
+<tr>
+<td align="center">4 </td>
+<td align="left"> レシピの中で定義されたAttribute </td>
+<td align="left"> /tmp/chef_repo/site-cookbooks/test_cookbook/recipes/default.rb</td>
+</tr>
+<tr>
+<td align="center">5 </td>
+<td align="left"> クックブック内のAttributeファイル </td>
+<td align="left"> /tmp/chef_repo/site-cookbooks/test_cookbook/attributes/defautl.rb</td>
+</tr>
+</tbody>
+</table>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[javaアクセス制御一覧]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/09/12/java-access/"/>
+    <updated>2014-09-12T06:09:24+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/09/12/java-access</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+
+
+<h2>目次</h2>
+
+
+<p><ul>
+ <li><ul>
+  <li><a href="#L...............................................................">クラスとインタフェースに対するアクセス制御</a></li>
+  <li><a href="#L........................................................................">クラスのメソッドとフィールドに対するアクセス制御</a></li>
+  <li><a href="#L....................................................................................">インタフェースのメソッドとフィールドに対するアクセス制御</a></li>
+ </ul></li>
+</ul>
+
+</p>
+
+<a name="L..............................................................."></a>
+<h2>クラスとインタフェースに対するアクセス制御</h2>
+
+<table>
+<thead>
+<tr>
+<th align="left">なし </th>
+<th align="left"> public</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">同じパッケージからのみ使える </td>
+<td align="left"> 他のパッケージから使える</td>
+</tr>
+</tbody>
+</table>
+
+
+<ul>
+<li>覚えるポイント:
+
+<ul>
+<li>アクセス制御は<code>なし</code>か<code>public</code>の2種類</li>
+</ul>
+</li>
+</ul>
+
+
+<a name="L........................................................................"></a>
+<h2>クラスのメソッドとフィールドに対するアクセス制御</h2>
+
+<table>
+<thead>
+<tr>
+<th align="left"> </th>
+<th align="left"> publicなしクラス </th>
+<th align="left"> publicありクラス</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">private </td>
+<td align="left"> クラス内でのみ使える </td>
+<td align="left"> クラス内でのみ使える</td>
+</tr>
+<tr>
+<td align="left">なし </td>
+<td align="left"> 同じパッケージからのみ使える </td>
+<td align="left"> 同じパッケージからのみ使える</td>
+</tr>
+<tr>
+<td align="left">protected </td>
+<td align="left"> 同じパッケージからのみ使える </td>
+<td align="left"> 同じパッケージとサブクラスからのみ使える</td>
+</tr>
+<tr>
+<td align="left">public </td>
+<td align="left"> 同じパッケージからのみ使える </td>
+<td align="left"> 他のパッケージから使える</td>
+</tr>
+</tbody>
+</table>
+
+
+<ul>
+<li>覚えるポイント:
+
+<ul>
+<li>クラスのアクセス制御　と　メソッド(フィールド)のアクセス制御のうち、制約が厳しい方が優先させる</li>
+<li>制約の厳しさ比較
+
+<ul>
+<li>public &lt; protected &lt; なし &lt; private</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+<a name="L...................................................................................."></a>
+<h2>インタフェースのメソッドとフィールドに対するアクセス制御</h2>
+
+<table>
+<thead>
+<tr>
+<th align="left"> </th>
+<th align="left"> publicなしインタフェース </th>
+<th align="left"> publicありインタフェース</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">なし </td>
+<td align="left"> 同じパッケージからのみ使える </td>
+<td align="left"> 他のパッケージから使える</td>
+</tr>
+<tr>
+<td align="left">public </td>
+<td align="left"> 同じパッケージからのみ使える </td>
+<td align="left"> 他のパッケージから使える</td>
+</tr>
+</tbody>
+</table>
+
+
+<ul>
+<li>覚えるポイント:
+
+<ul>
+<li>アクセス制御は<code>なし</code>か<code>public</code>の2種類</li>
+<li>インタフェースのアクセス制御　と　メソッド(フィールド)のアクセス制御のうち、インタフェースの
+アクセス制御が優先される
+
+<ul>
+<li>publicなしインタフェースのメソッド(フィールド): <code>同じパッケージからのみ使える</code>パターンのみ</li>
+<li>publicありインタフェースのメソッド(フィールド): <code>他のパッケージから使える</code>パターンのみ</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[marginの相殺について]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/07/26/http-margin/"/>
+    <updated>2014-07-26T08:56:05+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/07/26/http-margin</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<p>cssのmarginを使う際、上下に隣接する要素のmarginが相殺される様子を
+確認してみました。</p>
+
+<p>HTMLのソースは下記のとおりです。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;!DOCTYPE html&gt;</span>
+</span><span class='line'><span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">&quot;ja&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;head&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">&quot;utf-8&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;title&gt;</span>マージンの相殺<span class="nt">&lt;/title&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">href=</span><span class="s">&quot;../common/css/test.css&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/head&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;body&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;p</span> <span class="na">class=</span><span class="s">&quot;sample1&quot;</span><span class="nt">&gt;</span>sample1<span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;p</span> <span class="na">class=</span><span class="s">&quot;sample2&quot;</span><span class="nt">&gt;</span>sample2<span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/body&gt;</span>
+</span><span class='line'><span class="nt">&lt;/html&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>まずは上下に隣接する二つの要素のmarginを0pxにするところからやって
+みます。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="nc">.sample1</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">background-color</span><span class="o">:</span> <span class="m">#f6fa0c</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">border</span><span class="o">:</span> <span class="k">dotted</span> <span class="m">3px</span> <span class="m">#ffb700</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">margin-bottom</span><span class="o">:</span> <span class="m">0px</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nc">.sample2</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">background-color</span><span class="o">:</span> <span class="m">#00f5c4</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">border</span><span class="o">:</span> <span class="k">dotted</span> <span class="m">3px</span> <span class="m">#0400ff</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">margin-top</span><span class="o">:</span> <span class="m">0px</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>この結果は下記のようになります。</p>
+
+<p><img src="http://blog.seak.jp.net/images/20140726/1.jpg" title="image1" alt="image1"></p>
+
+<p>次は、上の要素(sample1)の下側に10pxのスペースを作ります。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="nc">.sample1</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">background-color</span><span class="o">:</span> <span class="m">#f6fa0c</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">border</span><span class="o">:</span> <span class="k">dotted</span> <span class="m">3px</span> <span class="m">#ffb700</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">margin-bottom</span><span class="o">:</span> <span class="m">10px</span><span class="p">;</span> <span class="o">&lt;-</span><span class="err">ここを変更</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nc">.sample2</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">background-color</span><span class="o">:</span> <span class="m">#00f5c4</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">border</span><span class="o">:</span> <span class="k">dotted</span> <span class="m">3px</span> <span class="m">#0400ff</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">margin-top</span><span class="o">:</span> <span class="m">0px</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>この結果は下記のようになります。</p>
+
+<p><img src="http://blog.seak.jp.net/images/20140726/2.jpg" title="image2" alt="image2"></p>
+
+<p>では、下の要素(sample2)の上側に10pxのスペースを作るとどうなるでしょうか?</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="nc">.sample1</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">background-color</span><span class="o">:</span> <span class="m">#f6fa0c</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">border</span><span class="o">:</span> <span class="k">dotted</span> <span class="m">3px</span> <span class="m">#ffb700</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">margin-bottom</span><span class="o">:</span> <span class="m">10px</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nc">.sample2</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">background-color</span><span class="o">:</span> <span class="m">#00f5c4</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">border</span><span class="o">:</span> <span class="k">dotted</span> <span class="m">3px</span> <span class="m">#0400ff</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">margin-top</span><span class="o">:</span> <span class="m">10px</span><span class="p">;</span> <span class="o">&lt;-</span><span class="err">ここを変更</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>この結果は下記のようになります。</p>
+
+<p><img src="http://blog.seak.jp.net/images/20140726/3.jpg" title="image3" alt="image3"></p>
+
+<p>つまり、下記のように<code>10px + 10px = 20px</code>にはなりません。</p>
+
+<p><img src="http://blog.seak.jp.net/images/20140726/4.jpg" title="image4" alt="image4"></p>
+
+<p>では、下の要素(sample2)の上側のスペースを20pxに変更するとどうなるでしょう?</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="nc">.sample1</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">background-color</span><span class="o">:</span> <span class="m">#f6fa0c</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">border</span><span class="o">:</span> <span class="k">dotted</span> <span class="m">3px</span> <span class="m">#ffb700</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">margin-bottom</span><span class="o">:</span> <span class="m">10px</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nc">.sample2</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">background-color</span><span class="o">:</span> <span class="m">#00f5c4</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">border</span><span class="o">:</span> <span class="k">dotted</span> <span class="m">3px</span> <span class="m">#0400ff</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">margin-top</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span> <span class="o">&lt;-</span><span class="err">ここを変更</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>この結果は下記のようになります。</p>
+
+<p><img src="http://blog.seak.jp.net/images/20140726/5.jpg" title="image5" alt="image5"></p>
+
+<p>ここで、上の要素(sample1)の市側のスペースを20pxに変更するとどうなるかは
+想像がつくと思います。</p>
+
+<p>試しに30pxにするとどうなるでしょうか?</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="nc">.sample1</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">background-color</span><span class="o">:</span> <span class="m">#f6fa0c</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">border</span><span class="o">:</span> <span class="k">dotted</span> <span class="m">3px</span> <span class="m">#ffb700</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">margin-bottom</span><span class="o">:</span> <span class="m">30px</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nc">.sample2</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">background-color</span><span class="o">:</span> <span class="m">#00f5c4</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">border</span><span class="o">:</span> <span class="k">dotted</span> <span class="m">3px</span> <span class="m">#0400ff</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">margin-top</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>結果は下記のとおりとなります。</p>
+
+<p><img src="http://blog.seak.jp.net/images/20140726/6.jpg" title="image6" alt="image6"></p>
+
+<p>なんとなくイメージできるでしょうか?</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[HTTPSのサイトをtelnetでページ表示できない]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/07/17/https-telnet-openssl/"/>
+    <updated>2014-07-17T10:54:58+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/07/17/https-telnet-openssl</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<p>開発とか、日常の運用業務でhttpサイトにtelnetでアクセスすることが
+よくあると思います。</p>
+
+<p>例えば</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>telnet www.yahoo.co.jp 80
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上記のように<code>telnet</code>してから、GETメソッドとかでHTTPリクエストを
+出しますよね。</p>
+
+<p>でも、HTTPSのサイトだとtelnetができません。</p>
+
+<p>そんな時は<code>openssl</code>コマンドの出番です。</p>
+
+<p>例えば下記のような感じ</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>openssl s_client -connect www.goole.co.jp:443
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上記でアクセスできたら、後は通常通りGETメソッドとかでHTTPリクエストが出せます。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[メソッドをオーバーライドする時のシグネチャにおける注意点]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/07/16/java-override/"/>
+    <updated>2014-07-16T09:30:59+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/07/16/java-override</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+
+
+<h2>目次</h2>
+
+
+<p><ul>
+ <li><a href="#L............">はじめに</a></li>
+ <li><a href="#L............................................................">シグネチャを合わせて正しくオーバーライド</a></li>
+ <li><a href="#L............................................................">引数の数を増やしたり、減らしたりしてみる</a></li>
+ <li><a href="#L.........">まとめ</a></li>
+</ul>
+
+</p>
+
+<a name="L............"></a>
+<h1>はじめに</h1>
+
+<p>Javaでメソッドをオーバーライドする時は、サブクラスのメソッドはスーパークラスの
+メソッドのシグネチャ(メソッド名と引数列の型)に合わせる必要があります。</p>
+
+<p>引数列の型が同じである必要があるということは知っていましたが、引数の数が
+違うとどうなるか?</p>
+
+<p>コンパイラに怒られることはわかっていつつ、試してみました。</p>
+
+<p>例として、スーパークラスのメソッドは下記のように定義します。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">class</span> <span class="nc">Papa</span> <span class="o">{</span>
+</span><span class='line'>    <span class="o">...</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="nf">calParameter</span><span class="o">(</span><span class="kt">int</span> <span class="n">x</span><span class="o">,</span> <span class="kt">int</span> <span class="n">y</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">sum_parameter</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">sum_parameter</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="o">...</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<a name="L............................................................"></a>
+<h1>シグネチャを合わせて正しくオーバーライド</h1>
+
+<p>説明するまでもありませんが、下記のようにオーバーライドすると、当然正常に
+コンパイルできます。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">class</span> <span class="nc">MySon</span> <span class="kd">extends</span> <span class="n">Papa</span> <span class="o">{</span>
+</span><span class='line'>    <span class="o">...</span>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="nf">calParameter</span><span class="o">(</span><span class="kt">int</span> <span class="n">x</span><span class="o">,</span> <span class="kt">int</span> <span class="n">y</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">diff_parameter</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="n">y</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">diff_parameter</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="o">...</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<a name="L............................................................"></a>
+<h1>引数の数を増やしたり、減らしたりしてみる</h1>
+
+<p>引数の数を増やす:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">class</span> <span class="nc">MySon</span> <span class="kd">extends</span> <span class="n">Papa</span> <span class="o">{</span>
+</span><span class='line'>    <span class="o">...</span>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="nf">calParameter</span><span class="o">(</span><span class="kt">int</span> <span class="n">x</span><span class="o">,</span> <span class="kt">int</span> <span class="n">y</span><span class="o">,</span> <span class="kt">int</span> <span class="n">z</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">diff_parameter</span> <span class="o">=</span> <span class="o">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">y</span><span class="o">)</span> <span class="o">*</span> <span class="n">z</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">diff_parameter</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="o">...</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>引数の数を減らす:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">class</span> <span class="nc">MySon</span> <span class="kd">extends</span> <span class="n">Papa</span> <span class="o">{</span>
+</span><span class='line'>    <span class="o">...</span>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="nf">calParameter</span><span class="o">(</span><span class="kt">int</span> <span class="n">x</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">diff_parameter</span> <span class="o">=</span> <span class="n">x</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">diff_parameter</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="o">...</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上記二つのパターンでコンパイルすると、いずれも下記のように怒られました。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>javac MySon.java
+</span><span class='line'>MySon.java:18: エラー: メソッドはスーパータイプのメソッドをオーバーライドまたは実装しません
+</span></code></pre></td></tr></table></div></figure>
+
+
+<a name="L........."></a>
+<h1>まとめ</h1>
+
+<p>今回のケースは想像はついてましたが、まとめると</p>
+
+<p><strong>メソッドをオーバーライドするには</strong></p>
+
+<ul>
+<li>メソッドの名前が等しく、かつ</li>
+<li>引数列の型と、引数の数が等しいこと</li>
+</ul>
+
+
+<p>となります。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Javaのsuper()を書く場所に注意]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/07/10/java-super/"/>
+    <updated>2014-07-10T06:35:19+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/07/10/java-super</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<p>Javaでサブクラスをつくった場合、特に何か書かなくてもスーパークラスの
+<strong>引数なし</strong>のコンストラクタはコンパイラによって、自動的に挿入されます。</p>
+
+<p>例えば下記のような、RectangleクラスのサブクラスNamedRectangleクラスをつくった場合
+<code>NamedRectangle()</code>コンストラクタのところに、スーパークラスのコンストラクタ呼び出しは
+書いていません。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">class</span> <span class="nc">NamedRectangle</span> <span class="kd">extends</span> <span class="n">Rectangle</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+</span><span class='line'>    <span class="n">NamedRectangle</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;NO NAME&quot;</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>この場合、コンパイル時に<code>super()</code>が自動的に挿入され、下記のように
+スーパークラスの引数なしのコンストラクタが呼び出せるようになっています。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">class</span> <span class="nc">NamedRectangle</span> <span class="kd">extends</span> <span class="n">Rectangle</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+</span><span class='line'>    <span class="n">NamedRectangle</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kd">super</span><span class="o">();</span> <span class="o">&lt;-</span><span class="err">これ</span>
+</span><span class='line'>        <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;NO NAME&quot;</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ではスーパークラスの<strong>引数付き</strong>のコンストラクタを呼び出す場合はどうでしょうか?
+そうです、明示的に書いてやる必要があります。
+例えば下記のような感じ</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">class</span> <span class="nc">NamedRectangle</span> <span class="kd">extends</span> <span class="n">Rectangle</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+</span><span class='line'>    <span class="n">NamedRectangle</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kd">super</span><span class="o">(</span><span class="mi">200</span><span class="o">,</span> <span class="mi">32</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;NO NAME&quot;</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>大変前置きが長かったですが、この<code>super()</code>を書く位置をずらしてコンパイルすると
+どうなってしまうでしょうか?</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">class</span> <span class="nc">NamedRectangle</span> <span class="kd">extends</span> <span class="n">Rectangle</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+</span><span class='line'>    <span class="n">NamedRectangle</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;NO NAME&quot;</span><span class="o">;</span>
+</span><span class='line'>        <span class="kd">super</span><span class="o">(</span><span class="mi">200</span><span class="o">,</span> <span class="mi">32</span><span class="o">);</span> <span class="o">&lt;-</span><span class="err">このように一行したに入れる</span>
+</span><span class='line'>    <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>コンパイルすると、、、</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>javac PlacedRectangle.java
+</span><span class='line'>PlacedRectangle.java:12: エラー: superの呼出しはコンストラクタの先頭文である必要があります
+</span><span class='line'>        super<span class="o">(</span>width, height<span class="o">)</span>;
+</span><span class='line'>             ^
+</span><span class='line'>エラー1個
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>superの呼出しはコンストラクタの先頭文である必要があります</code>と怒られてしまいました。</p>
+
+<p>Javaを書く方には「当然のこと!」と怒られそうですが、ちょっと気になってためした結果を
+せっかくですので、ブログにおこしました。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[gitのソースインストール]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/07/02/git-source-install/"/>
+    <updated>2014-07-02T10:11:52+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/07/02/git-source-install</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+
+
+<h2>目次</h2>
+
+
+<p><ul>
+ <li><ul>
+  <li><a href="#L............">はじめに</a></li>
+  <li><a href="#L......">環境</a></li>
+  <li><a href="#L........................">インストール手順</a></li>
+ </ul></li>
+</ul>
+
+</p>
+
+<a name="L............"></a>
+<h2>はじめに</h2>
+
+<p>CentOS6の環境でgitを使っているんですが、pre-push hookを作りたいと
+思った時に、gitのバージョンが1.8.2以上である必要があることを知りました。</p>
+
+<p>CentOS6でyumからインストールしたものだとバージョンが低いので、ソースから
+インストールしました。</p>
+
+<a name="L......"></a>
+<h2>環境</h2>
+
+<ul>
+<li>OS: CentOS6.4 x86_64</li>
+</ul>
+
+
+<a name="L........................"></a>
+<h2>インストール手順</h2>
+
+<p>現状のgitのバージョンを確認します</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git --version
+</span><span class='line'>git version 1.7.1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>適当な場所にソースをダウンロードします。今回はこのブログを書いた時の
+安定版の最新である<code>1.8.5</code>をダウンロードしました</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span><span class="nb">cd</span> /usr/local/data/src/
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>wget <span class="s2">&quot;https://git-core.googlecode.com/files/git-1.8.5.5.tar.gz&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>tar zxvf git-1.8.5.5.tar.gz
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>一応root権限になって、インストールを行いました</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>su -
+</span><span class='line'>
+</span><span class='line'><span class="c"># cd /usr/local/data/src/git-1.8.5.5</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># ./configure -prefix=/usr/local</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># make</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># make install</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ここで、自分のアカウントの<code>.pash_profile</code>を実行してからバージョンを確認すると
+バージョンが上がっているはずです。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># source ~/.bash_profile</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># git --version</span>
+</span><span class='line'>git version 1.8.5.5
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[pythonとrubyでコマンドラインで引数を受け取るプログラムをつくる]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/06/30/argv-of-python-and-ruby/"/>
+    <updated>2014-06-30T15:31:47+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/06/30/argv-of-python-and-ruby</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+
+
+<h2>目次</h2>
+
+
+<p><ul>
+ <li><ul>
+  <li><a href="#L............">はじめに</a></li>
+  <li><a href="#L..................">ソースコード</a></li>
+  <li><a href="#L.....................">プログラム実行</a></li>
+  <li><a href="#L......">比較</a></li>
+  <li><a href="#L......">感想</a></li>
+ </ul></li>
+</ul>
+
+</p>
+
+<a name="L............"></a>
+<h2>はじめに</h2>
+
+<p>最近Rubyを勉強しはじめましたが、日常的にPythonを書く私にとって
+「便利だなぁ」と思うところと、「なんか覚えにくいなぁ、というか
+とっつきにくいなぁ」と思うところの両者がかけめぐってますが、それは
+それで面白いところだし、とても勉強になります。</p>
+
+<p>そんなわけで、今日はコマンドラインから引数を受け取るプログラムを
+PythonとRubyの両方で書いてみました。</p>
+
+<a name="L.................."></a>
+<h2>ソースコード</h2>
+
+<p>python(argv.py):</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># coding: utf-8</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">sys</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">u&quot;これは第1引数です: &quot;</span> <span class="o">+</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">u&quot;これは第2引数です: &quot;</span> <span class="o">+</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">u&quot;これは第3引数です: &quot;</span> <span class="o">+</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ruby(argv.rb)</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># cofing: utf-8</span>
+</span><span class='line'><span class="nb">puts</span><span class="p">(</span><span class="s2">&quot;これは第1引数です: </span><span class="si">#{</span><span class="no">ARGV</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="nb">puts</span><span class="p">(</span><span class="s2">&quot;これは第2引数です: </span><span class="si">#{</span><span class="no">ARGV</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="nb">puts</span><span class="p">(</span><span class="s2">&quot;これは第3引数です: </span><span class="si">#{</span><span class="no">ARGV</span><span class="o">[</span><span class="mi">2</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<a name="L....................."></a>
+<h2>プログラム実行</h2>
+
+<p>python:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>python argv.py 1st 2nd
+</span><span class='line'>これは第1引数です: argv.py
+</span><span class='line'>これは第2引数です: 1st
+</span><span class='line'>これは第3引数です: 2nd
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ruby:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>ruby argv.rb 1st 2nd 3rd
+</span><span class='line'>これは第1引数です: 1st
+</span><span class='line'>これは第2引数です: 2nd
+</span><span class='line'>これは第3引数です: 3rd
+</span></code></pre></td></tr></table></div></figure>
+
+
+<a name="L......"></a>
+<h2>比較</h2>
+
+<ul>
+<li><p>まず決定的に異なるのは、インデント0が何になるかです。pythonの場合はコマンド名(スクリプト名)
+そのものになっているのに対し、rubyでは一つ目の引数になっています。
+どちらが正しいかは別として、直感的にはrubyの方がわかりやすい気がします。</p></li>
+<li><p>次に異なるのは、pythonではsysモジュールを呼び出しているのに対し、rubyではモジュールの
+呼び出しが必要ない点です。
+何がいいかは別として、rubyの方が楽です。</p></li>
+</ul>
+
+
+<a name="L......"></a>
+<h2>感想</h2>
+
+<p>今回のお題のプログラムをつくるなら、rubyの方が直感的にわかりやすくていいなぁという気持ちになりました。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[メソッドの仮引数名をフィールド名と同じにできるか?]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/06/27/java-method-arg-name/"/>
+    <updated>2014-06-27T06:11:59+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/06/27/java-method-arg-name</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<p>Javaで下記のようなプログラムを書いた場合について考えます。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">class</span> <span class="nc">Rectangle</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">width</span><span class="o">;</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">height</span><span class="o">;</span>
+</span><span class='line'>    <span class="n">Rectangle</span><span class="o">(</span><span class="kt">int</span> <span class="n">w</span><span class="o">,</span> <span class="kt">int</span> <span class="n">h</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">width</span> <span class="o">=</span> <span class="n">w</span><span class="o">;</span>
+</span><span class='line'>        <span class="n">height</span> <span class="o">=</span> <span class="n">h</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="o">...</span> <span class="err">このあたりは省略</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上記の場合、コンストラクタを呼び出す際、引数<code>w</code>と<code>h</code>で指定した値は
+正しく<code>width</code>と<code>height</code>フィールドに代入されます。</p>
+
+<p>しかし、下記のように仮引数名を変更した場合どうなるでしょうか?</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">class</span> <span class="nc">Rectangle</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">width</span><span class="o">;</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">height</span><span class="o">;</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="nf">Rectangle</span><span class="o">(</span><span class="kt">int</span> <span class="n">width</span><span class="o">,</span> <span class="kt">int</span> <span class="n">height</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">width</span> <span class="o">=</span> <span class="n">w</span><span class="o">;</span>
+</span><span class='line'>        <span class="n">height</span> <span class="o">=</span> <span class="n">h</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="o">...</span> <span class="err">このあたりは省略</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>コンパイル時はエラーになりませんが、インスタンスを作成してコンストラクタが呼び出されると
+<code>width</code>と<code>height</code>フィールドには指定した値が代入されず、0になってしまいます。</p>
+
+<p>このように、<strong>メソッドの仮引数名をフィールド名と同じ</strong>にする場合、<code>this</code>を
+使って次のように書く必要があります。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">class</span> <span class="nc">Rectangle</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">width</span><span class="o">;</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">height</span><span class="o">;</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="nf">Rectangle</span><span class="o">(</span><span class="kt">int</span> <span class="n">width</span><span class="o">,</span> <span class="kt">int</span> <span class="n">height</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">width</span> <span class="o">=</span> <span class="n">w</span><span class="o">;</span> <span class="o">&lt;-</span> <span class="err">ここを変更</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">height</span> <span class="o">=</span> <span class="n">h</span><span class="o">;</span> <span class="o">&lt;-</span> <span class="err">ここを変更</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="o">...</span> <span class="err">このあたりは省略</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>例えばpythonの場合、クラスを宣言した場合、クラス内の
+メソッドの第一引数には明示的に<code>self</code>と書き、フィールドの
+宣言の時も、<code>self.width = w</code>のように書きますね。</p>
+
+<p>例えばpythonで上記と同じプログラムを書くときは下記のようになります。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">class</span> <span class="nc">Rectange</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">):</span>
+</span><span class='line'>       <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="n">width</span>
+</span><span class='line'>       <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="n">height</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>javaの場合、pythonでいう<code>self</code>である<code>this</code>は、pythonとは異なり、メソッド宣言の中では
+省略可能です。</p>
+
+<p>これは、コンパイラによって自動的に<code>this</code>を補完してくれるからです。</p>
+
+<p>ただし、今回の例のように、メソッドの仮引数名をフィールド名と同じにした場合、<code>this</code>を
+省略すると、意図したとおりにプログラムが動きません。</p>
+
+<p>私は最初に覚えたオブジェクト指向言語はpythonなので、<code>this</code>を省略するのは違和感が
+あります。</p>
+
+<p>私はpythonをメインに仕事をしていますので、javaを書くときも混乱しないように<code>this</code>を
+省略しないで書こうと思っています。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[iptables 1レコードで複数ポートを定義する方法]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/06/24/linux-iptables-multiport/"/>
+    <updated>2014-06-24T14:32:04+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/06/24/linux-iptables-multiport</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<p>例えばApacheをたてて、iptablesを書く場合、たいてい<code>--dport</code>は80と443に
+して、通信を許可すると思います。</p>
+
+<p>その場合、私は今まで下記のように2レコードのiptablesを書いていました。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>-A INPUT -m state --state NEW -m tcp -p tcp --dport 80 -j ACCEPT
+</span><span class='line'>-A INPUT -m state --state NEW -m tcp -p tcp --dport 443 -j ACCEPT
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>しかし、<code>-m multiport</code>を使用すると、<code>--dports</code>オプションが利用できるようになり、
+これにより1レコードで複数のポートを指定できるようになります。</p>
+
+<p>例えば下記のような感じです。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>-A INPUT -m state --state NEW -m multiport -p tcp --dports 80,443 -j ACCEPT
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>私はついiptablesの行数を多くしてしまいがちなんで、重宝しそうです。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[.bash_profileと.bashrcについて]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/06/12/linux-profile/"/>
+    <updated>2014-06-12T13:31:39+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/06/12/linux-profile</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+
+
+<h2>目次</h2>
+
+
+<p><ul>
+ <li><ul>
+  <li><a href="#L............">はじめに</a></li>
+  <li><a href="#L.bash_profile....bashrc">.bash_profileと.bashrc</a></li>
+  <li><a href="#L.bash_profile....bashrc...........................">.bash_profileと.bashrcの使い分けについて</a></li>
+  <li><a href="#L.........">テスト</a></li>
+  <li><a href="#L.bash_profile....bashrc.........">.bash_profileや.bashrcの大元</a></li>
+ </ul></li>
+</ul>
+
+</p>
+
+<a name="L............"></a>
+<h2>はじめに</h2>
+
+<p><code>.bash_profile</code>と<code>.bashrc</code>でユーザ環境のカスタマイズはよくやってますが、
+その使い分けについてまじめに確認したことがなかったのでメモをしておきます。</p>
+
+<a name="L.bash_profile....bashrc"></a>
+<h2>.bash_profileと.bashrc</h2>
+
+<p>ユーザがLinuxにログインすると、ホームディレクトリにある<code>.bash_profile</code>と
+<code>.bashrc</code>が実行されるようになっています。</p>
+
+<p>ユーザは、これらの中に環境変数やコマンドのエイリアスの設定を自由に追加できます。</p>
+
+<a name="L.bash_profile....bashrc..........................."></a>
+<h2>.bash_profileと.bashrcの使い分けについて</h2>
+
+<p>sshでログインすると、<code>.bash_profile</code> -> <code>bashrc</code>の順に実行されます。
+これは<code>.bash_profile</code>のソースの上のあたりを見るとすぐにわかります。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># .bash_profile</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># Get the aliases and functions</span>
+</span><span class='line'><span class="k">if</span> <span class="o">[</span> -f ~/.bashrc <span class="o">]</span>; <span class="k">then</span>
+</span><span class='line'>        . ~/.bashrc
+</span><span class='line'><span class="k">fi</span>
+</span><span class='line'>
+</span><span class='line'>***以下略***
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>しかし、すでにログインしている状況で、新たにシェル(bash)を起動した際は
+<code>.bashrc</code>だけが実行されます。</p>
+
+<p>とくに、Linuxデスクトップ環境では、テスクトップ上で新しいコマンド端末を開いた際は
+<code>.bashrc</code>のみが実行されます。</p>
+
+<p>つまり、</p>
+
+<ul>
+<li><p>ログイン時に一回だけ実行したい時</p>
+
+<p>-> <code>.bash_profile</code>に記載</p></li>
+<li><p>シェルを起動する度に実行したい時(一般的な設定)</p>
+
+<p>-> <code>.bashrc</code>に記載</p></li>
+</ul>
+
+
+<a name="L........."></a>
+<h2>テスト</h2>
+
+<p>上記のことを確かめるために簡単なテストをしました。</p>
+
+<p><code>.bash_profile</code>に下記を追記</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># テスト</span>
+</span><span class='line'><span class="nb">echo</span> <span class="s1">&#39;.bash_profileに記載されたechoです&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>.bashrc</code>に下記を追記</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># テスト</span>
+</span><span class='line'><span class="nb">echo</span> <span class="s1">&#39;.bashrcに記載されたechoです&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ターミナルソフトで対象のサーバにsshログインすると、<code>.bashrc</code>に書いたものと
+<code>.bash_profile</code>に書いたものが表示されました。</p>
+
+<p><code>.bashrc</code>に書いたものが先に表示されているのは、<code>.bash_profile</code>内で<code>.bashrc</code>が
+呼び出された後の行に<code>echo '.bash_profileに記載されたechoです'</code>を書いている
+ためです。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>Last login: Thu Jun 12 13:51:12 2014 from office-gw01.bbtower.co.jp
+</span><span class='line'>.bashrcに記載されたechoです
+</span><span class='line'>.bash_profileに記載されたechoです
+</span><span class='line'><span class="o">[</span>testuser@www ~<span class="o">]</span><span class="err">$</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ログインした後に、<code>bash</code>コマンドをたたくと、<code>.bashrc</code>の内容のみが表示されます。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>testuser@www ~<span class="o">]</span><span class="nv">$ </span>bash
+</span><span class='line'>.bashrcに記載されたechoです
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ちなみに<code>su</code>コマンドに<code>-</code>をつけるかつけないで挙動が変わります。
+<code>-</code>をつけると、ログインシェルが呼び出されます。</p>
+
+<p>この違いも一応見てみると、下記のとおり</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>testuser@www ~<span class="o">]</span><span class="nv">$ </span>su testuser
+</span><span class='line'>パスワード:
+</span><span class='line'>.bashrcに記載されたechoです
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>testuser@www ~<span class="o">]</span><span class="nv">$ </span>su - testuser
+</span><span class='line'>パスワード:
+</span><span class='line'>.bashrcに記載されたechoです
+</span><span class='line'>.bash_profileに記載されたechoです
+</span></code></pre></td></tr></table></div></figure>
+
+
+<a name="L.bash_profile....bashrc........."></a>
+<h2>.bash_profileや.bashrcの大元</h2>
+
+<p><code>.bash_profile</code>や<code>.bashrc</code>の大元は<code>/etc/skel</code>にあります。
+つまり、<code>useradd</code>コマンドでユーザを作成すると、このディレクトリ内の
+ファイルがサブディレクトリを含めて、作成したユーザのホームディレクトリに
+コピーされます。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>ls -la /etc/skel/
+</span><span class='line'>合計 36
+</span><span class='line'>drwxr-xr-x.   4 root root  4096  5月  9 20:21 2014 .
+</span><span class='line'>drwxr-xr-x. 114 root root 12288  6月 12 13:50 2014 ..
+</span><span class='line'>-rw-r--r--    1 root root    18  7月 18 22:19 2013 .bash_logout
+</span><span class='line'>-rw-r--r--    1 root root   176  7月 18 22:19 2013 .bash_profile
+</span><span class='line'>-rw-r--r--    1 root root   124  7月 18 22:19 2013 .bashrc
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>以上のことから、すべてのユーザのホームディレクトリに共通に配布したい
+ファイルがある場合は、事前に<code>/etc/skel</code>内においておくと、確実です。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[色々なコミット修正方法]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/06/11/git-correction/"/>
+    <updated>2014-06-11T00:48:48+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/06/11/git-correction</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+
+
+<h2>目次</h2>
+
+
+<p><ul>
+ <li><ul>
+  <li><a href="#L............">はじめに</a></li>
+  <li><a href="#HEAD.....................">HEADコミットを修正</a></li>
+  <li><a href="#L...................................................................................">指定したコミットにリセットする(そのコミットまで巻き戻す)</a></li>
+  <li><a href="#L.........................code.git.reset.--hard..code......................">間違って実行した<code>git reset --hard</code>を取り消したい</a></li>
+  <li><a href="#L.code.git.add..code.................................................................................."><code>git add</code>でインデックスに追加したファイルをインデックスから外す</a></li>
+  <li><a href="#L....................................">過去のコミットの取り消し</a></li>
+  <li><a href="#L.............................................">ファイルを過去のある時点に戻す</a></li>
+ </ul></li>
+</ul>
+
+</p>
+
+<a name="L............"></a>
+<h2>はじめに</h2>
+
+<p>Gitには、複数のコミット修正方法があります。</p>
+
+<p>ここではその使い分けについて説明しています。</p>
+
+<a name="HEAD....................."></a>
+<h2>HEADコミットを修正</h2>
+
+<ul>
+<li><p>コマンド
+<code>git commit --amend</code></p></li>
+<li><p>目的</p>
+
+<ul>
+<li>HEADコミットのコミットメッセージを修正したり、ファイルの登録漏れを追加したい場合。</li>
+</ul>
+</li>
+<li><p>特徴</p>
+
+<ul>
+<li>履歴は残らない。</li>
+</ul>
+</li>
+<li><p>実行例</p></li>
+</ul>
+
+
+<p>HEADコミットのコミットメッセージを修正</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>touch testfile2
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git add testfile2
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git commit -m <span class="s2">&quot;add teste4re&quot;</span> &lt;-メッセージを間違えた
+</span><span class='line'><span class="o">[</span>master f95faeb<span class="o">]</span> add teste4re
+</span><span class='line'> 0 files changed, 0 insertions<span class="o">(</span>+<span class="o">)</span>, 0 deletions<span class="o">(</span>-<span class="o">)</span>
+</span><span class='line'> create mode 100644 testfile2
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git log --oneline
+</span><span class='line'>f95faeb add teste4re &lt;-メッセージを間違えたコミット
+</span><span class='line'>2fa37ff add test1
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git commit --amend
+</span><span class='line'>
+</span><span class='line'>viの編集画面が表示される
+</span><span class='line'>add teste4re　&lt;-これを正しいメッセージ<span class="s2">&quot;add testfile2&quot;</span>に修正する
+</span><span class='line'>
+</span><span class='line'><span class="c"># Please enter the commit message for your changes. Lines starting</span>
+</span><span class='line'><span class="c"># with &#39;#&#39; will be ignored, and an empty message aborts the commit.</span>
+</span><span class='line'><span class="c"># On branch master</span>
+</span><span class='line'><span class="c"># Changes to be committed:</span>
+</span><span class='line'><span class="c">#   (use &quot;git reset HEAD^1 &lt;file&gt;...&quot; to unstage)</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c">#       new file:   testfile2</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'>:wp
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>master 262c490<span class="o">]</span> add testfile2
+</span><span class='line'> 0 files changed, 0 insertions<span class="o">(</span>+<span class="o">)</span>, 0 deletions<span class="o">(</span>-<span class="o">)</span>
+</span><span class='line'> create mode 100644 testfile2
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git log --oneline
+</span><span class='line'>262c490 add testfile2 &lt;-メッセージが修正されている
+</span><span class='line'>2fa37ff add test1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ファイルの登録漏れがあったため、HEADコミットにファイルを追加したい場合</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>touch testfile3
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>touch testfile4
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git add testfile3 &lt;-testfile4をaddし忘れた
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git commit -m <span class="s2">&quot;add testfile3 &amp; testfile4&quot;</span>
+</span><span class='line'><span class="o">[</span>master d75d6bb<span class="o">]</span> add testfile3 &amp; testfile4
+</span><span class='line'> 0 files changed, 0 insertions<span class="o">(</span>+<span class="o">)</span>, 0 deletions<span class="o">(</span>-<span class="o">)</span>
+</span><span class='line'> create mode 100644 testfile3
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git status
+</span><span class='line'><span class="c"># On branch master</span>
+</span><span class='line'><span class="c"># Untracked files:</span>
+</span><span class='line'><span class="c">#   (use &quot;git add &lt;file&gt;...&quot; to include in what will be committed)</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c">#       testfile4　&lt;-testfile4がaddされていない</span>
+</span><span class='line'>nothing added to commit but untracked files present <span class="o">(</span>use <span class="s2">&quot;git add&quot;</span> to track<span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git add testfile4
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git commit --amend
+</span><span class='line'>
+</span><span class='line'>viの編集画面が表示されるが、特に問題なければメッセージを変更せずに、:wqする
+</span><span class='line'>add testfile3 &amp; testfile4
+</span><span class='line'>
+</span><span class='line'><span class="c"># Please enter the commit message for your changes. Lines starting</span>
+</span><span class='line'><span class="c"># with &#39;#&#39; will be ignored, and an empty message aborts the commit.</span>
+</span><span class='line'><span class="c"># On branch master</span>
+</span><span class='line'><span class="c"># Changes to be committed:</span>
+</span><span class='line'><span class="c">#   (use &quot;git reset HEAD^1 &lt;file&gt;...&quot; to unstage)</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c">#       new file:   testfile3</span>
+</span><span class='line'><span class="c">#       new file:   testfile4</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'>:wq
+</span><span class='line'>
+</span><span class='line'>master 8999e57<span class="o">]</span> add testfile3 &amp; testfile4
+</span><span class='line'> 0 files changed, 0 insertions<span class="o">(</span>+<span class="o">)</span>, 0 deletions<span class="o">(</span>-<span class="o">)</span>
+</span><span class='line'> create mode 100644 testfile3
+</span><span class='line'> create mode 100644 testfile4
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git log --oneline &lt;-新しいコミットは作成されていない
+</span><span class='line'>8999e57 add testfile3 &amp; testfile4
+</span><span class='line'>262c490 add testfile2
+</span><span class='line'>2fa37ff add test1
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git status
+</span><span class='line'><span class="c"># On branch master</span>
+</span><span class='line'>nothing to commit <span class="o">(</span>working directory clean<span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<a name="L..................................................................................."></a>
+<h2>指定したコミットにリセットする(そのコミットまで巻き戻す)</h2>
+
+<ul>
+<li><p>コマンド
+<code>git reset --hard [コミット]</code></p></li>
+<li><p>目的</p>
+
+<ul>
+<li>指定したコミットにリセットする(現在～指定したコミットの間のコミットを取り消す)</li>
+</ul>
+</li>
+<li><p>特徴</p>
+
+<ul>
+<li>作業ツリーやインデックス情報も<strong>指定したコミットの状態</strong>にする(そのコミットの状態まで巻き戻す)</li>
+<li>履歴は残らない。</li>
+<li>コミット単位でのみ巻き戻し可能。ファイル単位の操作はできない。</li>
+</ul>
+</li>
+<li><p>注意</p>
+
+<ul>
+<li><p>過去のコミットを指定することで、そのコミットまで巻き戻すことができるが、その途中経過のコミットは
+消えてしまう。なので、直近のコミットを取り消す場合以外は、なるべく<code>git revert</code>を使った
+方がよい。</p></li>
+<li><p><code>git reset</code>は指定したコミットの状態にするのに対し、<code>git revert</code>は指定したコミットをピンポイントで取り消す。
+つまり、<code>git reset</code>の場合は&#8221;現在～指定したコミットの間のコミット&#8221;を取り消すことになり、指定したコミットが
+取り消されるわけではない。</p></li>
+</ul>
+</li>
+<li><p>実行例</p></li>
+</ul>
+
+
+<p>現在のコミット(HEAD)を取り消し、1つ前の状態(HEAD^)まで巻き戻したい場合</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git add testfile5
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git commit -m <span class="s2">&quot;add testfile5&quot;</span>
+</span><span class='line'><span class="o">[</span>master 6e1dd4b<span class="o">]</span> add testfile5
+</span><span class='line'> 0 files changed, 0 insertions<span class="o">(</span>+<span class="o">)</span>, 0 deletions<span class="o">(</span>-<span class="o">)</span>
+</span><span class='line'> create mode 100644 testfile5
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>ls
+</span><span class='line'>test1  testfile2  testfile3  testfile4  testfile5
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>touch testfile6
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git add testfile6
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git commit -m <span class="s2">&quot;add testfile6&quot;</span>
+</span><span class='line'><span class="o">[</span>master ae67e63<span class="o">]</span> add testfile6
+</span><span class='line'> 0 files changed, 0 insertions<span class="o">(</span>+<span class="o">)</span>, 0 deletions<span class="o">(</span>-<span class="o">)</span>
+</span><span class='line'> create mode 100644 testfile6
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>ls
+</span><span class='line'>test1  testfile2  testfile3  testfile4  testfile5  testfile6
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git log
+</span><span class='line'>commit ae67e63bf95df640341098e32efdc1338d5891ca
+</span><span class='line'>Author: spam ham
+</span><span class='line'>Date:   Fri Jun 13 07:05:18 2014 +0900
+</span><span class='line'>
+</span><span class='line'>    add testfile6
+</span><span class='line'>
+</span><span class='line'>commit 6e1dd4b9855ee4454863aee24930a5c05ee2e862
+</span><span class='line'>Author: spam ham
+</span><span class='line'>Date:   Fri Jun 13 07:04:48 2014 +0900
+</span><span class='line'>
+</span><span class='line'>    add testfile5
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git reset --hard HEAD^ &lt;-これは<span class="s2">&quot;git reset --hard 6e1dd4&quot;</span>のようにコミットを指定しても良い
+</span><span class='line'>HEAD is now at 6e1dd4b add testfile5
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>ls &lt;-testfile6が消えている
+</span><span class='line'>test1  testfile2  testfile3  testfile4  testfile5
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git log &lt;-コミットae67e6が消えている
+</span><span class='line'>commit 6e1dd4b9855ee4454863aee24930a5c05ee2e862
+</span><span class='line'>Author: spam ham
+</span><span class='line'>Date:   Fri Jun 13 07:04:48 2014 +0900
+</span><span class='line'>
+</span><span class='line'>    add testfile5
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>マージをやり直したい時</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git checkout -b new
+</span><span class='line'>Switched to a new branch <span class="s1">&#39;new&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git branch -l
+</span><span class='line'>  master
+</span><span class='line'>* new
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>touch new_file1
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git add new_file1
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git commit -m <span class="s2">&quot;add new_file1&quot;</span>
+</span><span class='line'><span class="o">[</span>new cf904aa<span class="o">]</span> add new_file1
+</span><span class='line'> 0 files changed, 0 insertions<span class="o">(</span>+<span class="o">)</span>, 0 deletions<span class="o">(</span>-<span class="o">)</span>
+</span><span class='line'> create mode 100644 new_file1
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git branch -l
+</span><span class='line'>* master
+</span><span class='line'>  new
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>ls
+</span><span class='line'>master_file1
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git merge --no-ff new
+</span><span class='line'>Merge made by recursive.
+</span><span class='line'> 0 files changed, 0 insertions<span class="o">(</span>+<span class="o">)</span>, 0 deletions<span class="o">(</span>-<span class="o">)</span>
+</span><span class='line'> create mode 100644 new_file1
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>ls
+</span><span class='line'>master_file1  new_file1
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git log --graph
+</span><span class='line'>*   commit 945cb8efb71cdc41bad7cda657754bbfa6a5ff0f
+</span><span class='line'>|<span class="se">\ </span> Merge: 1566a75 cf904aa
+</span><span class='line'>| | Author: spam ham
+</span><span class='line'>| | Date:   Fri Jun 13 07:18:10 2014 +0900
+</span><span class='line'>| |
+</span><span class='line'>| |     Merge branch <span class="s1">&#39;new&#39;</span>
+</span><span class='line'>| |
+</span><span class='line'>| * commit cf904aaea51881fd56c0d2524074306ce192a6b8
+</span><span class='line'>|/  Author: spam ham
+</span><span class='line'>|   Date:   Fri Jun 13 07:17:20 2014 +0900
+</span><span class='line'>|
+</span><span class='line'>|       add new_file1
+</span><span class='line'>|
+</span><span class='line'>* commit 1566a75df4f3e81fb115ccbe4e9897efa0094703
+</span><span class='line'>  Author: spam ham
+</span><span class='line'>  Date:   Fri Jun 13 07:16:02 2014 +0900
+</span><span class='line'>
+</span><span class='line'>      add master_file1
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git reset --hard HEAD^
+</span><span class='line'>HEAD is now at 1566a75 add master_file1
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>ls &lt;-newブランチからマージしたファイルが消えている
+</span><span class='line'>master_file1
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git log --graph &lt;-ログからもマージした履歴が消えている
+</span><span class='line'>* commit 1566a75df4f3e81fb115ccbe4e9897efa0094703
+</span><span class='line'>  Author: spam ham
+</span><span class='line'>  Date:   Fri Jun 13 07:16:02 2014 +0900
+</span><span class='line'>
+</span><span class='line'>      add master_file1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<a name="L.........................code.git.reset.--hard..code......................"></a>
+<h2>間違って実行した<code>git reset --hard</code>を取り消したい</h2>
+
+<ul>
+<li><p>コマンド</p>
+
+<ul>
+<li><code>git reflog</code>でリポジトリの操作履歴を確認</li>
+<li><code>git reset --hard</code>で間違いを修正する</li>
+</ul>
+</li>
+<li><p>目的</p>
+
+<ul>
+<li>間違って<code>git reset --hard</code>を実行した場合に、その操作を取り消し、コミットを復活させる</li>
+</ul>
+</li>
+<li><p>特徴</p>
+
+<ul>
+<li><code>git reflog</code>コマンドによって、過去の操作履歴を確認し、その履歴情報をもとに、<code>git reset --hard</code>で
+　  削除されたコミットを復活します。
+<code>git reflog</code>で閲覧できる履歴情報はデフォルト設定で<strong>30日間</strong>保持されます。</li>
+</ul>
+</li>
+<li><p>実行例</p></li>
+</ul>
+
+
+<p>ここでは、<code>git reset --hard HEAD^</code>として、最新のコミット(4ac1275)を取り消し、1つ前のコミット(0394e66)に
+リセットしようとしたが、誤って<code>git reset --hard HEAD^^</code>として、2つ前のコミット(24ed0b8)にリセットして
+しまった場合を想定しています。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git log --oneline
+</span><span class='line'>4ac1275 add testfile4　: 現在<span class="o">(</span>HEAD<span class="o">)</span>
+</span><span class='line'>0394e66 add testfile3  : 1つ前のコミット<span class="o">(</span>HEAD^<span class="o">)</span>
+</span><span class='line'>24ed0b8 add testfile2  : 2つ前のコミット<span class="o">(</span>HEAD^^<span class="o">)</span>
+</span><span class='line'>81e4af0 add testfile1  : 3つ前のコミット<span class="o">(</span>HEAD^^^<span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>ls
+</span><span class='line'>testfile1  testfile2  testfile3  testfile4
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git reset --hard HEAD^^ &lt;-誤った操作
+</span><span class='line'>HEAD is now at 24ed0b8 add testfile2
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git log --oneline
+</span><span class='line'>24ed0b8 add testfile2
+</span><span class='line'>81e4af0 add testfile1
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>ls
+</span><span class='line'>testfile1  testfile2
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>shyamahira@www 20140616<span class="o">]</span><span class="nv">$ </span>git reflog
+</span><span class='line'>24ed0b8 HEAD@<span class="o">{</span>0<span class="o">}</span>: HEAD^^: updating HEAD
+</span><span class='line'>4ac1275 HEAD@<span class="o">{</span>1<span class="o">}</span>: commit: add testfile4
+</span><span class='line'>0394e66 HEAD@<span class="o">{</span>2<span class="o">}</span>: commit: add testfile3 &lt;-これを復活させたい
+</span><span class='line'>24ed0b8 HEAD@<span class="o">{</span>3<span class="o">}</span>: commit: add testfile2
+</span><span class='line'>81e4af0 HEAD@<span class="o">{</span>4<span class="o">}</span>: commit <span class="o">(</span>initial<span class="o">)</span>: add testfile1
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git reset --hard HEAD@<span class="o">{</span>2<span class="o">}</span>
+</span><span class='line'>HEAD is now at 0394e66 add testfile3
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git log --oneline
+</span><span class='line'>0394e66 add testfile3
+</span><span class='line'>24ed0b8 add testfile2
+</span><span class='line'>81e4af0 add testfile1
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>ls
+</span><span class='line'>testfile1  testfile2  testfile3
+</span></code></pre></td></tr></table></div></figure>
+
+
+<a name="L.code.git.add..code.................................................................................."></a>
+<h2><code>git add</code>でインデックスに追加したファイルをインデックスから外す</h2>
+
+<ul>
+<li><p>コマンド
+<code>git reset [filename]</code></p></li>
+<li><p>目的
+<code>git add</code>でインデックスに追加したファイルをインデックスから外す</p></li>
+<li><p>実行例</p></li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>touch testfile2
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git add testfile2
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git status
+</span><span class='line'><span class="c"># On branch master</span>
+</span><span class='line'><span class="c"># Changes to be committed:</span>
+</span><span class='line'><span class="c">#   (use &quot;git reset HEAD &lt;file&gt;...&quot; to unstage)</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c">#       new file:   testfile2</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git reset testfile2
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git status &lt;-インデックスから外れていることが確認できる。
+</span><span class='line'><span class="c"># On branch master</span>
+</span><span class='line'><span class="c"># Untracked files:</span>
+</span><span class='line'><span class="c">#   (use &quot;git add &lt;file&gt;...&quot; to include in what will be committed)</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c">#       testfile2</span>
+</span><span class='line'>nothing added to commit but untracked files present <span class="o">(</span>use <span class="s2">&quot;git add&quot;</span> to track<span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<a name="L...................................."></a>
+<h2>過去のコミットの取り消し</h2>
+
+<ul>
+<li><p>コマンド
+<code>git revert</code></p></li>
+<li><p>目的</p>
+
+<ul>
+<li>過去のコミットを取り消したい場合に利用</li>
+</ul>
+</li>
+<li><p>特徴</p>
+
+<ul>
+<li>取り消した履歴を明示的に残す</li>
+</ul>
+</li>
+<li><p><code>git reset</code>をすべきか? <code>git revert</code>をすべきか?</p>
+
+<ul>
+<li><p>取り消したいコミットが直前のものではない場合、なるべく<code>git revert</code>をした方がよい。
+なぜなら、<code>git reset</code>の場合、指定したコミットまで巻き戻ることになる。
+つまり、<code>git reset --hard HEAD^^</code>とした場合、現在(HEAD)からHEAD^^までが取り消されるため
+途中経過のHEAD^も失うことになる。
+<code>git revert</code>の場合は、指定したコミットのみを取り消すため、そのようなことにならない。</p></li>
+<li><p>取り消したい<strong>コミット</strong>がリモートリポジトリに公開済みの場合は、リモートリポジトリバージョンとの
+整合性がとれなくなるため、<code>git revert</code>をした方がよい。</p></li>
+</ul>
+</li>
+<li><p>注意</p>
+
+<ul>
+<li><code>git reset</code>は指定したコミットの状態にするのに対し、<code>git revert</code>は指定したコミットをピンポイントで取り消す。
+つまり、<code>git reset</code>の場合は&#8221;現在～指定したコミットの間のコミット&#8221;を取り消すことになり、指定したコミットが
+取り消されるわけではない。</li>
+</ul>
+</li>
+<li><p>実行例</p></li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git log --oneline
+</span><span class='line'>0394e66 add testfile3
+</span><span class='line'>24ed0b8 add testfile2
+</span><span class='line'>81e4af0 add testfile1
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>ls
+</span><span class='line'>testfile1  testfile2  testfile3
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git revert --no-edit 24ed0b8 &lt;--HEAD^を取り消す
+</span><span class='line'>Finished one revert.
+</span><span class='line'><span class="o">[</span>master 1c6720d<span class="o">]</span> Revert <span class="s2">&quot;add testfile2&quot;</span>
+</span><span class='line'> 0 files changed, 0 insertions<span class="o">(</span>+<span class="o">)</span>, 0 deletions<span class="o">(</span>-<span class="o">)</span>
+</span><span class='line'> delete mode 100644 testfile2
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git log --oneline
+</span><span class='line'>1c6720d Revert <span class="s2">&quot;add testfile2&quot;</span>
+</span><span class='line'>0394e66 add testfile3
+</span><span class='line'>24ed0b8 add testfile2
+</span><span class='line'>81e4af0 add testfile1
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>ls &lt;- HEAD^でコミットしたファイルのみが消えており、HEADでのコミットファイルは消えていない
+</span><span class='line'>testfile1  testfile3
+</span></code></pre></td></tr></table></div></figure>
+
+
+<a name="L............................................."></a>
+<h2>ファイルを過去のある時点に戻す</h2>
+
+<ul>
+<li><p>コマンド
+<code>git checkout [commit] [filename]</code></p></li>
+<li><p>目的</p>
+
+<ul>
+<li><code>git rm</code>で誤ってファイルを削除してしまった場合や、特定のファイルのみを過去の状態に戻したい時に使用</li>
+</ul>
+</li>
+<li><p>特徴</p>
+
+<ul>
+<li><code>git reset</code>コマンドの場合、<code>--mixed</code>、<code>--hard</code>、<code>--soft</code>のオプションを使用すると 引数には、
+コミットしか指定できません。そのため、特定のファイルのみを過去のある時点に戻す場合は
+<code>git checkout</code>を利用します。</li>
+</ul>
+</li>
+<li><p>実行例</p></li>
+</ul>
+
+
+<p><code>git rm</code>でファイルを削除してしまった場合</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>ls
+</span><span class='line'>file1  file2  file3
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git rm file2 &lt;-誤ってファイルを消してしまった
+</span><span class='line'>rm <span class="s1">&#39;file2&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>ls
+</span><span class='line'>file1  file3
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git checkout HEAD -- file2
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>ls &lt;-file2が復活している
+</span><span class='line'>file1  file2  file3
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>特定のファイルを過去の状態に戻したい時</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vi testfile1
+</span><span class='line'>add
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git add testfile1
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git commit -m <span class="s2">&quot;add testfile1&quot;</span>
+</span><span class='line'><span class="o">[</span>master <span class="o">(</span>root-commit<span class="o">)</span> 4c9d6bb<span class="o">]</span> add testfile1
+</span><span class='line'> 1 files changed, 1 insertions<span class="o">(</span>+<span class="o">)</span>, 0 deletions<span class="o">(</span>-<span class="o">)</span>
+</span><span class='line'> create mode 100644 testfile1
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>vi testfile1
+</span><span class='line'>edit1 &lt;-testfile1に追記
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git commit -am <span class="s2">&quot;edit1 testfile1&quot;</span>
+</span><span class='line'><span class="o">[</span>master 70161ba<span class="o">]</span> edit1 testfile1
+</span><span class='line'> 1 files changed, 1 insertions<span class="o">(</span>+<span class="o">)</span>, 0 deletions<span class="o">(</span>-<span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>vi testfile1
+</span><span class='line'>edit2 &lt;-testfile1に追記
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git commit -am <span class="s2">&quot;edit2 testfile1&quot;</span>
+</span><span class='line'><span class="o">[</span>master f83f195<span class="o">]</span> edit2 testfile1
+</span><span class='line'> 1 files changed, 1 insertions<span class="o">(</span>+<span class="o">)</span>, 0 deletions<span class="o">(</span>-<span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>vi testfile1
+</span><span class='line'>edit3 &lt;-testfile1に追記
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git commit -am <span class="s2">&quot;edit3 testfile1&quot;</span>
+</span><span class='line'><span class="o">[</span>master 2a335fe<span class="o">]</span> edit3 testfile1
+</span><span class='line'> 1 files changed, 1 insertions<span class="o">(</span>+<span class="o">)</span>, 0 deletions<span class="o">(</span>-<span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git log --oneline
+</span><span class='line'>2a335fe edit3 testfile1
+</span><span class='line'>f83f195 edit2 testfile1
+</span><span class='line'>70161ba edit1 testfile1
+</span><span class='line'>4c9d6bb add testfile1
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>cat testfile1
+</span><span class='line'>add
+</span><span class='line'>edit1
+</span><span class='line'>edit2
+</span><span class='line'>edit3
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git checkout f83f195 -- testfile1 &lt;-testfile1を過去の状態に戻す
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>cat testfile1
+</span><span class='line'>add
+</span><span class='line'>edit1
+</span><span class='line'>edit2
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Zeroconfを使用しないようにする]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/06/10/zeroconf/"/>
+    <updated>2014-06-10T16:45:49+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/06/10/zeroconf</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+
+
+<h2>目次</h2>
+
+
+<p><ul>
+ <li><ul>
+  <li><a href="#L............">はじめに</a></li>
+  <li><a href="#Zeroconf..............">Zeroconfとは(引用)</a></li>
+  <li><a href="#APIPA..............">APIPAとは(引用)</a></li>
+  <li><a href="#Zeroconf............">Zeroconfを無効に</a></li>
+ </ul></li>
+</ul>
+
+</p>
+
+<a name="L............"></a>
+<h2>はじめに</h2>
+
+<p>RHEL6やCentOS6を普通にインストールして、ルーティングテーブルを
+見ると下記のような感じになっています。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># netstat -rn</span>
+</span><span class='line'>Kernel IP routing table
+</span><span class='line'>Destination     Gateway         Genmask         Flags   MSS Window  irtt Iface
+</span><span class='line'>10.0.0.0        0.0.0.0         255.255.255.0   U         0 0          0 eth0
+</span><span class='line'>169.254.0.0     0.0.0.0         255.255.0.0     U         0 0          0 eth0
+</span><span class='line'>0.0.0.0         10.0.0.254      0.0.0.0         UG        0 0          0 eth0
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>169.254.0.0/16のルーティングテーブルがありますが、これは何だろう?</p>
+
+<p>これはZeroconfによって自動的に作られたものだそうです。</p>
+
+<a name="Zeroconf.............."></a>
+<h2>Zeroconfとは(引用)</h2>
+
+<blockquote><p>動的ホスト構成プロトコル(DHCP)が見つからなかった時(IPアドレスを取得できなかった時)に、
+TCP/IPがプライベートIPアドレスを自動的に割り当てる機能<strong>(APIPA:Automatic Private IP Address)</strong>を実装しています。
+この為、ルーティングに「169.254.0.0」が登録されています。</p></blockquote>
+
+<a name="APIPA.............."></a>
+<h2>APIPAとは(引用)</h2>
+
+<blockquote><p>ネットワーク機器に対して、IPアドレスを自動的に割り当て、利用するための機能。</p>
+
+<p>　TCP/IPを実装したネットワーク機器やシステムでは、それぞれのシステムに対して、
+重複しない固有のIPアドレスを割り当てておかなければお互いに通信することはできない。
+しかしネットワークに詳しい管理者がいなかったり、DHCPサーバも用意されていないような
+小規模なネットワークでは、IPアドレスを秩序立てて割り当てたり管理するのは困難である。
+そこで考案されたのがAPIPAというIPアドレスの自動的な割り当て、管理機能である。</p>
+
+<p>　APIPAを実装したシステムでは、最初に自分のシステムに割り当てるIPアドレスを
+「169.254.1.0～169.254.254.255」の範囲内からランダムに1つ選択する。
+そして、ARP要求をネットワークにブロードキャストすることによって、そのIPアドレスがほかの
+システムで利用されていないかどうかを確認する。もしどこかのシステムからARPの応答が返ってくれば、
+そのIPアドレスは使用中であるとみなし、別のIPアドレスで再試行する。このようにして
+未使用のIPアドレスを見つけ、それを自分のシステムに割り当てることによって、
+IPアドレスが重複しないことを保障する。
+「169.254.<em>.</em>」というIPアドレスはLINKLOCALアドレスといい、一般的なプライベートIPアドレスではないが、
+どこの組織にも割り当てられていないことが保証された、APIPAでのみ有効な、特別なIPアドレスである。</p>
+
+<p>　このように、APIPAを利用することにより、ユーザーはネットワークのIPアドレスをまったく意識することなく、
+ネットワーク上のほかのシステムと通信をすることができる。</p>
+
+<p>　ただしAPIPAは、小規模なネットワークで使うことを前提としているため、複数のネットワークをまたいで使うことはできない。
+APIPAで割り当てられたIPアドレスを持つパケットは、ルータでルーティングしてはいけないことになっている。
+そのため通信できる範囲は同一のネットワーク（ブロードキャストが届く範囲）に限定されることになる。
+インターネットへ接続するのではなく、ローカルのLAN上でファイル共有やプリンタ共有しか使わないという用途にはこれでも十分である。</p>
+
+<p>　APIPAは、最近のWindowsやMacintoshシステムなどで実装されている。これらのシステムでは、最初にDHCPなどでIPアドレスの
+取得を試みるが、それが失敗するとAPIPAによってランダムなIPアドレスを割り当てるようになっている。
+だがハブが壊れるなど、何らかの事情でネットワークが利用できない場合でも、自動的にランダムなIPアドレスが割り当てられたまま
+システムが起動してしまうことになるので、一見するとネットワークが正常に機能しているようにみえることがある。
+そのため、トラブルの原因を究明するのが困難になることもある。</p></blockquote>
+
+<a name="Zeroconf............"></a>
+<h2>Zeroconfを無効に</h2>
+
+<p>結局のところサーバ用途ではほぼ不要と思われるので、これを無効化します。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># vi /etc/sysconfig/network</span>
+</span><span class='line'><span class="nv">NOZEROCONF</span><span class="o">=</span>yes &lt;-これを追記する
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ネットワークを再起動して、再びルーティングテーブルを確認すると、無効化されることが
+確認できますね。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># service network restart</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># netstat -rn</span>
+</span><span class='line'>Kernel IP routing table
+</span><span class='line'>Destination     Gateway         Genmask         Flags   MSS Window  irtt Iface
+</span><span class='line'>10.0.0.0        0.0.0.0         255.255.255.0   U         0 0          0 eth0
+</span><span class='line'>0.0.0.0         10.0.0.254      0.0.0.0         UG        0 0          0 eth0
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+]]></content>
+  </entry>
+  
+</feed>

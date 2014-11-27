@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Chef | seak0503 Blog]]></title>
+  <link href="http://blog.seak.jp.net/blog/categories/chef/atom.xml" rel="self"/>
+  <link href="http://blog.seak.jp.net/"/>
+  <updated>2014-11-28T08:26:19+09:00</updated>
+  <id>http://blog.seak.jp.net/</id>
+  <author>
+    <name><![CDATA[seak0503]]></name>
+    <email><![CDATA[seak0503.gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[berks install時のエラー]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/09/25/chef-berks-install/"/>
+    <updated>2014-09-25T06:01:57+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/09/25/chef-berks-install</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<p><code>bundle exec berks install --path ./cookbooks</code>を実行したら下記のように
+怒られました。</p>
+
+<p><code>bash
+$ bundle exec berks install --path ./cookbooks
+DEPRECATED: `berks install --path [PATH}` has been replaced by `berks vendor`.
+DEPRECATED: Re-run your command as `berks vendor [PATH]` or see `berks help vendor`.
+</code></p>
+
+<p>Berkshelfのバージョンを調べたところ
+<code>bash
+$ berks -v
+3.1.5
+</code></p>
+
+<p>現在のバージョンでは下記のように書くらしいです。</p>
+
+<p><code>bash
+$ bundle exec berks vendor cookbooks
+</code></p>
+
+<p>気をとりなおして、<code>bunlde exec berks vendor cookbooks</code>を実行するとまたも怒られました。
+<code>bash
+$ bundle exec berks vendor cookbooks
+DEPRECATED: Your Berksfile contains a site location pointing to the Opscode Community Site (site :opscode). Site locations have been replaced by the source location. Change this to: 'source "https://supermarket.getchef.com"' to remove this warning. For more information visit https://github.com/berkshelf/berkshelf/wiki/deprecated-locations
+Resolving cookbooks dependencies...
+Fetching 'nginx' from source at site-cookbooks/nginx
+Fetching cookbooks index from https://supermarket.getchef.com...
+Using nginx (0.1.0) from source at site-cookbooks/nginx
+Using yum (3.3.2)
+Using yum-epel (0.5.1)
+Vendoring nginx (0.1.0) to /home/dev/study/chef/6/cookbooks/nginx
+Vendoring yum (3.3.2) to /home/dev/study/chef/6/cookbooks/yum
+Vendoring yum-epel (0.5.1) to /home/dev/study/chef/6/cookbooks/yum-epel
+</code></p>
+
+<p>一応クックブックは作ってくれたようですが、Berkshelfの2系以降はBerksfileの1行目は
+<code>site :opscode</code>ではなく<code>source "https://supermarket.getchef.com"</code>と書くようです。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ChefのAttributeの優先順位]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/09/15/chef-attribute/"/>
+    <updated>2014-09-15T22:05:47+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/09/15/chef-attribute</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<p>ChefにはAttributeの値を定義できる場所が複数あります。
+同名のAttributeを定義した場合、優先度の高いAttributeの値が
+最終的に利用されることになります。</p>
+
+<p>下の表では、下から上に優先度が高くなっています。</p>
+
+<p>また、リポジトリのディレクトリを例として<code>/tmp/chef_repo</code>、クックブックの
+ディレクトリを<code>/tmp/chef_repo/site-cookbooks/test_cookbook</code>としています。</p>
+
+<table>
+<thead>
+<tr>
+<th align="center">優先度 </th>
+<th align="left"> 定義場所 </th>
+<th align="left"> ディレクトリフルパス</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">1 </td>
+<td align="left"> Nodeオブジェクト </td>
+<td align="left"> /tmp/chef_repo/nodes/node01.json</td>
+</tr>
+<tr>
+<td align="center">2 </td>
+<td align="left"> ロール </td>
+<td align="left"> /tmp/chef_repo/web.json</td>
+</tr>
+<tr>
+<td align="center">3 </td>
+<td align="left"> Environments </td>
+<td align="left"> /tmp/chef_repo/environments/development.json</td>
+</tr>
+<tr>
+<td align="center">4 </td>
+<td align="left"> レシピの中で定義されたAttribute </td>
+<td align="left"> /tmp/chef_repo/site-cookbooks/test_cookbook/recipes/default.rb</td>
+</tr>
+<tr>
+<td align="center">5 </td>
+<td align="left"> クックブック内のAttributeファイル </td>
+<td align="left"> /tmp/chef_repo/site-cookbooks/test_cookbook/attributes/defautl.rb</td>
+</tr>
+</tbody>
+</table>
+
+]]></content>
+  </entry>
+  
+</feed>

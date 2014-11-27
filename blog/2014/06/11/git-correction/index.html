@@ -1,0 +1,1180 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>色々なコミット修正方法 - seak0503 Blog</title>
+  <meta name="author" content="seak0503">
+
+  
+  <meta name="description" content="目次 はじめに HEADコミットを修正 指定したコミットにリセットする(そのコミットまで巻き戻す) 間違って実行したgit reset --hardを取り消したい git addでインデックスに追加したファイルをインデックスから外す 過去のコミットの取り消し ファイルを過去のある時点に戻す &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.seak.jp.net/blog/2014/06/11/git-correction/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="seak0503 Blog" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <nav role="navigation"><ul class="subscription" data-subscription="rss email">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+    <li><a href="seak0503.gmail.com" rel="subscribe-email" title="subscribe via email">Email</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.seak.jp.net" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+    <li><a href="/">
+        <span class="blue_light">
+            seak0503 Blog
+        </span>
+       
+    </a></li>
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">色々なコミット修正方法</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-11T00:48:48+09:00" pubdate data-updated="true">2014-06-11</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><!-- more -->
+
+
+
+
+<h2>目次</h2>
+
+
+<p><ul>
+ <li><ul>
+  <li><a href="#L............">はじめに</a></li>
+  <li><a href="#HEAD.....................">HEADコミットを修正</a></li>
+  <li><a href="#L...................................................................................">指定したコミットにリセットする(そのコミットまで巻き戻す)</a></li>
+  <li><a href="#L.........................code.git.reset.--hard..code......................">間違って実行した<code>git reset --hard</code>を取り消したい</a></li>
+  <li><a href="#L.code.git.add..code.................................................................................."><code>git add</code>でインデックスに追加したファイルをインデックスから外す</a></li>
+  <li><a href="#L....................................">過去のコミットの取り消し</a></li>
+  <li><a href="#L.............................................">ファイルを過去のある時点に戻す</a></li>
+ </ul></li>
+</ul>
+
+</p>
+
+<a name="L............"></a>
+<h2>はじめに</h2>
+
+<p>Gitには、複数のコミット修正方法があります。</p>
+
+<p>ここではその使い分けについて説明しています。</p>
+
+<a name="HEAD....................."></a>
+<h2>HEADコミットを修正</h2>
+
+<ul>
+<li><p>コマンド
+<code>git commit --amend</code></p></li>
+<li><p>目的</p>
+
+<ul>
+<li>HEADコミットのコミットメッセージを修正したり、ファイルの登録漏れを追加したい場合。</li>
+</ul>
+</li>
+<li><p>特徴</p>
+
+<ul>
+<li>履歴は残らない。</li>
+</ul>
+</li>
+<li><p>実行例</p></li>
+</ul>
+
+
+<p>HEADコミットのコミットメッセージを修正</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>touch testfile2
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git add testfile2
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git commit -m <span class="s2">&quot;add teste4re&quot;</span> &lt;-メッセージを間違えた
+</span><span class='line'><span class="o">[</span>master f95faeb<span class="o">]</span> add teste4re
+</span><span class='line'> 0 files changed, 0 insertions<span class="o">(</span>+<span class="o">)</span>, 0 deletions<span class="o">(</span>-<span class="o">)</span>
+</span><span class='line'> create mode 100644 testfile2
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git log --oneline
+</span><span class='line'>f95faeb add teste4re &lt;-メッセージを間違えたコミット
+</span><span class='line'>2fa37ff add test1
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git commit --amend
+</span><span class='line'>
+</span><span class='line'>viの編集画面が表示される
+</span><span class='line'>add teste4re　&lt;-これを正しいメッセージ<span class="s2">&quot;add testfile2&quot;</span>に修正する
+</span><span class='line'>
+</span><span class='line'><span class="c"># Please enter the commit message for your changes. Lines starting</span>
+</span><span class='line'><span class="c"># with &#39;#&#39; will be ignored, and an empty message aborts the commit.</span>
+</span><span class='line'><span class="c"># On branch master</span>
+</span><span class='line'><span class="c"># Changes to be committed:</span>
+</span><span class='line'><span class="c">#   (use &quot;git reset HEAD^1 &lt;file&gt;...&quot; to unstage)</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c">#       new file:   testfile2</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'>:wp
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>master 262c490<span class="o">]</span> add testfile2
+</span><span class='line'> 0 files changed, 0 insertions<span class="o">(</span>+<span class="o">)</span>, 0 deletions<span class="o">(</span>-<span class="o">)</span>
+</span><span class='line'> create mode 100644 testfile2
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git log --oneline
+</span><span class='line'>262c490 add testfile2 &lt;-メッセージが修正されている
+</span><span class='line'>2fa37ff add test1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ファイルの登録漏れがあったため、HEADコミットにファイルを追加したい場合</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>touch testfile3
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>touch testfile4
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git add testfile3 &lt;-testfile4をaddし忘れた
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git commit -m <span class="s2">&quot;add testfile3 &amp; testfile4&quot;</span>
+</span><span class='line'><span class="o">[</span>master d75d6bb<span class="o">]</span> add testfile3 &amp; testfile4
+</span><span class='line'> 0 files changed, 0 insertions<span class="o">(</span>+<span class="o">)</span>, 0 deletions<span class="o">(</span>-<span class="o">)</span>
+</span><span class='line'> create mode 100644 testfile3
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git status
+</span><span class='line'><span class="c"># On branch master</span>
+</span><span class='line'><span class="c"># Untracked files:</span>
+</span><span class='line'><span class="c">#   (use &quot;git add &lt;file&gt;...&quot; to include in what will be committed)</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c">#       testfile4　&lt;-testfile4がaddされていない</span>
+</span><span class='line'>nothing added to commit but untracked files present <span class="o">(</span>use <span class="s2">&quot;git add&quot;</span> to track<span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git add testfile4
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git commit --amend
+</span><span class='line'>
+</span><span class='line'>viの編集画面が表示されるが、特に問題なければメッセージを変更せずに、:wqする
+</span><span class='line'>add testfile3 &amp; testfile4
+</span><span class='line'>
+</span><span class='line'><span class="c"># Please enter the commit message for your changes. Lines starting</span>
+</span><span class='line'><span class="c"># with &#39;#&#39; will be ignored, and an empty message aborts the commit.</span>
+</span><span class='line'><span class="c"># On branch master</span>
+</span><span class='line'><span class="c"># Changes to be committed:</span>
+</span><span class='line'><span class="c">#   (use &quot;git reset HEAD^1 &lt;file&gt;...&quot; to unstage)</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c">#       new file:   testfile3</span>
+</span><span class='line'><span class="c">#       new file:   testfile4</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'>:wq
+</span><span class='line'>
+</span><span class='line'>master 8999e57<span class="o">]</span> add testfile3 &amp; testfile4
+</span><span class='line'> 0 files changed, 0 insertions<span class="o">(</span>+<span class="o">)</span>, 0 deletions<span class="o">(</span>-<span class="o">)</span>
+</span><span class='line'> create mode 100644 testfile3
+</span><span class='line'> create mode 100644 testfile4
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git log --oneline &lt;-新しいコミットは作成されていない
+</span><span class='line'>8999e57 add testfile3 &amp; testfile4
+</span><span class='line'>262c490 add testfile2
+</span><span class='line'>2fa37ff add test1
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git status
+</span><span class='line'><span class="c"># On branch master</span>
+</span><span class='line'>nothing to commit <span class="o">(</span>working directory clean<span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<a name="L..................................................................................."></a>
+<h2>指定したコミットにリセットする(そのコミットまで巻き戻す)</h2>
+
+<ul>
+<li><p>コマンド
+<code>git reset --hard [コミット]</code></p></li>
+<li><p>目的</p>
+
+<ul>
+<li>指定したコミットにリセットする(現在～指定したコミットの間のコミットを取り消す)</li>
+</ul>
+</li>
+<li><p>特徴</p>
+
+<ul>
+<li>作業ツリーやインデックス情報も<strong>指定したコミットの状態</strong>にする(そのコミットの状態まで巻き戻す)</li>
+<li>履歴は残らない。</li>
+<li>コミット単位でのみ巻き戻し可能。ファイル単位の操作はできない。</li>
+</ul>
+</li>
+<li><p>注意</p>
+
+<ul>
+<li><p>過去のコミットを指定することで、そのコミットまで巻き戻すことができるが、その途中経過のコミットは
+消えてしまう。なので、直近のコミットを取り消す場合以外は、なるべく<code>git revert</code>を使った
+方がよい。</p></li>
+<li><p><code>git reset</code>は指定したコミットの状態にするのに対し、<code>git revert</code>は指定したコミットをピンポイントで取り消す。
+つまり、<code>git reset</code>の場合は&#8221;現在～指定したコミットの間のコミット&#8221;を取り消すことになり、指定したコミットが
+取り消されるわけではない。</p></li>
+</ul>
+</li>
+<li><p>実行例</p></li>
+</ul>
+
+
+<p>現在のコミット(HEAD)を取り消し、1つ前の状態(HEAD^)まで巻き戻したい場合</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git add testfile5
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git commit -m <span class="s2">&quot;add testfile5&quot;</span>
+</span><span class='line'><span class="o">[</span>master 6e1dd4b<span class="o">]</span> add testfile5
+</span><span class='line'> 0 files changed, 0 insertions<span class="o">(</span>+<span class="o">)</span>, 0 deletions<span class="o">(</span>-<span class="o">)</span>
+</span><span class='line'> create mode 100644 testfile5
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>ls
+</span><span class='line'>test1  testfile2  testfile3  testfile4  testfile5
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>touch testfile6
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git add testfile6
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git commit -m <span class="s2">&quot;add testfile6&quot;</span>
+</span><span class='line'><span class="o">[</span>master ae67e63<span class="o">]</span> add testfile6
+</span><span class='line'> 0 files changed, 0 insertions<span class="o">(</span>+<span class="o">)</span>, 0 deletions<span class="o">(</span>-<span class="o">)</span>
+</span><span class='line'> create mode 100644 testfile6
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>ls
+</span><span class='line'>test1  testfile2  testfile3  testfile4  testfile5  testfile6
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git log
+</span><span class='line'>commit ae67e63bf95df640341098e32efdc1338d5891ca
+</span><span class='line'>Author: spam ham
+</span><span class='line'>Date:   Fri Jun 13 07:05:18 2014 +0900
+</span><span class='line'>
+</span><span class='line'>    add testfile6
+</span><span class='line'>
+</span><span class='line'>commit 6e1dd4b9855ee4454863aee24930a5c05ee2e862
+</span><span class='line'>Author: spam ham
+</span><span class='line'>Date:   Fri Jun 13 07:04:48 2014 +0900
+</span><span class='line'>
+</span><span class='line'>    add testfile5
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git reset --hard HEAD^ &lt;-これは<span class="s2">&quot;git reset --hard 6e1dd4&quot;</span>のようにコミットを指定しても良い
+</span><span class='line'>HEAD is now at 6e1dd4b add testfile5
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>ls &lt;-testfile6が消えている
+</span><span class='line'>test1  testfile2  testfile3  testfile4  testfile5
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git log &lt;-コミットae67e6が消えている
+</span><span class='line'>commit 6e1dd4b9855ee4454863aee24930a5c05ee2e862
+</span><span class='line'>Author: spam ham
+</span><span class='line'>Date:   Fri Jun 13 07:04:48 2014 +0900
+</span><span class='line'>
+</span><span class='line'>    add testfile5
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>マージをやり直したい時</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git checkout -b new
+</span><span class='line'>Switched to a new branch <span class="s1">&#39;new&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git branch -l
+</span><span class='line'>  master
+</span><span class='line'>* new
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>touch new_file1
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git add new_file1
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git commit -m <span class="s2">&quot;add new_file1&quot;</span>
+</span><span class='line'><span class="o">[</span>new cf904aa<span class="o">]</span> add new_file1
+</span><span class='line'> 0 files changed, 0 insertions<span class="o">(</span>+<span class="o">)</span>, 0 deletions<span class="o">(</span>-<span class="o">)</span>
+</span><span class='line'> create mode 100644 new_file1
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git branch -l
+</span><span class='line'>* master
+</span><span class='line'>  new
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>ls
+</span><span class='line'>master_file1
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git merge --no-ff new
+</span><span class='line'>Merge made by recursive.
+</span><span class='line'> 0 files changed, 0 insertions<span class="o">(</span>+<span class="o">)</span>, 0 deletions<span class="o">(</span>-<span class="o">)</span>
+</span><span class='line'> create mode 100644 new_file1
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>ls
+</span><span class='line'>master_file1  new_file1
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git log --graph
+</span><span class='line'>*   commit 945cb8efb71cdc41bad7cda657754bbfa6a5ff0f
+</span><span class='line'>|<span class="se">\ </span> Merge: 1566a75 cf904aa
+</span><span class='line'>| | Author: spam ham
+</span><span class='line'>| | Date:   Fri Jun 13 07:18:10 2014 +0900
+</span><span class='line'>| |
+</span><span class='line'>| |     Merge branch <span class="s1">&#39;new&#39;</span>
+</span><span class='line'>| |
+</span><span class='line'>| * commit cf904aaea51881fd56c0d2524074306ce192a6b8
+</span><span class='line'>|/  Author: spam ham
+</span><span class='line'>|   Date:   Fri Jun 13 07:17:20 2014 +0900
+</span><span class='line'>|
+</span><span class='line'>|       add new_file1
+</span><span class='line'>|
+</span><span class='line'>* commit 1566a75df4f3e81fb115ccbe4e9897efa0094703
+</span><span class='line'>  Author: spam ham
+</span><span class='line'>  Date:   Fri Jun 13 07:16:02 2014 +0900
+</span><span class='line'>
+</span><span class='line'>      add master_file1
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git reset --hard HEAD^
+</span><span class='line'>HEAD is now at 1566a75 add master_file1
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>ls &lt;-newブランチからマージしたファイルが消えている
+</span><span class='line'>master_file1
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git log --graph &lt;-ログからもマージした履歴が消えている
+</span><span class='line'>* commit 1566a75df4f3e81fb115ccbe4e9897efa0094703
+</span><span class='line'>  Author: spam ham
+</span><span class='line'>  Date:   Fri Jun 13 07:16:02 2014 +0900
+</span><span class='line'>
+</span><span class='line'>      add master_file1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<a name="L.........................code.git.reset.--hard..code......................"></a>
+<h2>間違って実行した<code>git reset --hard</code>を取り消したい</h2>
+
+<ul>
+<li><p>コマンド</p>
+
+<ul>
+<li><code>git reflog</code>でリポジトリの操作履歴を確認</li>
+<li><code>git reset --hard</code>で間違いを修正する</li>
+</ul>
+</li>
+<li><p>目的</p>
+
+<ul>
+<li>間違って<code>git reset --hard</code>を実行した場合に、その操作を取り消し、コミットを復活させる</li>
+</ul>
+</li>
+<li><p>特徴</p>
+
+<ul>
+<li><code>git reflog</code>コマンドによって、過去の操作履歴を確認し、その履歴情報をもとに、<code>git reset --hard</code>で
+　  削除されたコミットを復活します。
+<code>git reflog</code>で閲覧できる履歴情報はデフォルト設定で<strong>30日間</strong>保持されます。</li>
+</ul>
+</li>
+<li><p>実行例</p></li>
+</ul>
+
+
+<p>ここでは、<code>git reset --hard HEAD^</code>として、最新のコミット(4ac1275)を取り消し、1つ前のコミット(0394e66)に
+リセットしようとしたが、誤って<code>git reset --hard HEAD^^</code>として、2つ前のコミット(24ed0b8)にリセットして
+しまった場合を想定しています。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git log --oneline
+</span><span class='line'>4ac1275 add testfile4　: 現在<span class="o">(</span>HEAD<span class="o">)</span>
+</span><span class='line'>0394e66 add testfile3  : 1つ前のコミット<span class="o">(</span>HEAD^<span class="o">)</span>
+</span><span class='line'>24ed0b8 add testfile2  : 2つ前のコミット<span class="o">(</span>HEAD^^<span class="o">)</span>
+</span><span class='line'>81e4af0 add testfile1  : 3つ前のコミット<span class="o">(</span>HEAD^^^<span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>ls
+</span><span class='line'>testfile1  testfile2  testfile3  testfile4
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git reset --hard HEAD^^ &lt;-誤った操作
+</span><span class='line'>HEAD is now at 24ed0b8 add testfile2
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git log --oneline
+</span><span class='line'>24ed0b8 add testfile2
+</span><span class='line'>81e4af0 add testfile1
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>ls
+</span><span class='line'>testfile1  testfile2
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>shyamahira@www 20140616<span class="o">]</span><span class="nv">$ </span>git reflog
+</span><span class='line'>24ed0b8 HEAD@<span class="o">{</span>0<span class="o">}</span>: HEAD^^: updating HEAD
+</span><span class='line'>4ac1275 HEAD@<span class="o">{</span>1<span class="o">}</span>: commit: add testfile4
+</span><span class='line'>0394e66 HEAD@<span class="o">{</span>2<span class="o">}</span>: commit: add testfile3 &lt;-これを復活させたい
+</span><span class='line'>24ed0b8 HEAD@<span class="o">{</span>3<span class="o">}</span>: commit: add testfile2
+</span><span class='line'>81e4af0 HEAD@<span class="o">{</span>4<span class="o">}</span>: commit <span class="o">(</span>initial<span class="o">)</span>: add testfile1
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git reset --hard HEAD@<span class="o">{</span>2<span class="o">}</span>
+</span><span class='line'>HEAD is now at 0394e66 add testfile3
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git log --oneline
+</span><span class='line'>0394e66 add testfile3
+</span><span class='line'>24ed0b8 add testfile2
+</span><span class='line'>81e4af0 add testfile1
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>ls
+</span><span class='line'>testfile1  testfile2  testfile3
+</span></code></pre></td></tr></table></div></figure>
+
+
+<a name="L.code.git.add..code.................................................................................."></a>
+<h2><code>git add</code>でインデックスに追加したファイルをインデックスから外す</h2>
+
+<ul>
+<li><p>コマンド
+<code>git reset [filename]</code></p></li>
+<li><p>目的
+<code>git add</code>でインデックスに追加したファイルをインデックスから外す</p></li>
+<li><p>実行例</p></li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>touch testfile2
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git add testfile2
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git status
+</span><span class='line'><span class="c"># On branch master</span>
+</span><span class='line'><span class="c"># Changes to be committed:</span>
+</span><span class='line'><span class="c">#   (use &quot;git reset HEAD &lt;file&gt;...&quot; to unstage)</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c">#       new file:   testfile2</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git reset testfile2
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git status &lt;-インデックスから外れていることが確認できる。
+</span><span class='line'><span class="c"># On branch master</span>
+</span><span class='line'><span class="c"># Untracked files:</span>
+</span><span class='line'><span class="c">#   (use &quot;git add &lt;file&gt;...&quot; to include in what will be committed)</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c">#       testfile2</span>
+</span><span class='line'>nothing added to commit but untracked files present <span class="o">(</span>use <span class="s2">&quot;git add&quot;</span> to track<span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<a name="L...................................."></a>
+<h2>過去のコミットの取り消し</h2>
+
+<ul>
+<li><p>コマンド
+<code>git revert</code></p></li>
+<li><p>目的</p>
+
+<ul>
+<li>過去のコミットを取り消したい場合に利用</li>
+</ul>
+</li>
+<li><p>特徴</p>
+
+<ul>
+<li>取り消した履歴を明示的に残す</li>
+</ul>
+</li>
+<li><p><code>git reset</code>をすべきか? <code>git revert</code>をすべきか?</p>
+
+<ul>
+<li><p>取り消したいコミットが直前のものではない場合、なるべく<code>git revert</code>をした方がよい。
+なぜなら、<code>git reset</code>の場合、指定したコミットまで巻き戻ることになる。
+つまり、<code>git reset --hard HEAD^^</code>とした場合、現在(HEAD)からHEAD^^までが取り消されるため
+途中経過のHEAD^も失うことになる。
+<code>git revert</code>の場合は、指定したコミットのみを取り消すため、そのようなことにならない。</p></li>
+<li><p>取り消したい<strong>コミット</strong>がリモートリポジトリに公開済みの場合は、リモートリポジトリバージョンとの
+整合性がとれなくなるため、<code>git revert</code>をした方がよい。</p></li>
+</ul>
+</li>
+<li><p>注意</p>
+
+<ul>
+<li><code>git reset</code>は指定したコミットの状態にするのに対し、<code>git revert</code>は指定したコミットをピンポイントで取り消す。
+つまり、<code>git reset</code>の場合は&#8221;現在～指定したコミットの間のコミット&#8221;を取り消すことになり、指定したコミットが
+取り消されるわけではない。</li>
+</ul>
+</li>
+<li><p>実行例</p></li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git log --oneline
+</span><span class='line'>0394e66 add testfile3
+</span><span class='line'>24ed0b8 add testfile2
+</span><span class='line'>81e4af0 add testfile1
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>ls
+</span><span class='line'>testfile1  testfile2  testfile3
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git revert --no-edit 24ed0b8 &lt;--HEAD^を取り消す
+</span><span class='line'>Finished one revert.
+</span><span class='line'><span class="o">[</span>master 1c6720d<span class="o">]</span> Revert <span class="s2">&quot;add testfile2&quot;</span>
+</span><span class='line'> 0 files changed, 0 insertions<span class="o">(</span>+<span class="o">)</span>, 0 deletions<span class="o">(</span>-<span class="o">)</span>
+</span><span class='line'> delete mode 100644 testfile2
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git log --oneline
+</span><span class='line'>1c6720d Revert <span class="s2">&quot;add testfile2&quot;</span>
+</span><span class='line'>0394e66 add testfile3
+</span><span class='line'>24ed0b8 add testfile2
+</span><span class='line'>81e4af0 add testfile1
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>ls &lt;- HEAD^でコミットしたファイルのみが消えており、HEADでのコミットファイルは消えていない
+</span><span class='line'>testfile1  testfile3
+</span></code></pre></td></tr></table></div></figure>
+
+
+<a name="L............................................."></a>
+<h2>ファイルを過去のある時点に戻す</h2>
+
+<ul>
+<li><p>コマンド
+<code>git checkout [commit] [filename]</code></p></li>
+<li><p>目的</p>
+
+<ul>
+<li><code>git rm</code>で誤ってファイルを削除してしまった場合や、特定のファイルのみを過去の状態に戻したい時に使用</li>
+</ul>
+</li>
+<li><p>特徴</p>
+
+<ul>
+<li><code>git reset</code>コマンドの場合、<code>--mixed</code>、<code>--hard</code>、<code>--soft</code>のオプションを使用すると 引数には、
+コミットしか指定できません。そのため、特定のファイルのみを過去のある時点に戻す場合は
+<code>git checkout</code>を利用します。</li>
+</ul>
+</li>
+<li><p>実行例</p></li>
+</ul>
+
+
+<p><code>git rm</code>でファイルを削除してしまった場合</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>ls
+</span><span class='line'>file1  file2  file3
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git rm file2 &lt;-誤ってファイルを消してしまった
+</span><span class='line'>rm <span class="s1">&#39;file2&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>ls
+</span><span class='line'>file1  file3
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git checkout HEAD -- file2
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>ls &lt;-file2が復活している
+</span><span class='line'>file1  file2  file3
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>特定のファイルを過去の状態に戻したい時</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vi testfile1
+</span><span class='line'>add
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git add testfile1
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git commit -m <span class="s2">&quot;add testfile1&quot;</span>
+</span><span class='line'><span class="o">[</span>master <span class="o">(</span>root-commit<span class="o">)</span> 4c9d6bb<span class="o">]</span> add testfile1
+</span><span class='line'> 1 files changed, 1 insertions<span class="o">(</span>+<span class="o">)</span>, 0 deletions<span class="o">(</span>-<span class="o">)</span>
+</span><span class='line'> create mode 100644 testfile1
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>vi testfile1
+</span><span class='line'>edit1 &lt;-testfile1に追記
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git commit -am <span class="s2">&quot;edit1 testfile1&quot;</span>
+</span><span class='line'><span class="o">[</span>master 70161ba<span class="o">]</span> edit1 testfile1
+</span><span class='line'> 1 files changed, 1 insertions<span class="o">(</span>+<span class="o">)</span>, 0 deletions<span class="o">(</span>-<span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>vi testfile1
+</span><span class='line'>edit2 &lt;-testfile1に追記
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git commit -am <span class="s2">&quot;edit2 testfile1&quot;</span>
+</span><span class='line'><span class="o">[</span>master f83f195<span class="o">]</span> edit2 testfile1
+</span><span class='line'> 1 files changed, 1 insertions<span class="o">(</span>+<span class="o">)</span>, 0 deletions<span class="o">(</span>-<span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>vi testfile1
+</span><span class='line'>edit3 &lt;-testfile1に追記
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git commit -am <span class="s2">&quot;edit3 testfile1&quot;</span>
+</span><span class='line'><span class="o">[</span>master 2a335fe<span class="o">]</span> edit3 testfile1
+</span><span class='line'> 1 files changed, 1 insertions<span class="o">(</span>+<span class="o">)</span>, 0 deletions<span class="o">(</span>-<span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git log --oneline
+</span><span class='line'>2a335fe edit3 testfile1
+</span><span class='line'>f83f195 edit2 testfile1
+</span><span class='line'>70161ba edit1 testfile1
+</span><span class='line'>4c9d6bb add testfile1
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>cat testfile1
+</span><span class='line'>add
+</span><span class='line'>edit1
+</span><span class='line'>edit2
+</span><span class='line'>edit3
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git checkout f83f195 -- testfile1 &lt;-testfile1を過去の状態に戻す
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>cat testfile1
+</span><span class='line'>add
+</span><span class='line'>edit1
+</span><span class='line'>edit2
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">seak0503</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-11T00:48:48+09:00" pubdate data-updated="true">2014-06-11</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/git/'>Git</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.seak.jp.net/blog/2014/06/11/git-correction/" data-via="" data-counturl="http://blog.seak.jp.net/blog/2014/06/11/git-correction/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/06/10/zeroconf/" title="Previous Post: Zeroconfを使用しないようにする">&laquo; Zeroconfを使用しないようにする</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/06/12/linux-profile/" title="Next Post: .bash_profileと.bashrcについて">.bash_profileと.bashrcについて &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/11/26/dev-octopress/">Octopressの環境移設</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/07/sublimetextmacterminal/">Sublime Textから素早くiTermを開く</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/04/sublimetextthemecursor/">Sublime Text 3のカーソルを変更する手順</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/04/sublimetextthemeitg/">Themeのカラースキームを編集する</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/17/sublimetextvim/">sublimeText3でVimライクな操作を可能にさせる</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+  <h1>Categories</h1>
+    <ul id="category-list"><li><a href='/blog/categories/apache/'>Apache (1)</a></li><li><a href='/blog/categories/benchmark/'>Benchmark (1)</a></li><li><a href='/blog/categories/chef/'>Chef (2)</a></li><li><a href='/blog/categories/git/'>Git (9)</a></li><li><a href='/blog/categories/github/'>GitHub (8)</a></li><li><a href='/blog/categories/html/'>HTML (1)</a></li><li><a href='/blog/categories/java/'>Java (4)</a></li><li><a href='/blog/categories/linux/'>Linux (7)</a></li><li><a href='/blog/categories/markdown/'>Markdown (2)</a></li><li><a href='/blog/categories/octopress/'>Octopress (3)</a></li><li><a href='/blog/categories/oracle/'>Oracle (1)</a></li><li><a href='/blog/categories/python/'>Python (1)</a></li><li><a href='/blog/categories/ruby/'>Ruby (2)</a></li><li><a href='/blog/categories/security/'>Security (2)</a></li><li><a href='/blog/categories/sublime-text/'>Sublime Text (4)</a></li></ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/seak0503">@seak0503</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'seak0503',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - seak0503 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'seak0503';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.seak.jp.net/blog/2014/06/11/git-correction/';
+        var disqus_url = 'http://blog.seak.jp.net/blog/2014/06/11/git-correction/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

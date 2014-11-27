@@ -1,0 +1,1209 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>git rebaseの検証 - seak0503 Blog</title>
+  <meta name="author" content="seak0503">
+
+  
+  <meta name="description" content="目次 はじめに topicブランチでrebase時に競合が発生しないケース1 topicブランチでrebase時に競合が発生しないケース2 topicブランチでrebase時に競合が発生するケース はじめに git rebaseの挙動について数パターン検証を実施しました。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.seak.jp.net/blog/2014/04/25/git-rebase/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="seak0503 Blog" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <nav role="navigation"><ul class="subscription" data-subscription="rss email">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+    <li><a href="seak0503.gmail.com" rel="subscribe-email" title="subscribe via email">Email</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.seak.jp.net" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+    <li><a href="/">
+        <span class="blue_light">
+            seak0503 Blog
+        </span>
+       
+    </a></li>
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Git Rebaseの検証</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-25T14:35:31+09:00" pubdate data-updated="true">2014-04-25</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><!-- more -->
+
+
+
+
+<h2>目次</h2>
+
+
+<p><ul>
+ <li><ul>
+  <li><a href="#L............">はじめに</a></li>
+  <li><a href="#topic...............rebase.......................................1">topicブランチでrebase時に競合が発生しないケース1</a></li>
+  <li><a href="#topic...............rebase.......................................2">topicブランチでrebase時に競合が発生しないケース2</a></li>
+  <li><a href="#topic...............rebase....................................">topicブランチでrebase時に競合が発生するケース</a></li>
+ </ul></li>
+</ul>
+
+</p>
+
+<a name="L............"></a>
+<h2>はじめに</h2>
+
+<p>git rebaseの挙動について数パターン検証を実施しました。</p>
+
+<p>ここでは分岐元ブランチを<strong>master</strong>、分岐先ブランチを<strong>topic</strong>として
+説明をしていきます。</p>
+
+<a name="topic...............rebase.......................................1"></a>
+<h2>topicブランチでrebase時に競合が発生しないケース1</h2>
+
+<blockquote><p>topicブランチの作業中にmasterブランチ側で新規のファイルが
+追加され、その後topicブランチ側でrebaseする様子を説明します。
+最終的にはmasterブランチ側からtopicブランチをマージします。</p></blockquote>
+
+<p>masterブランチでmaster_file1をcommit</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>touch master_file1
+</span><span class='line'><span class="nv">$ </span>git add master_file1
+</span><span class='line'><span class="nv">$ </span>git commit -m <span class="s2">&quot;add master_file1&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>topicブランチを作成して、checkoutする</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git checkout -b topic
+</span><span class='line'><span class="nv">$ </span>git branch -l
+</span><span class='line'>  master
+</span><span class='line'>* topic
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>topicブランチでcommitする</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>touch topic_file1
+</span><span class='line'><span class="nv">$ </span>git add topic_file1
+</span><span class='line'><span class="nv">$ </span>git commit -m <span class="s2">&quot;add topic_file1&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>topicブランチのログを見てみる</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git log -l
+</span><span class='line'>commit 8f699a5f3a50ccb3c5b214656086a707fbbdfeec
+</span><span class='line'>Author: spam ham
+</span><span class='line'>Date:   Fri Apr 25 14:50:56 2014 +0900
+</span><span class='line'>
+</span><span class='line'>    add topic_file1
+</span><span class='line'>
+</span><span class='line'>commit 1d46277f8c83e3e9573c31c23d3c3386d1592774
+</span><span class='line'>Author: spam ham
+</span><span class='line'>Date:   Fri Apr 25 14:49:48 2014 +0900
+</span><span class='line'>
+</span><span class='line'>    add master_file1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>masterブランチをcheckoutして、fileを追加する</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git checkout master
+</span><span class='line'><span class="nv">$ </span>git branch -l
+</span><span class='line'>* master
+</span><span class='line'>  topic
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>touch master_file2
+</span><span class='line'><span class="nv">$ </span>git add master_file2
+</span><span class='line'><span class="nv">$ </span>git commit -m <span class="s2">&quot;add master_file2&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>再度topicブランチをcheckoutして、rebaseする</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git checkout topic
+</span><span class='line'>Switched to branch <span class="s1">&#39;topic&#39;</span>
+</span><span class='line'><span class="nv">$ </span>git branch -l
+</span><span class='line'>  master
+</span><span class='line'>* topic
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git rebase master
+</span><span class='line'>First, rewinding head to replay your work on top of it...
+</span><span class='line'>Applying: add topic_file1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ログを確認してみる</p>
+
+<blockquote><p>topicブランチがmasterブランチの最新のコミットに
+つなぎ替えられている。</p></blockquote>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git log -l
+</span><span class='line'>commit 2fd51d15af10ceb9c2e665a08fac5bbdf14e433b
+</span><span class='line'>Author: spam ham
+</span><span class='line'>Date:   Fri Apr 25 14:50:56 2014 +0900
+</span><span class='line'>
+</span><span class='line'>    add topic_file1
+</span><span class='line'>
+</span><span class='line'>commit 97912a14f399cd509a5113d50a9cb0070a3dc1ed
+</span><span class='line'>Author: spam ham
+</span><span class='line'>Date:   Fri Apr 25 14:52:36 2014 +0900
+</span><span class='line'>
+</span><span class='line'>    add master_file2
+</span><span class='line'>
+</span><span class='line'>commit 1d46277f8c83e3e9573c31c23d3c3386d1592774
+</span><span class='line'>Author: spam ham
+</span><span class='line'>Date:   Fri Apr 25 14:49:48 2014 +0900
+</span><span class='line'>
+</span><span class='line'>    add master_file1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>masterブランチにcheckoutして、topicブランチをマージする</p>
+
+<blockquote><p>ここではFast-forwardされないよう、オプションに&#8211;no-ffをつける</p></blockquote>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git checkout master
+</span><span class='line'><span class="nv">$ </span>git branch -l
+</span><span class='line'>* master
+</span><span class='line'>  topic
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git merge --no-ff topic
+</span><span class='line'>Merge made by recursive.
+</span><span class='line'> 0 files changed, 0 insertions<span class="o">(</span>+<span class="o">)</span>, 0 deletions<span class="o">(</span>-<span class="o">)</span>
+</span><span class='line'> create mode 100644 topic_file1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>masterブランチでログを確認してみる</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git log --graph
+</span><span class='line'>*   commit a5a3b795fd94b5f1da414c958e9ee8d8fdefcdd8
+</span><span class='line'>|<span class="se">\ </span> Merge: 97912a1 2fd51d1
+</span><span class='line'>| | Author: spam ham
+</span><span class='line'>| | Date:   Fri Apr 25 15:12:23 2014 +0900
+</span><span class='line'>| |
+</span><span class='line'>| |     Merge branch <span class="s1">&#39;topic&#39;</span>
+</span><span class='line'>| |
+</span><span class='line'>| * commit 2fd51d15af10ceb9c2e665a08fac5bbdf14e433b
+</span><span class='line'>|/  Author: spam ham
+</span><span class='line'>|   Date:   Fri Apr 25 14:50:56 2014 +0900
+</span><span class='line'>|
+</span><span class='line'>|       add topic_file1
+</span><span class='line'>|
+</span><span class='line'>* commit 97912a14f399cd509a5113d50a9cb0070a3dc1ed
+</span><span class='line'>| Author: spam ham
+</span><span class='line'>| Date:   Fri Apr 25 14:52:36 2014 +0900
+</span><span class='line'>|
+</span><span class='line'>|     add master_file2
+</span><span class='line'>|
+</span><span class='line'>* commit 1d46277f8c83e3e9573c31c23d3c3386d1592774
+</span><span class='line'>  Author: spam ham
+</span><span class='line'>  Date:   Fri Apr 25 14:49:48 2014 +0900
+</span><span class='line'>
+</span><span class='line'>      add master_file1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>masterブランチの作業ツリーにあるファイルを確認する</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>ls
+</span><span class='line'>master_file1  master_file2  topic_file1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<a name="topic...............rebase.......................................2"></a>
+<h2>topicブランチでrebase時に競合が発生しないケース2</h2>
+
+<blockquote><p>topicブランチの作業中にmasterブランチ側で既存ファイル<strong>master_file1</strong>が
+編集され、その後topicブランチ側でrebaseする様子を説明します。
+最終的にはmasterブランチ側からtopicブランチをマージします。</p></blockquote>
+
+<p>masterブランチでmaster_file1をcommit</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>touch master_file1
+</span><span class='line'><span class="nv">$ </span>git add master_file1
+</span><span class='line'><span class="nv">$ </span>git commit -m <span class="s2">&quot;add master_file1&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>topicブランチを作成して、checkoutする</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git checkout -b topic
+</span><span class='line'><span class="nv">$ </span>git branch -l
+</span><span class='line'>  master
+</span><span class='line'>* topic
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>topicブランチでcommitする</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>touch topic_file1
+</span><span class='line'><span class="nv">$ </span>git add topic_file1
+</span><span class='line'><span class="nv">$ </span>git commit -m <span class="s2">&quot;add topic_file1&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>topicブランチのログを見てみる</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git log -l
+</span><span class='line'>commit 7b4204ff3eb14372283574cc51e0291d6b948e36
+</span><span class='line'>Author: spam ham
+</span><span class='line'>Date:   Fri Apr 25 15:03:29 2014 +0900
+</span><span class='line'>
+</span><span class='line'>    add topic_file1
+</span><span class='line'>
+</span><span class='line'>commit 5172e127b47cc58859e169bb23d299f849488cc8
+</span><span class='line'>Author: spam ham
+</span><span class='line'>Date:   Fri Apr 25 15:02:56 2014 +0900
+</span><span class='line'>
+</span><span class='line'>    add master_file1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>masterブランチをcheckoutして、master_file1を編集する</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git checkout master
+</span><span class='line'><span class="nv">$ </span>git branch -l
+</span><span class='line'>* master
+</span><span class='line'>  topic
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>vi master_file1
+</span><span class='line'>1 * master branch &lt;-1行目を書き換える
+</span><span class='line'>git commit -am <span class="s2">&quot;ecit master_file1&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>再度topicブランチをcheckoutして、rebaseする</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git checkout topic
+</span><span class='line'>Switched to branch <span class="s1">&#39;topic&#39;</span>
+</span><span class='line'><span class="nv">$ </span>git branch -l
+</span><span class='line'>  master
+</span><span class='line'>* topic
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git rebase master
+</span><span class='line'>First, rewinding head to replay your work on top of it...
+</span><span class='line'>Applying: add topic_file1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ログを確認してみる</p>
+
+<blockquote><p>topicブランチがmasterブランチの最新のコミットに
+つなぎ替えられている。</p></blockquote>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git log -l
+</span><span class='line'>commit 9982a206a6465b79035ad996bb6c5df99d888890
+</span><span class='line'>Author: spam ham
+</span><span class='line'>Date:   Fri Apr 25 15:03:29 2014 +0900
+</span><span class='line'>
+</span><span class='line'>    add topic_file1
+</span><span class='line'>
+</span><span class='line'>commit 46c64813617c21a0d0c80355d5ef9b1f42160f41
+</span><span class='line'>Author: spam ham
+</span><span class='line'>Date:   Fri Apr 25 15:08:16 2014 +0900
+</span><span class='line'>
+</span><span class='line'>    ecit master_file1
+</span><span class='line'>
+</span><span class='line'>commit 5172e127b47cc58859e169bb23d299f849488cc8
+</span><span class='line'>Author: spam ham
+</span><span class='line'>Date:   Fri Apr 25 15:02:56 2014 +0900
+</span><span class='line'>
+</span><span class='line'>    add master_file1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>masterブランチにcheckoutして、topicブランチをマージする</p>
+
+<blockquote><p>ここではFast-forwardされないよう、オプションに&#8211;no-ffをつける</p></blockquote>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git checkout master
+</span><span class='line'><span class="nv">$ </span>git branch -l
+</span><span class='line'>* master
+</span><span class='line'>  topic
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git merge --no-ff topic
+</span><span class='line'>Merge made by recursive.
+</span><span class='line'> 0 files changed, 0 insertions<span class="o">(</span>+<span class="o">)</span>, 0 deletions<span class="o">(</span>-<span class="o">)</span>
+</span><span class='line'> create mode 100644 topic_file1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>masterブランチでログを確認してみる</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git log --graph
+</span><span class='line'>*   commit a00615e2350db3046de20f87457624fe8632d3de
+</span><span class='line'>|<span class="se">\ </span> Merge: 46c6481 9982a20
+</span><span class='line'>| | Author: spam ham
+</span><span class='line'>| | Date:   Fri Apr 25 15:17:38 2014 +0900
+</span><span class='line'>| |
+</span><span class='line'>| |     Merge branch <span class="s1">&#39;topic&#39;</span>
+</span><span class='line'>| |
+</span><span class='line'>| * commit 9982a206a6465b79035ad996bb6c5df99d888890
+</span><span class='line'>|/  Author: spam ham
+</span><span class='line'>|   Date:   Fri Apr 25 15:03:29 2014 +0900
+</span><span class='line'>|
+</span><span class='line'>|       add topic_file1
+</span><span class='line'>|
+</span><span class='line'>* commit 46c64813617c21a0d0c80355d5ef9b1f42160f41
+</span><span class='line'>| Author: spam ham
+</span><span class='line'>| Date:   Fri Apr 25 15:08:16 2014 +0900
+</span><span class='line'>|
+</span><span class='line'>|     ecit master_file1
+</span><span class='line'>|
+</span><span class='line'>* commit 5172e127b47cc58859e169bb23d299f849488cc8
+</span><span class='line'>  Author: spam ham
+</span><span class='line'>  Date:   Fri Apr 25 15:02:56 2014 +0900
+</span><span class='line'>
+</span><span class='line'>      add master_file1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>masterブランチの作業ツリーにあるファイルを確認する</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>ls
+</span><span class='line'>master_file1  topic_file1
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>cat master_file1
+</span><span class='line'>* master branch
+</span></code></pre></td></tr></table></div></figure>
+
+
+<a name="topic...............rebase...................................."></a>
+<h2>topicブランチでrebase時に競合が発生するケース</h2>
+
+<blockquote><p>topicブランチの作業中にmasterブランチ側で既存ファイル<strong>master_file1</strong>が
+編集されるが、topicブランチ側でも<strong>master_file1</strong>を更新してしまっていて
+rebaseした際に競合が発生してしまうケースです。</p>
+
+<p>topicブランチ側で競合を解決し、最終的にはmasterブランチ側からtopic
+ブランチをマージします。</p></blockquote>
+
+<p>masterブランチでmaster_file1をcommit</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>touch master_file1
+</span><span class='line'><span class="nv">$ </span>git add master_file1
+</span><span class='line'><span class="nv">$ </span>git commit -m <span class="s2">&quot;add master_file1&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>topicブランチを作成して、checkoutする</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git checkout -b topic
+</span><span class='line'><span class="nv">$ </span>git branch -l
+</span><span class='line'>  master
+</span><span class='line'>* topic
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>topicブランチでcommitする</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>touch topic_file1
+</span><span class='line'><span class="nv">$ </span>git add topic_file1
+</span><span class='line'><span class="nv">$ </span>git commit -m <span class="s2">&quot;add topic_file1&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>topicブランチのログを見てみる</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git log -l
+</span><span class='line'>commit 0c7eb5e105e38454df86d737c6ae52a9a4d04953
+</span><span class='line'>Author: spam ham
+</span><span class='line'>Date:   Fri Apr 25 15:52:42 2014 +0900
+</span><span class='line'>
+</span><span class='line'>    add topic_file1
+</span><span class='line'>
+</span><span class='line'>commit af5b2b29d575cb617cafa0408edf94fe26cd6997
+</span><span class='line'>Author: spam ham
+</span><span class='line'>Date:   Fri Apr 25 15:52:17 2014 +0900
+</span><span class='line'>
+</span><span class='line'>    add master_file1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>masterブランチをcheckoutして、master_file1を編集する</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git checkout master
+</span><span class='line'><span class="nv">$ </span>git branch -l
+</span><span class='line'>* master
+</span><span class='line'>  topic
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>vi master_file1
+</span><span class='line'>1 * master branch &lt;-1行目を書き換える
+</span><span class='line'>
+</span><span class='line'>git commit -am <span class="s2">&quot;edit master_file1 by master branch&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>再度topicブランチをcheckoutして、master_file1を編集する</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git checkout topic
+</span><span class='line'>Switched to branch <span class="s1">&#39;topic&#39;</span>
+</span><span class='line'><span class="nv">$ </span>git branch -l
+</span><span class='line'>  master
+</span><span class='line'>* topic
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>vi master_file1
+</span><span class='line'>1 * topic branch &lt;-1行目を書き換える
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git commit -am <span class="s2">&quot;edit master_file1 by topci branch&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ログを確認してみる</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git log -l
+</span><span class='line'>commit a919d02bf25a5f24db9d1df5c34ae2f32772d673
+</span><span class='line'>Author: spam ham
+</span><span class='line'>Date:   Fri Apr 25 15:55:48 2014 +0900
+</span><span class='line'>
+</span><span class='line'>    edit master_file1 by topci branch
+</span><span class='line'>
+</span><span class='line'>commit 0c7eb5e105e38454df86d737c6ae52a9a4d04953
+</span><span class='line'>Author: spam ham
+</span><span class='line'>Date:   Fri Apr 25 15:52:42 2014 +0900
+</span><span class='line'>
+</span><span class='line'>    add topic_file1
+</span><span class='line'>
+</span><span class='line'>commit af5b2b29d575cb617cafa0408edf94fe26cd6997
+</span><span class='line'>Author: spam ham
+</span><span class='line'>Date:   Fri Apr 25 15:52:17 2014 +0900
+</span><span class='line'>
+</span><span class='line'>    add master_file1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>topicブランチ側でrebaseする</p>
+
+<blockquote><p>競合が発生した</p></blockquote>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git branch -l
+</span><span class='line'>  master
+</span><span class='line'>* topic
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git rebase master
+</span><span class='line'>First, rewinding head to replay your work on top of it...
+</span><span class='line'>Applying: add topic_file1
+</span><span class='line'>Applying: edit master_file1 by topci branch
+</span><span class='line'>Using index info to reconstruct a base tree...
+</span><span class='line'>Falling back to patching base and 3-way merge...
+</span><span class='line'>Auto-merging master_file1
+</span><span class='line'>CONFLICT <span class="o">(</span>content<span class="o">)</span>: Merge conflict in master_file1
+</span><span class='line'>Failed to merge in the changes.
+</span><span class='line'>Patch failed at 0002 edit master_file1 by topci branch
+</span><span class='line'>
+</span><span class='line'>When you have resolved this problem run <span class="s2">&quot;git rebase --continue&quot;</span>.
+</span><span class='line'>If you would prefer to skip this patch, instead run <span class="s2">&quot;git rebase --skip&quot;</span>.
+</span><span class='line'>To restore the original branch and stop rebasing run <span class="s2">&quot;git rebase --abort&quot;</span>.
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>競合を解決する</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vi master_file1
+</span><span class='line'><span class="o">&lt;&lt;&lt;&lt;&lt;&lt;</span>&lt; HEAD
+</span><span class='line'>* master <span class="nv">branch</span>
+</span><span class='line'><span class="o">=======</span>
+</span><span class='line'>* topic branch
+</span><span class='line'>&gt;&gt;&gt;&gt;&gt;&gt;&gt; edit master_file1 by topci branch
+</span><span class='line'>↓
+</span><span class='line'>
+</span><span class='line'>* master branch
+</span><span class='line'>* topic branch
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>リベースを続行する</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git add master_file1
+</span><span class='line'><span class="nv">$ </span>git rebase --continue
+</span><span class='line'>Applying: edit master_file1 by topci branch
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ログを確認する</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git log -l
+</span><span class='line'>commit 622730cac98bcbdfa65c6a8e3bf396c9d7411efb
+</span><span class='line'>Author: spam ham
+</span><span class='line'>Date:   Fri Apr 25 15:55:48 2014 +0900
+</span><span class='line'>
+</span><span class='line'>    edit master_file1 by topci branch
+</span><span class='line'>
+</span><span class='line'>commit cb6981979432a82be38161897527987ae285fdde
+</span><span class='line'>Author: spam ham
+</span><span class='line'>Date:   Fri Apr 25 15:52:42 2014 +0900
+</span><span class='line'>
+</span><span class='line'>    add topic_file1
+</span><span class='line'>
+</span><span class='line'>commit 48cfe32d78c91ee66e049d639e81f9de5589ffc5
+</span><span class='line'>Author: spam ham
+</span><span class='line'>Date:   Fri Apr 25 15:54:40 2014 +0900
+</span><span class='line'>
+</span><span class='line'>    edit master_file1 by master branch
+</span><span class='line'>
+</span><span class='line'>commit af5b2b29d575cb617cafa0408edf94fe26cd6997
+</span><span class='line'>Author: spam ham
+</span><span class='line'>Date:   Fri Apr 25 15:52:17 2014 +0900
+</span><span class='line'>
+</span><span class='line'>    add master_file1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>masterブランチにcheckoutして、topicブランチをマージする</p>
+
+<blockquote><p>ここではFast-forwardされないよう、オプションに&#8211;no-ffをつける</p></blockquote>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git checkout master
+</span><span class='line'><span class="nv">$ </span>git branch -l
+</span><span class='line'>* master
+</span><span class='line'>  topic
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git merge --no-ff topic
+</span><span class='line'>Merge made by recursive.
+</span><span class='line'> master_file1 |    1 +
+</span><span class='line'> 1 files changed, 1 insertions<span class="o">(</span>+<span class="o">)</span>, 0 deletions<span class="o">(</span>-<span class="o">)</span>
+</span><span class='line'> create mode 100644 topic_file1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>masterブランチでログを確認してみる</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git log --graph
+</span><span class='line'>*   commit 1a89c2c64bb2eff79c09806f484f25eba6cd9829
+</span><span class='line'>|<span class="se">\ </span> Merge: 48cfe32 622730c
+</span><span class='line'>| | Author: spam ham
+</span><span class='line'>| | Date:   Fri Apr 25 16:16:31 2014 +0900
+</span><span class='line'>| |
+</span><span class='line'>| |     Merge branch <span class="s1">&#39;topic&#39;</span>
+</span><span class='line'>| |
+</span><span class='line'>| * commit 622730cac98bcbdfa65c6a8e3bf396c9d7411efb
+</span><span class='line'>| | Author: spam ham
+</span><span class='line'>| | Date:   Fri Apr 25 15:55:48 2014 +0900
+</span><span class='line'>| |
+</span><span class='line'>| |     edit master_file1 by topci branch
+</span><span class='line'>| |
+</span><span class='line'>| * commit cb6981979432a82be38161897527987ae285fdde
+</span><span class='line'>|/  Author: spam ham
+</span><span class='line'>|   Date:   Fri Apr 25 15:52:42 2014 +0900
+</span><span class='line'>|
+</span><span class='line'>|       add topic_file1
+</span><span class='line'>|
+</span><span class='line'>* commit 48cfe32d78c91ee66e049d639e81f9de5589ffc5
+</span><span class='line'>| Author: spam ham
+</span><span class='line'>| Date:   Fri Apr 25 15:54:40 2014 +0900
+</span><span class='line'>|
+</span><span class='line'>|     edit master_file1 by master branch
+</span><span class='line'>|
+</span><span class='line'>* commit af5b2b29d575cb617cafa0408edf94fe26cd6997
+</span><span class='line'>  Author: spam ham
+</span><span class='line'>  Date:   Fri Apr 25 15:52:17 2014 +0900
+</span><span class='line'>
+</span><span class='line'>      add master_file1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>masterブランチの作業ツリーにあるファイルを確認する</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>ls
+</span><span class='line'>master_file1  topic_file1
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>cat master_file1
+</span><span class='line'>* master branch
+</span><span class='line'>* topic branch
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">seak0503</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-25T14:35:31+09:00" pubdate data-updated="true">2014-04-25</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/git/'>Git</a>, <a class='category' href='/blog/categories/github/'>GitHub</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.seak.jp.net/blog/2014/04/25/git-rebase/" data-via="" data-counturl="http://blog.seak.jp.net/blog/2014/04/25/git-rebase/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/04/24/merge-commit-and-fast-forward-merge/" title="Previous Post: マージコミットとFast-forwardマージ">&laquo; マージコミットとFast-forwardマージ</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/04/25/git-revert-merge/" title="Next Post: git revertでマージコミットの取り消しを行う">git revertでマージコミットの取り消しを行う &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/11/26/dev-octopress/">Octopressの環境移設</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/07/sublimetextmacterminal/">Sublime Textから素早くiTermを開く</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/04/sublimetextthemecursor/">Sublime Text 3のカーソルを変更する手順</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/04/sublimetextthemeitg/">Themeのカラースキームを編集する</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/17/sublimetextvim/">sublimeText3でVimライクな操作を可能にさせる</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+  <h1>Categories</h1>
+    <ul id="category-list"><li><a href='/blog/categories/apache/'>Apache (1)</a></li><li><a href='/blog/categories/benchmark/'>Benchmark (1)</a></li><li><a href='/blog/categories/chef/'>Chef (2)</a></li><li><a href='/blog/categories/git/'>Git (9)</a></li><li><a href='/blog/categories/github/'>GitHub (8)</a></li><li><a href='/blog/categories/html/'>HTML (1)</a></li><li><a href='/blog/categories/java/'>Java (4)</a></li><li><a href='/blog/categories/linux/'>Linux (7)</a></li><li><a href='/blog/categories/markdown/'>Markdown (2)</a></li><li><a href='/blog/categories/octopress/'>Octopress (3)</a></li><li><a href='/blog/categories/oracle/'>Oracle (1)</a></li><li><a href='/blog/categories/python/'>Python (1)</a></li><li><a href='/blog/categories/ruby/'>Ruby (2)</a></li><li><a href='/blog/categories/security/'>Security (2)</a></li><li><a href='/blog/categories/sublime-text/'>Sublime Text (4)</a></li></ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/seak0503">@seak0503</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'seak0503',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - seak0503 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'seak0503';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.seak.jp.net/blog/2014/04/25/git-rebase/';
+        var disqus_url = 'http://blog.seak.jp.net/blog/2014/04/25/git-rebase/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

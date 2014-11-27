@@ -1,0 +1,384 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>pythonとrubyでコマンドラインで引数を受け取るプログラムをつくる - seak0503 Blog</title>
+  <meta name="author" content="seak0503">
+
+  
+  <meta name="description" content="目次 はじめに ソースコード プログラム実行 比較 感想 はじめに 最近Rubyを勉強しはじめましたが、日常的にPythonを書く私にとって
+「便利だなぁ」と思うところと、「なんか覚えにくいなぁ、というか
+とっつきにくいなぁ」と思うところの両者がかけめぐってますが、それは
+それで面白いところだし &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.seak.jp.net/blog/2014/06/30/argv-of-python-and-ruby/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="seak0503 Blog" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <nav role="navigation"><ul class="subscription" data-subscription="rss email">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+    <li><a href="seak0503.gmail.com" rel="subscribe-email" title="subscribe via email">Email</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.seak.jp.net" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+    <li><a href="/">
+        <span class="blue_light">
+            seak0503 Blog
+        </span>
+       
+    </a></li>
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Pythonとrubyでコマンドラインで引数を受け取るプログラムをつくる</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-30T15:31:47+09:00" pubdate data-updated="true">2014-06-30</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><!-- more -->
+
+
+
+
+<h2>目次</h2>
+
+
+<p><ul>
+ <li><ul>
+  <li><a href="#L............">はじめに</a></li>
+  <li><a href="#L..................">ソースコード</a></li>
+  <li><a href="#L.....................">プログラム実行</a></li>
+  <li><a href="#L......">比較</a></li>
+  <li><a href="#L......">感想</a></li>
+ </ul></li>
+</ul>
+
+</p>
+
+<a name="L............"></a>
+<h2>はじめに</h2>
+
+<p>最近Rubyを勉強しはじめましたが、日常的にPythonを書く私にとって
+「便利だなぁ」と思うところと、「なんか覚えにくいなぁ、というか
+とっつきにくいなぁ」と思うところの両者がかけめぐってますが、それは
+それで面白いところだし、とても勉強になります。</p>
+
+<p>そんなわけで、今日はコマンドラインから引数を受け取るプログラムを
+PythonとRubyの両方で書いてみました。</p>
+
+<a name="L.................."></a>
+<h2>ソースコード</h2>
+
+<p>python(argv.py):</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># coding: utf-8</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">sys</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">u&quot;これは第1引数です: &quot;</span> <span class="o">+</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">u&quot;これは第2引数です: &quot;</span> <span class="o">+</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">u&quot;これは第3引数です: &quot;</span> <span class="o">+</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ruby(argv.rb)</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># cofing: utf-8</span>
+</span><span class='line'><span class="nb">puts</span><span class="p">(</span><span class="s2">&quot;これは第1引数です: </span><span class="si">#{</span><span class="no">ARGV</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="nb">puts</span><span class="p">(</span><span class="s2">&quot;これは第2引数です: </span><span class="si">#{</span><span class="no">ARGV</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="nb">puts</span><span class="p">(</span><span class="s2">&quot;これは第3引数です: </span><span class="si">#{</span><span class="no">ARGV</span><span class="o">[</span><span class="mi">2</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<a name="L....................."></a>
+<h2>プログラム実行</h2>
+
+<p>python:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>python argv.py 1st 2nd
+</span><span class='line'>これは第1引数です: argv.py
+</span><span class='line'>これは第2引数です: 1st
+</span><span class='line'>これは第3引数です: 2nd
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ruby:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>ruby argv.rb 1st 2nd 3rd
+</span><span class='line'>これは第1引数です: 1st
+</span><span class='line'>これは第2引数です: 2nd
+</span><span class='line'>これは第3引数です: 3rd
+</span></code></pre></td></tr></table></div></figure>
+
+
+<a name="L......"></a>
+<h2>比較</h2>
+
+<ul>
+<li><p>まず決定的に異なるのは、インデント0が何になるかです。pythonの場合はコマンド名(スクリプト名)
+そのものになっているのに対し、rubyでは一つ目の引数になっています。
+どちらが正しいかは別として、直感的にはrubyの方がわかりやすい気がします。</p></li>
+<li><p>次に異なるのは、pythonではsysモジュールを呼び出しているのに対し、rubyではモジュールの
+呼び出しが必要ない点です。
+何がいいかは別として、rubyの方が楽です。</p></li>
+</ul>
+
+
+<a name="L......"></a>
+<h2>感想</h2>
+
+<p>今回のお題のプログラムをつくるなら、rubyの方が直感的にわかりやすくていいなぁという気持ちになりました。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">seak0503</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-30T15:31:47+09:00" pubdate data-updated="true">2014-06-30</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/python/'>Python</a>, <a class='category' href='/blog/categories/ruby/'>Ruby</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.seak.jp.net/blog/2014/06/30/argv-of-python-and-ruby/" data-via="" data-counturl="http://blog.seak.jp.net/blog/2014/06/30/argv-of-python-and-ruby/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/06/27/java-method-arg-name/" title="Previous Post: メソッドの仮引数名をフィールド名と同じにできるか?">&laquo; メソッドの仮引数名をフィールド名と同じにできるか?</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/07/02/git-source-install/" title="Next Post: gitのソースインストール">gitのソースインストール &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/11/26/dev-octopress/">Octopressの環境移設</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/07/sublimetextmacterminal/">Sublime Textから素早くiTermを開く</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/04/sublimetextthemecursor/">Sublime Text 3のカーソルを変更する手順</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/04/sublimetextthemeitg/">Themeのカラースキームを編集する</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/17/sublimetextvim/">sublimeText3でVimライクな操作を可能にさせる</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+  <h1>Categories</h1>
+    <ul id="category-list"><li><a href='/blog/categories/apache/'>Apache (1)</a></li><li><a href='/blog/categories/benchmark/'>Benchmark (1)</a></li><li><a href='/blog/categories/chef/'>Chef (2)</a></li><li><a href='/blog/categories/git/'>Git (9)</a></li><li><a href='/blog/categories/github/'>GitHub (8)</a></li><li><a href='/blog/categories/html/'>HTML (1)</a></li><li><a href='/blog/categories/java/'>Java (4)</a></li><li><a href='/blog/categories/linux/'>Linux (7)</a></li><li><a href='/blog/categories/markdown/'>Markdown (2)</a></li><li><a href='/blog/categories/octopress/'>Octopress (3)</a></li><li><a href='/blog/categories/oracle/'>Oracle (1)</a></li><li><a href='/blog/categories/python/'>Python (1)</a></li><li><a href='/blog/categories/ruby/'>Ruby (2)</a></li><li><a href='/blog/categories/security/'>Security (2)</a></li><li><a href='/blog/categories/sublime-text/'>Sublime Text (4)</a></li></ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/seak0503">@seak0503</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'seak0503',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - seak0503 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'seak0503';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.seak.jp.net/blog/2014/06/30/argv-of-python-and-ruby/';
+        var disqus_url = 'http://blog.seak.jp.net/blog/2014/06/30/argv-of-python-and-ruby/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

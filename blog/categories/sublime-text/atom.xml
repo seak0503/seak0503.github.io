@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Sublime Text | seak0503 Blog]]></title>
+  <link href="http://blog.seak.jp.net/blog/categories/sublime-text/atom.xml" rel="self"/>
+  <link href="http://blog.seak.jp.net/"/>
+  <updated>2014-11-28T08:26:19+09:00</updated>
+  <id>http://blog.seak.jp.net/</id>
+  <author>
+    <name><![CDATA[seak0503]]></name>
+    <email><![CDATA[seak0503.gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Sublime Textから素早くiTermを開く]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/11/07/sublimetextmacterminal/"/>
+    <updated>2014-11-07T14:33:28+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/11/07/sublimetextmacterminal</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+
+
+<h2>目次</h2>
+
+
+<p><ul>
+ <li><ul>
+  <li><a href="#L............">はじめに</a></li>
+  <li><a href="#L........................">インストール手順</a></li>
+  <li><a href="#L............">設定手順</a></li>
+  <li><a href="#L............">利用手順</a></li>
+ </ul></li>
+</ul>
+
+</p>
+
+<a name="L............"></a>
+<h2>はじめに</h2>
+
+<p>Sublime Textを使っていると、記述したスクリプトをターミナル上ですぐに実行したい
+場合が多々あると思います。</p>
+
+<p>Sublime Textの拡張パッケージである<code>MacTerminal</code>を使うと、Sublime Textで開いている
+ファイルのディレクトリをカレンとディレクトリとしてターミナルが立ち上がるので
+めちゃめちゃ便利です。</p>
+
+<p>ちなみに、これに似たパッケージに<code>Terminal</code>をいうものがありますが、<code>MacTerminal</code>は
+複数ターミナルを開くと、iTermのタブで開かれるのに対し、<code>Terminal</code>は新規にiTermを
+立ち上げてしまうので、<code>MacTerminal</code>の方が便利だと思います。</p>
+
+<a name="L........................"></a>
+<h2>インストール手順</h2>
+
+<p>Package Controlで<code>MacTerminal</code>を検索して、インストール</p>
+
+<a name="L............"></a>
+<h2>設定手順</h2>
+
+<p>デフォルト設定だと、Macデフォルトのターミナルが開いてしまうので
+設定設定変更する必要があります。</p>
+
+<ol>
+<li><p>Sublime Textから<code>Preferences</code> -> <code>Package Settings</code> -> <code>MacTerminal</code> -> <code>Settings-User</code>を開く</p></li>
+<li><p>下記の設定を入れる
+<code>bash
+{
+"directory_mode" : "project",
+"terminal"   :  "iterm"
+}
+</code></p></li>
+<li><p>Sublime Textを再起動する</p></li>
+</ol>
+
+
+<a name="L............"></a>
+<h2>利用手順</h2>
+
+<ol>
+<li><p>ファイルを新規作成するか、既存ファイルの編集を行う</p></li>
+<li><p>ショートカットキー`ctrl + command + t'を押すと、iTermが開く</p></li>
+</ol>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Sublime Text 3のカーソルを変更する手順]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/11/04/sublimetextthemecursor/"/>
+    <updated>2014-11-04T14:42:57+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/11/04/sublimetextthemecursor</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+
+
+<h2>目次</h2>
+
+
+<p><ul>
+ <li><a href="#L............">はじめに</a></li>
+ <li><a href="#L......">環境</a></li>
+ <li><a href="#L......">手順</a></li>
+</ul>
+
+</p>
+
+<a name="L............"></a>
+<h1>はじめに</h1>
+
+<p>Sublime Textのカーソルはブロックになっていないため、見失いやすかったり
+検索した時に、HITした場所がわかりづらかったりします。</p>
+
+<p>ここではSublime Text 3のカーソルを変更する手順を説明します。</p>
+
+<a name="L......"></a>
+<h1>環境</h1>
+
+<p>OS: Mac
+Sublime Text: バージョン3
+Theme: itg</p>
+
+<a name="L......"></a>
+<h1>手順</h1>
+
+<ol>
+<li><p>コマンドパレットを開く</p></li>
+<li><p><code>Package Control: Add Repository</code>コマンドを叩く</p></li>
+<li><p><code>https://github.com/jlangston/BlockCursorEverywhere.git</code>をリポジトリとして追加する</p></li>
+<li><p>コマンドパレットを開く</p></li>
+<li><p><code>Package Control: install Package</code>コマンドを叩く</p></li>
+<li><p><code>BlockCursorEverywhere</code>をインストールする</p></li>
+<li><p>下記を<code>~/Library/Application\ Support/Sublime\ Text\ 3/Packages/User/itg.dark.tmTheme</code>に追加する
+<code>html
+&lt;dict&gt;
+&lt;key&gt;name&lt;/key&gt;
+&lt;string&gt;Block Cursor&lt;/string&gt;
+&lt;key&gt;scope&lt;/key&gt;
+&lt;string&gt;block_cursor&lt;/string&gt;
+&lt;key&gt;settings&lt;/key&gt;
+&lt;dict&gt;
+ &lt;key&gt;foreground&lt;/key&gt;
+ &lt;string&gt;#000000&lt;/string&gt;
+ &lt;key&gt;background&lt;/key&gt;
+ &lt;string&gt;#0df505&lt;/string&gt; &lt;--ここを好きな色にするとカーソルに色が変わる
+&lt;/dict&gt;
+&lt;/dict&gt;
+</code></p></li>
+</ol>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Themeのカラースキームを編集する]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/11/04/sublimetextthemeitg/"/>
+    <updated>2014-11-04T14:25:57+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/11/04/sublimetextthemeitg</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+
+
+<h2>目次</h2>
+
+
+<p><ul>
+ <li><a href="#L............">はじめに</a></li>
+ <li><a href="#L......">環境</a></li>
+ <li><a href="#L...................................................">カスタマイズ用のファイルを準備する</a></li>
+</ul>
+
+</p>
+
+<a name="L............"></a>
+<h1>はじめに</h1>
+
+<p>Sublime Textでは有志の方が公開しているThemeに変更することが
+できます。
+Themeを変更したものの、カーソルの色などを変更したいなど
+カラースキームを調整したくなることもあると思います。</p>
+
+<p>ここでは、<code>Theme – itg.flat</code>を例に、Themeのカラースキームを
+調整するための準備について説明します。</p>
+
+<a name="L......"></a>
+<h1>環境</h1>
+
+<ul>
+<li>OS: Mac</li>
+<li>Sublime Text: バージョン3</li>
+<li>Theme: Theme - itg.flat</li>
+</ul>
+
+
+<a name="L..................................................."></a>
+<h1>カスタマイズ用のファイルを準備する</h1>
+
+<p>Theme - itg.flatのパッケージを適当なところにコピーする。
+拡張子は<code>.zip</code>にする
+<code>bash
+cp ~/Library/Application\ Support/Sublime\ Text\ 3/Installed\ Packages/Theme\ -\ itg.flat.sublime-package /tmp/Theme\ -\ itg.flat.sublime-package.zip
+</code></p>
+
+<p>解凍する
+<code>bash
+unzip /tmp/Theme\ -\ itg.flat.sublime-package.zip
+</code></p>
+
+<p>必要なファイルをコピーする</p>
+
+<p><strong>ここではitgのカラースキームにitg.darkを使用するものとします</strong>
+<code>bash
+cp itg.dark.tmTheme ~/Library/Application\ Support/Sublime\ Text\ 3/Packages/User/
+</code></p>
+
+<p>以下の手順でSublime Textのカラースキームを変更する</p>
+
+<p><code>Preferences -&gt; Color Scheme -&gt; User -&gt; itg.dark</code>の順で選択する</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[sublimeText3でVimライクな操作を可能にさせる]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/10/17/sublimetextvim/"/>
+    <updated>2014-10-17T15:33:59+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/10/17/sublimetextvim</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<ol>
+<li><p>Sublime TextのPackage Controlから<code>Vintageous</code>をインストールする。</p>
+
+<p>これを入れると、%sでの置換なども出来るようになります。</p></li>
+<li><p>Sublime Textのユーザ設定ファイルに下記を追記する。</p></li>
+</ol>
+
+
+<p><code>bash
+"vintage_ctrl_keys": true,
+"vintage_start_in_command_mode": true
+</code></p>
+
+<ul>
+<li><p><code>"vintage_ctrl_keys": true</code>は、ctrl キーを使用する vim のショートカットが使えるようにする設定</p></li>
+<li><p><code>"vintage_start_in_command_mode": true</code>は、ファイルを開いた時にコマンドモードで始まるようにする設定</p></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>

@@ -1,0 +1,435 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>マージで競合が発生した時に、マージをやり直す方法 - seak0503 Blog</title>
+  <meta name="author" content="seak0503">
+
+  
+  <meta name="description" content="目次 はじめに マージで競合が発生した時に、マージをやり直す はじめに マージを実行して競合が発生した時、競合を解決しているうちに、途中で
+何をやっていたかわからなくなり、マージを最初からやり直したくなることが
+あります。 ここではその方法を簡単に解説します。 マージで競合が発生した時に、 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.seak.jp.net/blog/2014/04/28/git-reset-merge/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="seak0503 Blog" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <nav role="navigation"><ul class="subscription" data-subscription="rss email">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+    <li><a href="seak0503.gmail.com" rel="subscribe-email" title="subscribe via email">Email</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.seak.jp.net" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+    <li><a href="/">
+        <span class="blue_light">
+            seak0503 Blog
+        </span>
+       
+    </a></li>
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">マージで競合が発生した時に、マージをやり直す方法</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-28T10:48:32+09:00" pubdate data-updated="true">2014-04-28</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><!-- more -->
+
+
+
+
+<h2>目次</h2>
+
+
+<p><ul>
+ <li><ul>
+  <li><a href="#L............">はじめに</a></li>
+  <li><a href="#L..................................................................">マージで競合が発生した時に、マージをやり直す</a></li>
+ </ul></li>
+</ul>
+
+</p>
+
+<a name="L............"></a>
+<h2>はじめに</h2>
+
+<p>マージを実行して競合が発生した時、競合を解決しているうちに、途中で
+何をやっていたかわからなくなり、マージを最初からやり直したくなることが
+あります。</p>
+
+<p>ここではその方法を簡単に解説します。</p>
+
+<a name="L.................................................................."></a>
+<h2>マージで競合が発生した時に、マージをやり直す</h2>
+
+<p>masterブランチでファイルを作成</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git branch -l
+</span><span class='line'>* master
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>vi master_file1
+</span><span class='line'>* new: commit by master branch --&gt; 1行目を編集する
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git add master_file1
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git commit -m <span class="s2">&quot;add master_file1&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>topicブランチで<code>master_file1</code>を編集</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git checkout -b topic
+</span><span class='line'><span class="nv">$ </span>vi master_file1
+</span><span class='line'>* edit: commit by topci branch --&gt; 1行目を編集する
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git commit -am <span class="s2">&quot;edit master_file1 by topic branch&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>masterブランチで<code>master_file1</code>を編集</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git checkout master
+</span><span class='line'><span class="nv">$ </span>vi master_file1
+</span><span class='line'>* edit: commit by master branch --&gt; 1行目を編集する
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git commit -am <span class="s2">&quot;edit master_file1 by master branch&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>masterブランチでtopicブランチをマージ</p>
+
+<blockquote><p>ここでコンフリクトが発生する</p></blockquote>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git branch -l
+</span><span class='line'>* master
+</span><span class='line'>  topic
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git diff topic
+</span><span class='line'>diff --git a/master_file1 b/master_file1
+</span><span class='line'>index fc507c7..c65fc62 100644
+</span><span class='line'>--- a/master_file1
+</span><span class='line'>+++ b/master_file1
+</span><span class='line'>@@ -1 +1 @@
+</span><span class='line'>-* edit: commit by topci branch
+</span><span class='line'>+* edit: commit by master branch
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git merge topic
+</span><span class='line'>Auto-merging master_file1
+</span><span class='line'>CONFLICT <span class="o">(</span>content<span class="o">)</span>: Merge conflict in master_file1
+</span><span class='line'>Automatic merge failed; fix conflicts and <span class="k">then </span>commit the result.
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git status -s
+</span><span class='line'>UU master_file1
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>cat master_file1
+</span><span class='line'><span class="o">&lt;&lt;&lt;&lt;&lt;&lt;</span>&lt; HEAD
+</span><span class='line'>* edit: commit by master <span class="nv">branch</span>
+</span><span class='line'><span class="o">=======</span>
+</span><span class='line'>* edit: commit by topci branch
+</span><span class='line'>&gt;&gt;&gt;&gt;&gt;&gt;&gt; topic
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>マージをやり直す</p>
+
+<blockquote><p>先ほどマージした時にコンフリクトしたファイルが、マージ前の
+状態に戻っている。</p></blockquote>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git reset --hard HEAD
+</span><span class='line'>HEAD is now at bb4408f edit master_file1 by master branch
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>cat master_file1
+</span><span class='line'>* edit: commit by master branch
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">seak0503</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-28T10:48:32+09:00" pubdate data-updated="true">2014-04-28</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/git/'>Git</a>, <a class='category' href='/blog/categories/github/'>GitHub</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.seak.jp.net/blog/2014/04/28/git-reset-merge/" data-via="" data-counturl="http://blog.seak.jp.net/blog/2014/04/28/git-reset-merge/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/04/27/git-add-remote-initial-push/" title="Previous Post: リモートリポジトリの登録とデフォルトリモートブランチの設定">&laquo; リモートリポジトリの登録とデフォルトリモートブランチの設定</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/04/28/git-resolution-advanced-conflict/" title="Next Post: 高度な競合の解決(ファイル単位で解決を行う)">高度な競合の解決(ファイル単位で解決を行う) &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/11/26/dev-octopress/">Octopressの環境移設</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/07/sublimetextmacterminal/">Sublime Textから素早くiTermを開く</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/04/sublimetextthemecursor/">Sublime Text 3のカーソルを変更する手順</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/04/sublimetextthemeitg/">Themeのカラースキームを編集する</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/17/sublimetextvim/">sublimeText3でVimライクな操作を可能にさせる</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+  <h1>Categories</h1>
+    <ul id="category-list"><li><a href='/blog/categories/apache/'>Apache (1)</a></li><li><a href='/blog/categories/benchmark/'>Benchmark (1)</a></li><li><a href='/blog/categories/chef/'>Chef (2)</a></li><li><a href='/blog/categories/git/'>Git (9)</a></li><li><a href='/blog/categories/github/'>GitHub (8)</a></li><li><a href='/blog/categories/html/'>HTML (1)</a></li><li><a href='/blog/categories/java/'>Java (4)</a></li><li><a href='/blog/categories/linux/'>Linux (7)</a></li><li><a href='/blog/categories/markdown/'>Markdown (2)</a></li><li><a href='/blog/categories/octopress/'>Octopress (3)</a></li><li><a href='/blog/categories/oracle/'>Oracle (1)</a></li><li><a href='/blog/categories/python/'>Python (1)</a></li><li><a href='/blog/categories/ruby/'>Ruby (2)</a></li><li><a href='/blog/categories/security/'>Security (2)</a></li><li><a href='/blog/categories/sublime-text/'>Sublime Text (4)</a></li></ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/seak0503">@seak0503</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'seak0503',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - seak0503 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'seak0503';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.seak.jp.net/blog/2014/04/28/git-reset-merge/';
+        var disqus_url = 'http://blog.seak.jp.net/blog/2014/04/28/git-reset-merge/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

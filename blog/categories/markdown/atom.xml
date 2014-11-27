@@ -1,0 +1,900 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Markdown | seak0503 Blog]]></title>
+  <link href="http://blog.seak.jp.net/blog/categories/markdown/atom.xml" rel="self"/>
+  <link href="http://blog.seak.jp.net/"/>
+  <updated>2014-11-28T08:26:19+09:00</updated>
+  <id>http://blog.seak.jp.net/</id>
+  <author>
+    <name><![CDATA[seak0503]]></name>
+    <email><![CDATA[seak0503.gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Octopressで使えるMarkdownクイックリファレンス]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/04/24/octopress-markdown-quick-reference/"/>
+    <updated>2014-04-24T06:45:10+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/04/24/octopress-markdown-quick-reference</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+
+
+<h2>目次</h2>
+
+
+<p><ul>
+ <li><ul>
+  <li><a href="#L............">はじめに</a></li>
+  <li><a href="#L.................................">シンタックスハイライト</a></li>
+  <li><a href="#L..............................">コードインライン表示</a></li>
+  <li><a href="#L...................................................................................">コードインライン表示(コード中にバッククオートを含む場合)</a></li>
+  <li><a href="#L................">タイトル 大</a></li>
+ </ul></li>
+ <li><a href="#L...">```</a></li>
+ <li><a href="#L................">タイトル 大</a></li>
+ <li><a href="#L...............">タイトル大</a></li>
+ <li><ul>
+  <li><a href="#L................">タイトル 中</a></li>
+ </ul></li>
+ <li><a href="#L................">タイトル 中</a></li>
+ <li><ul>
+  <li><a href="#L...............">タイトル中</a></li>
+  <li><a href="#L................">タイトル 小</a></li>
+  <li><a href="#L................">タイトル 小</a></li>
+  <li><ul>
+   <li><a href="#L...............">タイトル小</a></li>
+  </ul></li>
+  <li><a href="#L............">ボールド</a></li>
+  <li><a href="#L...............">イタリック</a></li>
+  <li><a href="#L............">打消し線</a></li>
+  <li><a href="#L.....................">番号なしリスト</a></li>
+  <li><a href="#L..............................................................">番号なしリスト(リスト内に文字列がある場合)</a></li>
+  <li><a href="#L..................................................">番号なしリスト(ネストされたリスト)</a></li>
+  <li><a href="#L.....................">番号付きリスト</a></li>
+  <li><a href="#L..............................................................">番号付きリスト(リスト内に文字列がある場合)</a></li>
+  <li><a href="#L..................................................">番号なしリスト(ネストされたリスト)</a></li>
+  <li><a href="#Blockquotes.-.......">Blockquotes - 引用</a></li>
+  <li><a href="#Horizontal.rules.-..........">Horizontal rules - 水平線</a></li>
+  <li><a href="#L.........">リンク</a></li>
+  <li><a href="#L.....................">画像へのリンク</a></li>
+  <li><a href="#L........................">画像を貼りつける</a></li>
+  <li><a href="#L..................">テーブル記法</a></li>
+  <li><a href="#Markdown............">Markdownの無効化</a></li>
+ </ul></li>
+</ul>
+
+</p>
+
+<a name="L............"></a>
+<h2>はじめに</h2>
+
+<p>Octopressでのブログをはじめたので、使用頻度の高いOctopressで使えるMarkdownの構文、
+使用例、HTML出力結果を用途別に掲載しています。</p>
+
+<a name="L................................."></a>
+<h2>シンタックスハイライト</h2>
+
+<p>構文:</p>
+
+<p>   言語名は全て小文字で記述するよう注意して下さい。</p>
+
+<p><code>
+ (ブランク行) &lt;-なくても問題ないが、Markdownのソースが見やすくなる
+</code>言語名
+ ここにソースを記述する
+ <code>
+ (ブランク行) &lt;-なくても問題ないが、Markdownのソースが見やすくなる
+</code></p>
+
+<p>使用例:</p>
+
+<p><code>
+ (ブランク行)
+</code>python
+ def test():</p>
+
+<pre><code> p = "test"
+ return p
+</code></pre>
+
+<p> <code>
+ (ブランク行)
+</code></p>
+
+<p>HTML出力結果:</p>
+
+<p>```python
+def test():</p>
+
+<pre><code>p = "test"
+return p
+</code></pre>
+
+<p>```</p>
+
+<a name="L.............................."></a>
+<h2>コードインライン表示</h2>
+
+<p>構文:</p>
+
+<p><code>
+`ここにコードを書く`
+</code></p>
+
+<p>使用例:</p>
+
+<p><code>
+ここで`python test.py`を実行して下さい。
+</code></p>
+
+<p>HTML出力結果:</p>
+
+<p>ここで<code>python test.py</code>を実行して下さい。</p>
+
+<a name="L..................................................................................."></a>
+<h2>コードインライン表示(コード中にバッククオートを含む場合)</h2>
+
+<p>構文:</p>
+
+<p><code>
+ `` `ここにコードを書く` ``
+</code></p>
+
+<p>使用例:</p>
+
+<p><code>
+ここで`` `python test.py` ``を実行して下さい。
+</code></p>
+
+<p>HTML出力結果:</p>
+
+<p>ここで<code>`python test.py`</code>を実行して下さい。</p>
+
+<a name="L................"></a>
+<h2>タイトル 大</h2>
+
+<p>構文:</p>
+
+<a name="L..."></a>
+<h1>```</h1>
+
+<a name="L................"></a>
+<h1>タイトル 大</h1>
+
+<p>```</p>
+
+<p>または</p>
+
+<p>```</p>
+
+<a name="L..............."></a>
+<h1>タイトル大</h1>
+
+<p>```</p>
+
+<a name="L................"></a>
+<h2>タイトル 中</h2>
+
+<p>構文:</p>
+
+<p>```</p>
+
+<a name="L................"></a>
+<h1>タイトル 中</h1>
+
+<p>```</p>
+
+<p>または</p>
+
+<p>```</p>
+
+<a name="L..............."></a>
+<h2>タイトル中</h2>
+
+<p>```</p>
+
+<a name="L................"></a>
+<h2>タイトル 小</h2>
+
+<p>構文:</p>
+
+<p>```</p>
+
+<a name="L................"></a>
+<h2>タイトル 小</h2>
+
+<p>```</p>
+
+<p>または</p>
+
+<p>```</p>
+
+<a name="L..............."></a>
+<h3>タイトル小</h3>
+
+<p>```</p>
+
+<a name="L............"></a>
+<h2>ボールド</h2>
+
+<p>構文:</p>
+
+<p><code>
+**ここに文字列を書く**
+</code></p>
+
+<p>使用例:</p>
+
+<p><code>
+これは**ボールド**の説明です。
+</code></p>
+
+<p>HTML出力結果:</p>
+
+<p>これは<strong>ボールド</strong>の説明です。</p>
+
+<a name="L..............."></a>
+<h2>イタリック</h2>
+
+<p>構文:</p>
+
+<p><code>
+*ここに文字列を書く*
+</code></p>
+
+<p>使用例:</p>
+
+<p><code>
+これは*イタリック*の説明です。
+</code></p>
+
+<p>HTML出力結果:</p>
+
+<p>これは<em>イタリック</em>の説明です。</p>
+
+<a name="L............"></a>
+<h2>打消し線</h2>
+
+<p>構文:</p>
+
+<p><code>
+~~打ち消し対象文字列~~
+</code></p>
+
+<p>使用例:</p>
+
+<p><code>
+打消し対象は~~ここの部分~~です。
+</code></p>
+
+<p>HTML出力結果:</p>
+
+<p>打消し対象は<del>ここの部分</del>です。</p>
+
+<a name="L....................."></a>
+<h2>番号なしリスト</h2>
+
+<p>構文:</p>
+
+<p><code>
+* 任意の文字列
+</code></p>
+
+<p>使用例:</p>
+
+<p><code>
+* 文字列1
+* 文字列2
+</code></p>
+
+<p>HTML出力結果:</p>
+
+<ul>
+<li>文字列1</li>
+<li>文字列2</li>
+</ul>
+
+
+<a name="L.............................................................."></a>
+<h2>番号なしリスト(リスト内に文字列がある場合)</h2>
+
+<p>構文:</p>
+
+<p><code>
+* 任意の文字列
+(ブランク行)
+[半角スペース][半角スペース]任意の文字列
+</code></p>
+
+<p>使用例:</p>
+
+<p>```
+* リスト1</p>
+
+<p>  これはリスト1の説明文です。</p>
+
+<ul>
+<li><p>リスト2</p>
+
+<p>これはリスト2の説明文です。
+```</p></li>
+</ul>
+
+
+<p>HTML出力結果:</p>
+
+<ul>
+<li><p>リスト1</p>
+
+<p>これはリスト1の説明文です。</p></li>
+<li><p>リスト2</p>
+
+<p>これはリスト2の説明文です。</p></li>
+</ul>
+
+
+<a name="L.................................................."></a>
+<h2>番号なしリスト(ネストされたリスト)</h2>
+
+<p>構文:</p>
+
+<p><code>
+* 任意の文字列
+(ブランク行)
+[半角スペース][半角スペース]* 任意の文字列
+</code></p>
+
+<p>使用例:</p>
+
+<p>```
+* リスト1</p>
+
+<ul>
+<li><p>ネストリスト1</p></li>
+<li><p>リスト2</p>
+
+<ul>
+<li>ネストリスト2
+```</li>
+</ul>
+</li>
+</ul>
+
+
+<p>HTML出力結果:</p>
+
+<ul>
+<li><p>リスト1</p>
+
+<ul>
+<li>ネストリスト1</li>
+</ul>
+</li>
+<li><p>リスト2</p>
+
+<ul>
+<li>ネストリスト2</li>
+</ul>
+</li>
+</ul>
+
+
+<a name="L....................."></a>
+<h2>番号付きリスト</h2>
+
+<p>構文:</p>
+
+<p>頭の数字は"1. 2. 3."と、シーケンシャルに書くのではなく、全て"1. "にすると
+HTML出力時には自動的に順番がふられる。</p>
+
+<p><code>
+1. 任意の文字列
+</code></p>
+
+<p>使用例:</p>
+
+<p><code>
+1. 文字列1
+1. 文字列2
+</code></p>
+
+<p>HTML出力結果:</p>
+
+<ol>
+<li>文字列1</li>
+<li>文字列2</li>
+</ol>
+
+
+<a name="L.............................................................."></a>
+<h2>番号付きリスト(リスト内に文字列がある場合)</h2>
+
+<p>構文:</p>
+
+<p><code>
+1. 任意の文字列
+(ブランク行)
+[半角スペース][半角スペース][半角スペース]任意の文字列
+</code></p>
+
+<p>使用例:</p>
+
+<p>```
+1. リスト1</p>
+
+<p>   これはリスト1の説明文です。</p>
+
+<ol>
+<li><p>リスト2</p>
+
+<p>これはリスト2の説明文です。
+```</p></li>
+</ol>
+
+
+<p>HTML出力結果:</p>
+
+<ol>
+<li><p>リスト1</p>
+
+<p>これはリスト1の説明文です。</p></li>
+<li><p>リスト2</p>
+
+<p>これはリスト2の説明文です。</p></li>
+</ol>
+
+
+<a name="L.................................................."></a>
+<h2>番号なしリスト(ネストされたリスト)</h2>
+
+<p>構文:</p>
+
+<p><code>
+1. 任意の文字列
+(ブランク行)
+[半角スペース][半角スペース][半角スペース]1. 任意の文字列
+</code></p>
+
+<p>使用例:</p>
+
+<p>```
+1. リスト1</p>
+
+<ol>
+<li><p> ネストリスト1-1</p></li>
+<li><p> ネストリスト1-2</p></li>
+<li><p>リスト2</p></li>
+<li><p> ネストリスト2-1</p></li>
+<li><p> ネストリスト2-2
+```</p></li>
+</ol>
+
+
+<p>HTML出力結果:</p>
+
+<ol>
+<li><p>リスト1</p>
+
+<ol>
+<li><p>ネストリスト1-1</p></li>
+<li><p>ネストリスト1-2</p></li>
+</ol>
+</li>
+<li><p>リスト2</p>
+
+<ol>
+<li><p>ネストリスト2-1</p></li>
+<li><p>ネストリスト2-2</p></li>
+</ol>
+</li>
+</ol>
+
+
+<a name="Blockquotes.-......."></a>
+<h2>Blockquotes - 引用</h2>
+
+<p>構文:</p>
+
+<p>```</p>
+
+<blockquote><p>引用文
+```</p></blockquote>
+
+<p>使用例:</p>
+
+<p>```</p>
+
+<blockquote><p>文頭に>を置くことで引用になります。
+複数行にまたがる場合、改行のたびにこの記号を置く必要があります。
+```</p></blockquote>
+
+<p>HTML出力結果:</p>
+
+<blockquote><p>文頭に>を置くことで引用になります。
+複数行にまたがる場合、改行のたびにこの記号を置く必要があります。</p></blockquote>
+
+<a name="Horizontal.rules.-.........."></a>
+<h2>Horizontal rules - 水平線</h2>
+
+<p>構文:</p>
+
+<p>```</p>
+
+<hr />
+
+<p>```</p>
+
+<p>使用例:</p>
+
+<p>```
+水平線より上です</p>
+
+<hr />
+
+<p>水平線より下です
+```</p>
+
+<p>HTML出力結果:</p>
+
+<p>水平線より上です</p>
+
+<hr />
+
+<p>水平線より下です</p>
+
+<a name="L........."></a>
+<h2>リンク</h2>
+
+<p>構文:</p>
+
+<p><code>
+[リンクタイトル](URL)
+</code></p>
+
+<p>使用例:</p>
+
+<p><code>
+[GitHub Preview](http://github-preview.herokuapp.com/)
+</code></p>
+
+<p>HTML出力結果:</p>
+
+<p><a href="http://github-preview.herokuapp.com/">GitHub Preview</a></p>
+
+<a name="L....................."></a>
+<h2>画像へのリンク</h2>
+
+<p>構文:</p>
+
+<p><code>
+![代替テキスト](画像のURL)
+</code></p>
+
+<p>使用例:</p>
+
+<p><code>
+![octcat](http://siliconangle.com/files/2012/03/github_logo-300x300.jpg)
+</code></p>
+
+<p>HTML出力結果:</p>
+
+<p><img src="http://siliconangle.com/files/2012/03/github_logo-300x300.jpg" alt="octcat" /></p>
+
+<a name="L........................"></a>
+<h2>画像を貼りつける</h2>
+
+<p>画像を<code>ローカルリポジトリdir/sources/images</code>配下に配置して、下記のようにすると
+ブログに画像を貼りつけることができる</p>
+
+<p>構文:</p>
+
+<p><code>
+<img class="[class names]" src="/path/to/image" title="[width] [height] [title text] [alt text]" >
+</code></p>
+
+<p>使用例:</p>
+
+<p><code>
+<img src="/images/20140416/mickey.jpeg" title="mickey" alt="this is a mickey image">
+</code></p>
+
+<p>HTML出力結果:</p>
+
+<p><img src="/images/20140416/mickey.jpeg" title="mickey" alt="this is a mickey image"></p>
+
+<a name="L.................."></a>
+<h2>テーブル記法</h2>
+
+<p>使用例:</p>
+
+<p><code>
+th1(left)|th2(center)|th3(right)|
+:--------|:---------:|---------:|
+td1      |td2        |td3
+td4      |td5        |td6
+</code></p>
+
+<p>HTML出力結果:</p>
+
+<table>
+<thead>
+<tr>
+<th align="left">th1(left)</th>
+<th align="center">th2(center)</th>
+<th align="right">th3(right)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">td1      </td>
+<td align="center">td2        </td>
+<td align="right">td3</td>
+</tr>
+<tr>
+<td align="left">td4      </td>
+<td align="center">td5        </td>
+<td align="right">td6</td>
+</tr>
+</tbody>
+</table>
+
+
+<a name="Markdown............"></a>
+<h2>Markdownの無効化</h2>
+
+<p>構文:</p>
+
+<p><code>
+(バックスラッシュ)Markdown
+</code></p>
+
+<p>使用例:</p>
+
+<p><code>
+\* リストを無効化します
+</code></p>
+
+<p>HTML出力結果</p>
+
+<p>* リストを無効化します</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[markdownでシンタックスハイライト可能な言語一覧(Octoress)]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/04/15/markdown-syntax-languages/"/>
+    <updated>2014-04-15T02:59:10+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/04/15/markdown-syntax-languages</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+
+
+<h2>目次</h2>
+
+
+<p><ul>
+ <li><ul>
+  <li><a href="#L............">はじめに</a></li>
+  <li><a href="#Bash">Bash</a></li>
+  <li><a href="#C">C</a></li>
+  <li><a href="#C..">C++</a></li>
+  <li><a href="#CSS">CSS</a></li>
+  <li><a href="#HTML">HTML</a></li>
+  <li><a href="#Java">Java</a></li>
+  <li><a href="#JavaScript">JavaScript</a></li>
+  <li><a href="#MySQL">MySQL</a></li>
+  <li><a href="#Perl">Perl</a></li>
+  <li><a href="#PHP">PHP</a></li>
+  <li><a href="#Python">Python</a></li>
+  <li><a href="#Python.3">Python 3</a></li>
+  <li><a href="#Ruby">Ruby</a></li>
+  <li><a href="#SQL">SQL</a></li>
+  <li><a href="#Text">Text</a></li>
+  <li><a href="#XML">XML</a></li>
+ </ul></li>
+</ul>
+
+</p>
+
+<a name="L............"></a>
+<h2>はじめに</h2>
+
+<p>勝手ながら、個人的によく利用する言語のみ抜粋して掲載しています。</p>
+
+<a name="Bash"></a>
+<h2>Bash</h2>
+
+<p><code>
+ (ブランク行)
+</code>bash
+ ソース記述
+ <code>
+ (ブランク行)
+</code></p>
+
+<a name="C"></a>
+<h2>C</h2>
+
+<p><code>
+ (ブランク行)
+</code>c
+ ソース記述
+ <code>
+ (ブランク行)
+</code></p>
+
+<a name="C.."></a>
+<h2>C++</h2>
+
+<p><code>
+ (ブランク行)
+</code>c++
+ ソース記述
+ <code>
+ (ブランク行)
+</code></p>
+
+<a name="CSS"></a>
+<h2>CSS</h2>
+
+<p><code>
+ (ブランク行)
+</code>css
+ ソース記述
+ <code>
+ (ブランク行)
+</code></p>
+
+<ul>
+<li>Django</li>
+</ul>
+
+
+<p><code>
+ (ブランク行)
+</code>django
+ ソース記述
+ <code>
+ (ブランク行)
+</code></p>
+
+<a name="HTML"></a>
+<h2>HTML</h2>
+
+<p><code>
+ (ブランク行)
+</code>html
+ ソース記述
+ <code>
+ (ブランク行)
+</code></p>
+
+<a name="Java"></a>
+<h2>Java</h2>
+
+<p><code>
+ (ブランク行)
+</code>java
+ ソース記述
+ <code>
+ (ブランク行)
+</code></p>
+
+<a name="JavaScript"></a>
+<h2>JavaScript</h2>
+
+<p><code>
+ (ブランク行)
+</code>javascript
+ ソース記述
+ <code>
+ (ブランク行)
+</code></p>
+
+<a name="MySQL"></a>
+<h2>MySQL</h2>
+
+<p><code>
+ (ブランク行)
+</code>mysql
+ ソース記述
+ <code>
+ (ブランク行)
+</code></p>
+
+<a name="Perl"></a>
+<h2>Perl</h2>
+
+<p><code>
+ (ブランク行)
+</code>perl
+ ソース記述
+ <code>
+ (ブランク行)
+</code></p>
+
+<a name="PHP"></a>
+<h2>PHP</h2>
+
+<p><code>
+ (ブランク行)
+</code>php
+ ソース記述
+ <code>
+ (ブランク行)
+</code></p>
+
+<a name="Python"></a>
+<h2>Python</h2>
+
+<p><code>
+ (ブランク行)
+</code>python
+ ソース記述
+ <code>
+ (ブランク行)
+</code></p>
+
+<a name="Python.3"></a>
+<h2>Python 3</h2>
+
+<p><code>
+ (ブランク行)
+</code>python3
+ ソース記述
+ <code>
+ (ブランク行)
+</code></p>
+
+<a name="Ruby"></a>
+<h2>Ruby</h2>
+
+<p><code>
+ (ブランク行)
+</code>ruby
+ ソース記述
+ <code>
+ (ブランク行)
+</code></p>
+
+<a name="SQL"></a>
+<h2>SQL</h2>
+
+<p><code>
+ (ブランク行)
+</code>sql
+ ソース記述
+ <code>
+ (ブランク行)
+</code></p>
+
+<a name="Text"></a>
+<h2>Text</h2>
+
+<p><code>
+ (ブランク行)
+</code>text
+ ソース記述
+ <code>
+ (ブランク行)
+</code></p>
+
+<a name="XML"></a>
+<h2>XML</h2>
+
+<p><code>
+ (ブランク行)
+</code>xml
+ ソース記述
+ <code>
+ (ブランク行)
+</code></p>
+]]></content>
+  </entry>
+  
+</feed>

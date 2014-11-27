@@ -1,0 +1,722 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>git revertでマージコミットの取り消しを行う - seak0503 Blog</title>
+  <meta name="author" content="seak0503">
+
+  
+  <meta name="description" content="目次 はじめに マージコミットの取り消し 補足 はじめに git revertでマージコミットの取り消しを実施した場合に、履歴が
+どうなるかを確認しました。 ここでは分岐元ブランチをmaster、分岐先ブランチをtopicとします。 マージコミットの取り消し masterブランチでファイルを作成 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.seak.jp.net/blog/2014/04/25/git-revert-merge/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="seak0503 Blog" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <nav role="navigation"><ul class="subscription" data-subscription="rss email">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+    <li><a href="seak0503.gmail.com" rel="subscribe-email" title="subscribe via email">Email</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.seak.jp.net" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+    <li><a href="/">
+        <span class="blue_light">
+            seak0503 Blog
+        </span>
+       
+    </a></li>
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Git Revertでマージコミットの取り消しを行う</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-25T17:14:56+09:00" pubdate data-updated="true">2014-04-25</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><!-- more -->
+
+
+
+
+<h2>目次</h2>
+
+
+<p><ul>
+ <li><ul>
+  <li><a href="#L............">はじめに</a></li>
+  <li><a href="#L....................................">マージコミットの取り消し</a></li>
+  <li><a href="#L......">補足</a></li>
+ </ul></li>
+</ul>
+
+</p>
+
+<a name="L............"></a>
+<h2>はじめに</h2>
+
+<p><code>git revert</code>でマージコミットの取り消しを実施した場合に、履歴が
+どうなるかを確認しました。</p>
+
+<p>ここでは分岐元ブランチを<strong>master</strong>、分岐先ブランチを<strong>topic</strong>とします。</p>
+
+<a name="L...................................."></a>
+<h2>マージコミットの取り消し</h2>
+
+<p>masterブランチでファイルを作成</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>touch master_file1
+</span><span class='line'><span class="nv">$ </span>git add master_file1
+</span><span class='line'><span class="nv">$ </span>git commit -m <span class="s2">&quot;add master_file1&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>topicブランチにcheckout</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git checkout -b topic
+</span><span class='line'><span class="nv">$ </span>git branch -l
+</span><span class='line'>  master
+</span><span class='line'>* topic
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>topicブランチでいくつかcommitする</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>touch topic_file1
+</span><span class='line'><span class="nv">$ </span>git add topic_file1
+</span><span class='line'><span class="nv">$ </span>git commit -m <span class="s2">&quot;add topci_file1&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>touch topic_file2
+</span><span class='line'><span class="nv">$ </span>git add topic_file2
+</span><span class='line'><span class="nv">$ </span>git commit -m <span class="s2">&quot;add topci_file2&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>touch topic_file3
+</span><span class='line'><span class="nv">$ </span>git add topic_file3
+</span><span class='line'><span class="nv">$ </span>git commit -m <span class="s2">&quot;add topci_file3&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>masterブランチにcheckoutし、一回コミットする</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git checkout master
+</span><span class='line'><span class="nv">$ </span>git branch -l
+</span><span class='line'>* master
+</span><span class='line'>  topic
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>touch master_file2
+</span><span class='line'><span class="nv">$ </span>git add master_file2
+</span><span class='line'><span class="nv">$ </span>git commit -m <span class="s2">&quot;add master_file2&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>topicブランチをマージする</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git merge topic
+</span><span class='line'>Merge made by recursive.
+</span><span class='line'> 0 files changed, 0 insertions<span class="o">(</span>+<span class="o">)</span>, 0 deletions<span class="o">(</span>-<span class="o">)</span>
+</span><span class='line'> create mode 100644 topic_file1
+</span><span class='line'> create mode 100644 topic_file2
+</span><span class='line'> create mode 100644 topic_file3
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ログを確認する</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git log --graph
+</span><span class='line'>*   commit ecc627c4ec21d56880c43d70ed9c651fc27bb2ac
+</span><span class='line'>|<span class="se">\ </span> Merge: 7611117 8998d77
+</span><span class='line'>| | Author: spam ham
+</span><span class='line'>| | Date:   Fri Apr 25 19:09:41 2014 +0900
+</span><span class='line'>| |
+</span><span class='line'>| |     Merge branch <span class="s1">&#39;topic&#39;</span>
+</span><span class='line'>| |
+</span><span class='line'>| * commit 8998d77d981f1410201b44e83c3640922bd8941f
+</span><span class='line'>| | Author: spam ham
+</span><span class='line'>| | Date:   Fri Apr 25 18:42:45 2014 +0900
+</span><span class='line'>| |
+</span><span class='line'>| |     add topic_file3
+</span><span class='line'>| |
+</span><span class='line'>| * commit cc62d621e45b462469c2b42c932e437ff1bf2fd1
+</span><span class='line'>| | Author: spam ham
+</span><span class='line'>| | Date:   Fri Apr 25 18:42:23 2014 +0900
+</span><span class='line'>| |
+</span><span class='line'>| |     add topic_file2
+</span><span class='line'>| |
+</span><span class='line'>| * commit b91fa995c57a94a7a12d70fed70be73aa089dd2c
+</span><span class='line'>| | Author: spam ham
+</span><span class='line'>| | Date:   Fri Apr 25 18:41:56 2014 +0900
+</span><span class='line'>| |
+</span><span class='line'>| |     add topic_file1
+</span><span class='line'>| |
+</span><span class='line'>* | commit 761111709af04a7e736d6ca6a1ac23ccaac94781
+</span><span class='line'>|/  Author: spam ham
+</span><span class='line'>|   Date:   Fri Apr 25 19:08:25 2014 +0900
+</span><span class='line'>|
+</span><span class='line'>|       add master_file2
+</span><span class='line'>|
+</span><span class='line'>* commit 02c3bd6497e4d9e43117e9802b86af204f063657
+</span><span class='line'>  Author: spam ham
+</span><span class='line'>  Date:   Fri Apr 25 18:37:02 2014 +0900
+</span><span class='line'>
+</span><span class='line'>      add master_file1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>マージコミットを取り消す</p>
+
+<blockquote><p>マージコミットをrevertする場合は、2つのブランチのうちどちらを
+残すのか指定します。
+ここでは<strong>ecc627c</strong>が取り消したいマージコミットで、<strong>7611117</strong>を
+含むブランチが残したいブランチだとします。
+<strong>ecc627c</strong>のログを見ると<code>Merge: 7611117 8998d77</code>とあるので
+親コミット<strong>7611117</strong>が親番号1、親コミット<strong>8998d77</strong>が親番号2となります。
+<code>git revert -m</code>で残したい親番号を指定することで、マージコミットの
+取り消しが可能となります。</p></blockquote>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git revert -m 1 ecc627c --no-edit
+</span><span class='line'>Finished one revert.
+</span><span class='line'><span class="o">[</span>master c77f6c6<span class="o">]</span> Revert <span class="s2">&quot;Merge branch &#39;topic&#39;&quot;</span>
+</span><span class='line'> 0 files changed, 0 insertions<span class="o">(</span>+<span class="o">)</span>, 0 deletions<span class="o">(</span>-<span class="o">)</span>
+</span><span class='line'> delete mode 100644 topic_file1
+</span><span class='line'> delete mode 100644 topic_file2
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ログを確認する</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git log --graph
+</span><span class='line'>* commit c77f6c6303699fa0b06b25d1becb7d44d0c5716b
+</span><span class='line'>| Author: spam ham
+</span><span class='line'>| Date:   Fri Apr 25 19:18:32 2014 +0900
+</span><span class='line'>|
+</span><span class='line'>|     Revert <span class="s2">&quot;Merge branch &#39;topic&#39;&quot;</span>
+</span><span class='line'>|
+</span><span class='line'>|     This reverts commit ecc627c4ec21d56880c43d70ed9c651fc27bb2ac, reversin
+</span><span class='line'>|     changes made to 761111709af04a7e736d6ca6a1ac23ccaac94781.
+</span><span class='line'>|
+</span><span class='line'>*   commit ecc627c4ec21d56880c43d70ed9c651fc27bb2ac
+</span><span class='line'>|<span class="se">\ </span> Merge: 7611117 8998d77
+</span><span class='line'>| | Author: spam ham
+</span><span class='line'>| | Date:   Fri Apr 25 19:09:41 2014 +0900
+</span><span class='line'>| |
+</span><span class='line'>| |     Merge branch <span class="s1">&#39;topic&#39;</span>
+</span><span class='line'>| |
+</span><span class='line'>| * commit 8998d77d981f1410201b44e83c3640922bd8941f
+</span><span class='line'>| | Author: spam ham
+</span><span class='line'>| | Date:   Fri Apr 25 18:42:45 2014 +0900
+</span><span class='line'>| |
+</span><span class='line'>| |     add topic_file3
+</span><span class='line'>| |
+</span><span class='line'>| * commit cc62d621e45b462469c2b42c932e437ff1bf2fd1
+</span><span class='line'>| | Author: spam ham
+</span><span class='line'>| | Date:   Fri Apr 25 18:42:23 2014 +0900
+</span><span class='line'>| |
+</span><span class='line'>| |     add topic_file2
+</span><span class='line'>| |
+</span><span class='line'>| * commit b91fa995c57a94a7a12d70fed70be73aa089dd2c
+</span><span class='line'>| | Author: spam ham
+</span><span class='line'>| | Date:   Fri Apr 25 18:41:56 2014 +0900
+</span><span class='line'>| |
+</span><span class='line'>| |     add topic_file1
+</span><span class='line'>| |
+</span><span class='line'>* | commit 761111709af04a7e736d6ca6a1ac23ccaac94781
+</span><span class='line'>|/  Author: spam ham
+</span><span class='line'>|   Date:   Fri Apr 25 19:08:25 2014 +0900
+</span><span class='line'>|
+</span><span class='line'>|       add master_file2
+</span><span class='line'>|
+</span><span class='line'>* commit 02c3bd6497e4d9e43117e9802b86af204f063657
+</span><span class='line'>  Author: spam ham
+</span><span class='line'>  Date:   Fri Apr 25 18:37:02 2014 +0900
+</span><span class='line'>
+</span><span class='line'>      add master_file1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>作業ツリーにあるファイルを確認する</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>ls
+</span><span class='line'>master_file1  master_file2
+</span></code></pre></td></tr></table></div></figure>
+
+
+<a name="L......"></a>
+<h2>補足</h2>
+
+<blockquote><p>上記例では親番号1を残す対象にしましたが、親番号2を残す対象にしたら
+どうなるのかも確認しました。</p>
+
+<p>下記の実行結果を見るとわかりますが、<code>git revert</code>後は<strong>7611117</strong>で作成した
+ファイル<code>master_file2</code>が作業ツリーから消えています。</p></blockquote>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git revert -m 2 ecc627c4 --no-edit
+</span><span class='line'>Finished one revert.
+</span><span class='line'><span class="o">[</span>detached HEAD c577704<span class="o">]</span> Revert <span class="s2">&quot;Merge branch &#39;topic&#39;&quot;</span>
+</span><span class='line'> 0 files changed, 0 insertions<span class="o">(</span>+<span class="o">)</span>, 0 deletions<span class="o">(</span>-<span class="o">)</span>
+</span><span class='line'> delete mode 100644 master_file2
+</span><span class='line'>
+</span><span class='line'>* commit c5777047cb99a72060cf94b59b2ae64fd507b981
+</span><span class='line'>| Author: spam ham
+</span><span class='line'>| Date:   Fri Apr 25 19:41:30 2014 +0900
+</span><span class='line'>|
+</span><span class='line'>|     Revert <span class="s2">&quot;Merge branch &#39;topic&#39;&quot;</span>
+</span><span class='line'>|
+</span><span class='line'>|     This reverts commit ecc627c4ec21d56880c43d70ed9c651fc27bb2ac, rever
+</span><span class='line'>|     changes made to 8998d77d981f1410201b44e83c3640922bd8941f.
+</span><span class='line'>|
+</span><span class='line'>*   commit ecc627c4ec21d56880c43d70ed9c651fc27bb2ac
+</span><span class='line'>|<span class="se">\ </span> Merge: 7611117 8998d77
+</span><span class='line'>| | Author: spam ham
+</span><span class='line'>| | Date:   Fri Apr 25 19:09:41 2014 +0900
+</span><span class='line'>| |
+</span><span class='line'>| |     Merge branch <span class="s1">&#39;topic&#39;</span>
+</span><span class='line'>| |
+</span><span class='line'>| * commit 8998d77d981f1410201b44e83c3640922bd8941f
+</span><span class='line'>| | Author: spam ham
+</span><span class='line'>| | Date:   Fri Apr 25 18:42:45 2014 +0900
+</span><span class='line'>| |
+</span><span class='line'>| |     add topic_file3
+</span><span class='line'>| |
+</span><span class='line'>| * commit cc62d621e45b462469c2b42c932e437ff1bf2fd1
+</span><span class='line'>| | Author: spam ham
+</span><span class='line'>| | Date:   Fri Apr 25 18:42:23 2014 +0900
+</span><span class='line'>| |
+</span><span class='line'>| |     add topic_file2
+</span><span class='line'>| |
+</span><span class='line'>| * commit b91fa995c57a94a7a12d70fed70be73aa089dd2c
+</span><span class='line'>| | Author: spam ham
+</span><span class='line'>| | Date:   Fri Apr 25 18:41:56 2014 +0900
+</span><span class='line'>| |
+</span><span class='line'>| |     add topic_file1
+</span><span class='line'>| |
+</span><span class='line'>* | commit 761111709af04a7e736d6ca6a1ac23ccaac94781
+</span><span class='line'>|/  Author: spam ham
+</span><span class='line'>|   Date:   Fri Apr 25 19:08:25 2014 +0900
+</span><span class='line'>|
+</span><span class='line'>|       add master_file2
+</span><span class='line'>|
+</span><span class='line'>* commit 02c3bd6497e4d9e43117e9802b86af204f063657
+</span><span class='line'>  Author: spam ham
+</span><span class='line'>  Date:   Fri Apr 25 18:37:02 2014 +0900
+</span><span class='line'>      add master_file1
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>ls
+</span><span class='line'>master_file1  topic_file1  topic_file2  topic_file3
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">seak0503</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-25T17:14:56+09:00" pubdate data-updated="true">2014-04-25</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/git/'>Git</a>, <a class='category' href='/blog/categories/github/'>GitHub</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.seak.jp.net/blog/2014/04/25/git-revert-merge/" data-via="" data-counturl="http://blog.seak.jp.net/blog/2014/04/25/git-revert-merge/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/04/25/git-rebase/" title="Previous Post: git rebaseの検証">&laquo; git rebaseの検証</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/04/27/git-add-remote-initial-push/" title="Next Post: リモートリポジトリの登録とデフォルトリモートブランチの設定">リモートリポジトリの登録とデフォルトリモートブランチの設定 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/11/26/dev-octopress/">Octopressの環境移設</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/07/sublimetextmacterminal/">Sublime Textから素早くiTermを開く</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/04/sublimetextthemecursor/">Sublime Text 3のカーソルを変更する手順</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/04/sublimetextthemeitg/">Themeのカラースキームを編集する</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/17/sublimetextvim/">sublimeText3でVimライクな操作を可能にさせる</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+  <h1>Categories</h1>
+    <ul id="category-list"><li><a href='/blog/categories/apache/'>Apache (1)</a></li><li><a href='/blog/categories/benchmark/'>Benchmark (1)</a></li><li><a href='/blog/categories/chef/'>Chef (2)</a></li><li><a href='/blog/categories/git/'>Git (9)</a></li><li><a href='/blog/categories/github/'>GitHub (8)</a></li><li><a href='/blog/categories/html/'>HTML (1)</a></li><li><a href='/blog/categories/java/'>Java (4)</a></li><li><a href='/blog/categories/linux/'>Linux (7)</a></li><li><a href='/blog/categories/markdown/'>Markdown (2)</a></li><li><a href='/blog/categories/octopress/'>Octopress (3)</a></li><li><a href='/blog/categories/oracle/'>Oracle (1)</a></li><li><a href='/blog/categories/python/'>Python (1)</a></li><li><a href='/blog/categories/ruby/'>Ruby (2)</a></li><li><a href='/blog/categories/security/'>Security (2)</a></li><li><a href='/blog/categories/sublime-text/'>Sublime Text (4)</a></li></ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/seak0503">@seak0503</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'seak0503',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - seak0503 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'seak0503';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.seak.jp.net/blog/2014/04/25/git-revert-merge/';
+        var disqus_url = 'http://blog.seak.jp.net/blog/2014/04/25/git-revert-merge/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

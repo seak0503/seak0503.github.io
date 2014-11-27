@@ -5,11 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>seak0503 Blog</title>
+  <title>Sublime Textから素早くiTermを開く - seak0503 Blog</title>
   <meta name="author" content="seak0503">
 
   
-  <meta name="description" content="">
+  <meta name="description" content="目次 はじめに インストール手順 設定手順 利用手順 はじめに Sublime Textを使っていると、記述したスクリプトをターミナル上ですぐに実行したい
+場合が多々あると思います。 Sublime Textの拡張パッケージであるMacTerminalを使うと、Sublime &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.seak.jp.net/">
+  <link rel="canonical" href="http://blog.seak.jp.net/blog/2014/11/07/sublimetextmacterminal/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -63,54 +64,12 @@
 </nav>
   <div id="main">
     <div id="content">
-      <div class="blog-index">
+      <div>
+<article class="hentry" role="article">
   
-  
-  
-    <article>
-      
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2014/11/26/dev-octopress/">Octopressの環境移設</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-11-26T14:23:42+09:00" pubdate data-updated="true">2014-11-26</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"></div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/11/26/dev-octopress/">つづきを読む</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/11/07/sublimetextmacterminal/">Sublime Textから素早くiTermを開く</a></h1>
+      <h1 class="entry-title">Sublime Textから素早くiTermを開く</h1>
     
     
       <p class="meta">
@@ -133,337 +92,142 @@
   </header>
 
 
-  <div class="entry-content"></div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/11/07/sublimetextmacterminal/">つづきを読む</a>
-    </footer>
-  
+<div class="entry-content"><!-- more -->
 
 
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/11/04/sublimetextthemecursor/">Sublime Text 3のカーソルを変更する手順</a></h1>
-    
-    
-      <p class="meta">
-        
 
 
+<h2>目次</h2>
 
 
+<p><ul>
+ <li><ul>
+  <li><a href="#L............">はじめに</a></li>
+  <li><a href="#L........................">インストール手順</a></li>
+  <li><a href="#L............">設定手順</a></li>
+  <li><a href="#L............">利用手順</a></li>
+ </ul></li>
+</ul>
 
+</p>
 
+<a name="L............"></a>
+<h2>はじめに</h2>
 
+<p>Sublime Textを使っていると、記述したスクリプトをターミナル上ですぐに実行したい
+場合が多々あると思います。</p>
 
-  
+<p>Sublime Textの拡張パッケージである<code>MacTerminal</code>を使うと、Sublime Textで開いている
+ファイルのディレクトリをカレンとディレクトリとしてターミナルが立ち上がるので
+めちゃめちゃ便利です。</p>
 
+<p>ちなみに、これに似たパッケージに<code>Terminal</code>をいうものがありますが、<code>MacTerminal</code>は
+複数ターミナルを開くと、iTermのタブで開かれるのに対し、<code>Terminal</code>は新規にiTermを
+立ち上げてしまうので、<code>MacTerminal</code>の方が便利だと思います。</p>
 
-<time datetime="2014-11-04T14:42:57+09:00" pubdate data-updated="true">2014-11-04</time>
-        
-      </p>
-    
-  </header>
+<a name="L........................"></a>
+<h2>インストール手順</h2>
 
+<p>Package Controlで<code>MacTerminal</code>を検索して、インストール</p>
 
-  <div class="entry-content"></div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/11/04/sublimetextthemecursor/">つづきを読む</a>
-    </footer>
-  
+<a name="L............"></a>
+<h2>設定手順</h2>
 
+<p>デフォルト設定だと、Macデフォルトのターミナルが開いてしまうので
+設定設定変更する必要があります。</p>
 
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/11/04/sublimetextthemeitg/">Themeのカラースキームを編集する</a></h1>
-    
-    
-      <p class="meta">
-        
+<ol>
+<li><p>Sublime Textから<code>Preferences</code> -> <code>Package Settings</code> -> <code>MacTerminal</code> -> <code>Settings-User</code>を開く</p></li>
+<li><p>下記の設定を入れる</p></li>
+</ol>
 
 
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">{</span>
+</span><span class='line'>  <span class="s2">&quot;directory_mode&quot;</span> : <span class="s2">&quot;project&quot;</span>,
+</span><span class='line'>  <span class="s2">&quot;terminal&quot;</span>   :  <span class="s2">&quot;iterm&quot;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
+<ol>
+<li>Sublime Textを再起動する</li>
+</ol>
 
 
+<a name="L............"></a>
+<h2>利用手順</h2>
 
+<ol>
+<li><p>ファイルを新規作成するか、既存ファイルの編集を行う</p></li>
+<li><p>ショートカットキー`ctrl + command + t&#8217;を押すと、iTermが開く</p></li>
+</ol>
 
-  
-
-
-<time datetime="2014-11-04T14:25:57+09:00" pubdate data-updated="true">2014-11-04</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"></div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/11/04/sublimetextthemeitg/">つづきを読む</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/10/17/sublimetextvim/">sublimeText3でVimライクな操作を可能にさせる</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-10-17T15:33:59+09:00" pubdate data-updated="true">2014-10-17</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"></div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/10/17/sublimetextvim/">つづきを読む</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/09/25/chef-berks-install/">Berks Install時のエラー</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-09-25T06:01:57+09:00" pubdate data-updated="true">2014-09-25</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"></div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/09/25/chef-berks-install/">つづきを読む</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/09/24/ruby-bundler/">Bundleコマンドのパスを通す方法</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-09-24T06:40:21+09:00" pubdate data-updated="true">2014-09-24</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"></div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/09/24/ruby-bundler/">つづきを読む</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/09/15/chef-attribute/">ChefのAttributeの優先順位</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-09-15T22:05:47+09:00" pubdate data-updated="true">2014-09-15</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"></div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/09/15/chef-attribute/">つづきを読む</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/09/12/java-access/">Javaアクセス制御一覧</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-09-12T06:09:24+09:00" pubdate data-updated="true">2014-09-12</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"></div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/09/12/java-access/">つづきを読む</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/07/26/http-margin/">Marginの相殺について</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-07-26T08:56:05+09:00" pubdate data-updated="true">2014-07-26</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"></div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/07/26/http-margin/">つづきを読む</a>
-    </footer>
-  
-
-
-    </article>
-  
-  <div class="pagination">
-    
-      <a class="prev" href="/blog/page/2/">&larr; Older</a>
-    
-    <a href="/blog/archives">Blog Archives</a>
-    
-  </div>
 </div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">seak0503</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-11-07T14:33:28+09:00" pubdate data-updated="true">2014-11-07</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/sublime-text/'>Sublime Text</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.seak.jp.net/blog/2014/11/07/sublimetextmacterminal/" data-via="" data-counturl="http://blog.seak.jp.net/blog/2014/11/07/sublimetextmacterminal/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/11/04/sublimetextthemecursor/" title="Previous Post: Sublime Text 3のカーソルを変更する手順">&laquo; Sublime Text 3のカーソルを変更する手順</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/11/26/dev-octopress/" title="Next Post: Octopressの環境移設">Octopressの環境移設 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
 <aside class="sidebar">
   
     <section>
@@ -500,7 +264,7 @@
 <section>
   <h1>GitHub Repos</h1>
   <ul id="gh_repos">
-    <li class="loading">Status updating&#8230;</li>
+    <li class="loading">Status updating...</li>
   </ul>
   
   <a href="https://github.com/seak0503">@seak0503</a> on GitHub
@@ -533,6 +297,7 @@
   
 </aside>
 
+
     </div>
   </div>
   <footer role="contentinfo"><p>
@@ -547,7 +312,10 @@
       var disqus_shortname = 'seak0503';
       
         
-        var disqus_script = 'count.js';
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.seak.jp.net/blog/2014/11/07/sublimetextmacterminal/';
+        var disqus_url = 'http://blog.seak.jp.net/blog/2014/11/07/sublimetextmacterminal/';
+        var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

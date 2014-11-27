@@ -5,11 +5,13 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>seak0503 Blog</title>
+  <title>Oracle ORIONとは - seak0503 Blog</title>
   <meta name="author" content="seak0503">
 
   
-  <meta name="description" content="">
+  <meta name="description" content="目次 はじめに 参考URL 参考資料 はじめに これまで、LinuxサーバのDiskパフォーマンスを検証するにあたり、
+Bonnie++やIOZoneを使っていましたが、なんとなくしっくりきて
+いませんでした。 というかBonnie++はあまり現実感がないし、 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +20,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.seak.jp.net/">
+  <link rel="canonical" href="http://blog.seak.jp.net/blog/2014/04/16/oracle-orion-intoroduction/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -63,15 +65,12 @@
 </nav>
   <div id="main">
     <div id="content">
-      <div class="blog-index">
+      <div>
+<article class="hentry" role="article">
   
-  
-  
-    <article>
-      
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2014/11/26/dev-octopress/">Octopressの環境移設</a></h1>
+      <h1 class="entry-title">Oracle ORIONとは</h1>
     
     
       <p class="meta">
@@ -87,383 +86,140 @@
   
 
 
-<time datetime="2014-11-26T14:23:42+09:00" pubdate data-updated="true">2014-11-26</time>
+<time datetime="2014-04-16T01:09:21+09:00" pubdate data-updated="true">2014-04-16</time>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"></div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/11/26/dev-octopress/">つづきを読む</a>
-    </footer>
-  
+<div class="entry-content"><!-- more -->
 
 
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/11/07/sublimetextmacterminal/">Sublime Textから素早くiTermを開く</a></h1>
-    
-    
-      <p class="meta">
-        
 
 
+<h2>目次</h2>
 
 
+<p><ul>
+ <li><ul>
+  <li><a href="#L............">はじめに</a></li>
+  <li><a href="#L......URL">参考URL</a></li>
+  <li><a href="#L............">参考資料</a></li>
+ </ul></li>
+</ul>
 
+</p>
 
+<a name="L............"></a>
+<h2>はじめに</h2>
 
+<p>これまで、LinuxサーバのDiskパフォーマンスを検証するにあたり、
+<strong>Bonnie++</strong>や<strong>IOZone</strong>を使っていましたが、なんとなくしっくりきて
+いませんでした。</p>
 
-  
+<p>というかBonnie++はあまり現実感がないし、IOZoneは私のようなパフォーマンス測定
+素人野郎には使いこなすのが難しい、、、</p>
 
+<p>esxiなどの仮想基盤上のLinux仮想マシンのベンチをIOZoneを使ってとってみましたが、
+スループットが恐ろしく遅い結果になったり、はたまたシーケンシャルI/Oよりも
+ランダムI/Oの結果の方がスループットが良かったりなど、不思議なことが起こってしまい
+意味のあるデータがとれなかったりと悩んでいました。</p>
 
-<time datetime="2014-11-07T14:33:28+09:00" pubdate data-updated="true">2014-11-07</time>
-        
-      </p>
-    
-  </header>
+<p>IaaSとかでDBを使うお客さんとかに上手く説明できるような測定をしたいなぁ、、、</p>
 
+<p>そんな時、Oracleの<strong>ORION</strong>というベンチマークソフトに出会いました。</p>
 
-  <div class="entry-content"></div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/11/07/sublimetextmacterminal/">つづきを読む</a>
-    </footer>
-  
+<p>なんでも、<strong>Oracle Database（DB）のI/O ワークロードをシュミレートできるフリーの
+ディスクI/O 性能測定ツール</strong>、ということで、現実味があり、とてもよさそう。</p>
 
+<p>検証はこれからとして、わかりやすかった情報をメモしておきます。</p>
 
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/11/04/sublimetextthemecursor/">Sublime Text 3のカーソルを変更する手順</a></h1>
-    
-    
-      <p class="meta">
-        
+<a name="L......URL"></a>
+<h2>参考URL</h2>
 
+<ul>
+<li><p><a href="http://hesonogoma.com/linux/oracle_orion_disk_performance_benchmark.html">Oracle ORIONの使用方法 （Linuxディスクベンチマーク）</a></p>
 
+<p><a href="/files/20140416/Oracle_ORION_Linux_disk_benchmark.pdf">PDF版はこちら</a></p></li>
+<li><p><a href="http://hesonogoma.com/Windows/oracle_orion_disk_benchmark.html">Oracle ORIONの使用方法 （Windowsディスクベンチマーク）</a></p>
 
+<p><a href="/files/20140416/Oracle_ORION_Windows_disk_benchmark.pdf">PDF版はこちら</a></p></li>
+<li><p><a href="http://docs.oracle.com/cd/E16338_01/server.112/b56312/iodesign.htm#CACJEEDI">Oracle Orion測定ツールによるI/O測定</a></p>
 
+<p><a href="/files/20140416/iodesign.pdf">PDF版はこちら</a></p></li>
+</ul>
 
 
+<a name="L............"></a>
+<h2>参考資料</h2>
 
+<ul>
+<li><a href="/files/20140416/OracleOrion20081219ver1.1.pdf">Oracle ORION version 11.1 for Linux x86-64 とりあえずORIONでテストをしたい人向け</a></li>
+</ul>
 
-  
-
-
-<time datetime="2014-11-04T14:42:57+09:00" pubdate data-updated="true">2014-11-04</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"></div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/11/04/sublimetextthemecursor/">つづきを読む</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/11/04/sublimetextthemeitg/">Themeのカラースキームを編集する</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-11-04T14:25:57+09:00" pubdate data-updated="true">2014-11-04</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"></div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/11/04/sublimetextthemeitg/">つづきを読む</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/10/17/sublimetextvim/">sublimeText3でVimライクな操作を可能にさせる</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-10-17T15:33:59+09:00" pubdate data-updated="true">2014-10-17</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"></div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/10/17/sublimetextvim/">つづきを読む</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/09/25/chef-berks-install/">Berks Install時のエラー</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-09-25T06:01:57+09:00" pubdate data-updated="true">2014-09-25</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"></div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/09/25/chef-berks-install/">つづきを読む</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/09/24/ruby-bundler/">Bundleコマンドのパスを通す方法</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-09-24T06:40:21+09:00" pubdate data-updated="true">2014-09-24</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"></div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/09/24/ruby-bundler/">つづきを読む</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/09/15/chef-attribute/">ChefのAttributeの優先順位</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-09-15T22:05:47+09:00" pubdate data-updated="true">2014-09-15</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"></div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/09/15/chef-attribute/">つづきを読む</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/09/12/java-access/">Javaアクセス制御一覧</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-09-12T06:09:24+09:00" pubdate data-updated="true">2014-09-12</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"></div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/09/12/java-access/">つづきを読む</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/07/26/http-margin/">Marginの相殺について</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-07-26T08:56:05+09:00" pubdate data-updated="true">2014-07-26</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"></div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/07/26/http-margin/">つづきを読む</a>
-    </footer>
-  
-
-
-    </article>
-  
-  <div class="pagination">
-    
-      <a class="prev" href="/blog/page/2/">&larr; Older</a>
-    
-    <a href="/blog/archives">Blog Archives</a>
-    
-  </div>
 </div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">seak0503</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-16T01:09:21+09:00" pubdate data-updated="true">2014-04-16</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/benchmark/'>Benchmark</a>, <a class='category' href='/blog/categories/oracle/'>Oracle</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.seak.jp.net/blog/2014/04/16/oracle-orion-intoroduction/" data-via="" data-counturl="http://blog.seak.jp.net/blog/2014/04/16/oracle-orion-intoroduction/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/04/15/markdown-syntax-languages/" title="Previous Post: markdownでシンタックスハイライト可能な言語一覧(Octoress)">&laquo; markdownでシンタックスハイライト可能な言語一覧(Octoress)</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/04/17/octopress-install/" title="Next Post: Octopress+GitHub+Bitbucketでブログ環境構築">Octopress+GitHub+Bitbucketでブログ環境構築 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
 <aside class="sidebar">
   
     <section>
@@ -500,7 +256,7 @@
 <section>
   <h1>GitHub Repos</h1>
   <ul id="gh_repos">
-    <li class="loading">Status updating&#8230;</li>
+    <li class="loading">Status updating...</li>
   </ul>
   
   <a href="https://github.com/seak0503">@seak0503</a> on GitHub
@@ -533,6 +289,7 @@
   
 </aside>
 
+
     </div>
   </div>
   <footer role="contentinfo"><p>
@@ -547,7 +304,10 @@
       var disqus_shortname = 'seak0503';
       
         
-        var disqus_script = 'count.js';
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.seak.jp.net/blog/2014/04/16/oracle-orion-intoroduction/';
+        var disqus_url = 'http://blog.seak.jp.net/blog/2014/04/16/oracle-orion-intoroduction/';
+        var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

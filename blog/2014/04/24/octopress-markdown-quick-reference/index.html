@@ -1,0 +1,972 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Octopressで使えるMarkdownクイックリファレンス - seak0503 Blog</title>
+  <meta name="author" content="seak0503">
+
+  
+  <meta name="description" content="目次 はじめに シンタックスハイライト コードインライン表示 コードインライン表示(コード中にバッククオートを含む場合) タイトル 大 タイトル 中 タイトル 小 ボールド イタリック 打消し線 番号なしリスト 番号なしリスト(リスト内に文字列がある場合) 番号なしリスト(ネストされたリスト) &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.seak.jp.net/blog/2014/04/24/octopress-markdown-quick-reference/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="seak0503 Blog" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <nav role="navigation"><ul class="subscription" data-subscription="rss email">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+    <li><a href="seak0503.gmail.com" rel="subscribe-email" title="subscribe via email">Email</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.seak.jp.net" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+    <li><a href="/">
+        <span class="blue_light">
+            seak0503 Blog
+        </span>
+       
+    </a></li>
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Octopressで使えるMarkdownクイックリファレンス</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-24T06:45:10+09:00" pubdate data-updated="true">2014-04-24</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><!-- more -->
+
+
+
+
+<h2>目次</h2>
+
+
+<p><ul>
+ <li><ul>
+  <li><a href="#L............">はじめに</a></li>
+  <li><a href="#L.................................">シンタックスハイライト</a></li>
+  <li><a href="#L..............................">コードインライン表示</a></li>
+  <li><a href="#L...................................................................................">コードインライン表示(コード中にバッククオートを含む場合)</a></li>
+  <li><a href="#L................">タイトル 大</a></li>
+  <li><a href="#L................">タイトル 中</a></li>
+  <li><a href="#L................">タイトル 小</a></li>
+  <li><a href="#L............">ボールド</a></li>
+  <li><a href="#L...............">イタリック</a></li>
+  <li><a href="#L............">打消し線</a></li>
+  <li><a href="#L.....................">番号なしリスト</a></li>
+  <li><a href="#L..............................................................">番号なしリスト(リスト内に文字列がある場合)</a></li>
+  <li><a href="#L..................................................">番号なしリスト(ネストされたリスト)</a></li>
+  <li><a href="#L.....................">番号付きリスト</a></li>
+  <li><a href="#L..............................................................">番号付きリスト(リスト内に文字列がある場合)</a></li>
+  <li><a href="#L..................................................">番号なしリスト(ネストされたリスト)</a></li>
+  <li><a href="#Blockquotes.-.......">Blockquotes - 引用</a></li>
+  <li><a href="#Horizontal.rules.-..........">Horizontal rules - 水平線</a></li>
+  <li><a href="#L.........">リンク</a></li>
+  <li><a href="#L.....................">画像へのリンク</a></li>
+  <li><a href="#L........................">画像を貼りつける</a></li>
+  <li><a href="#L..................">テーブル記法</a></li>
+  <li><a href="#Markdown............">Markdownの無効化</a></li>
+ </ul></li>
+</ul>
+
+</p>
+
+<a name="L............"></a>
+<h2>はじめに</h2>
+
+<p>Octopressでのブログをはじめたので、使用頻度の高いOctopressで使えるMarkdownの構文、
+使用例、HTML出力結果を用途別に掲載しています。</p>
+
+<a name="L................................."></a>
+<h2>シンタックスハイライト</h2>
+
+<p>構文:</p>
+
+<p>   言語名は全て小文字で記述するよう注意して下さい。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'> (ブランク行) &lt;-なくても問題ないが、Markdownのソースが見やすくなる
+</span><span class='line'> ```言語名
+</span><span class='line'> ここにソースを記述する
+</span><span class='line'> ```
+</span><span class='line'> (ブランク行) &lt;-なくても問題ないが、Markdownのソースが見やすくなる</span></code></pre></td></tr></table></div></figure>
+
+
+<p>使用例:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'> (ブランク行)
+</span><span class='line'> ```python
+</span><span class='line'> def test():
+</span><span class='line'>     p = "test"
+</span><span class='line'>     return p
+</span><span class='line'> ```
+</span><span class='line'> (ブランク行)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>HTML出力結果:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">test</span><span class="p">():</span>
+</span><span class='line'>    <span class="n">p</span> <span class="o">=</span> <span class="s">&quot;test&quot;</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">p</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<a name="L.............................."></a>
+<h2>コードインライン表示</h2>
+
+<p>構文:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="sb">`ここにコードを書く`</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>使用例:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="err">ここで</span><span class="sb">`python test.py`</span><span class="err">を実行して下さい。</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>HTML出力結果:</p>
+
+<p>ここで<code>python test.py</code>を実行して下さい。</p>
+
+<a name="L..................................................................................."></a>
+<h2>コードインライン表示(コード中にバッククオートを含む場合)</h2>
+
+<p>構文:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'> <span class="sb">``</span> <span class="sb">`ここにコードを書く`</span> <span class="sb">``</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>使用例:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="err">ここで</span><span class="sb">``</span> <span class="sb">`python test.py`</span> <span class="sb">``</span><span class="err">を実行して下さい。</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>HTML出力結果:</p>
+
+<p>ここで<code>`python test.py`</code>を実行して下さい。</p>
+
+<a name="L................"></a>
+<h2>タイトル 大</h2>
+
+<p>構文:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="o">============</span>
+</span><span class='line'><span class="err">タイトル</span> <span class="err">大</span>
+</span><span class='line'><span class="o">============</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>または</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># タイトル大</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<a name="L................"></a>
+<h2>タイトル 中</h2>
+
+<p>構文:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="err">タイトル</span> <span class="err">中</span>
+</span><span class='line'><span class="o">============</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>または</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">## タイトル中</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<a name="L................"></a>
+<h2>タイトル 小</h2>
+
+<p>構文:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="err">タイトル</span> <span class="err">小</span>
+</span><span class='line'><span class="o">------------</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>または</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">### タイトル小</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<a name="L............"></a>
+<h2>ボールド</h2>
+
+<p>構文:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="o">**</span><span class="err">ここに文字列を書く</span><span class="o">**</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>使用例:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="err">これは</span><span class="o">**</span><span class="err">ボールド</span><span class="o">**</span><span class="err">の説明です。</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>HTML出力結果:</p>
+
+<p>これは<strong>ボールド</strong>の説明です。</p>
+
+<a name="L..............."></a>
+<h2>イタリック</h2>
+
+<p>構文:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="o">*</span><span class="err">ここに文字列を書く</span><span class="o">*</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>使用例:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="err">これは</span><span class="o">*</span><span class="err">イタリック</span><span class="o">*</span><span class="err">の説明です。</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>HTML出力結果:</p>
+
+<p>これは<em>イタリック</em>の説明です。</p>
+
+<a name="L............"></a>
+<h2>打消し線</h2>
+
+<p>構文:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="o">~~</span><span class="err">打ち消し対象文字列</span><span class="o">~~</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>使用例:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="err">打消し対象は</span><span class="o">~~</span><span class="err">ここの部分</span><span class="o">~~</span><span class="err">です。</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>HTML出力結果:</p>
+
+<p>打消し対象は<del>ここの部分</del>です。</p>
+
+<a name="L....................."></a>
+<h2>番号なしリスト</h2>
+
+<p>構文:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="o">*</span> <span class="err">任意の文字列</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>使用例:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="o">*</span> <span class="err">文字列</span><span class="mi">1</span>
+</span><span class='line'><span class="o">*</span> <span class="err">文字列</span><span class="mi">2</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>HTML出力結果:</p>
+
+<ul>
+<li>文字列1</li>
+<li>文字列2</li>
+</ul>
+
+
+<a name="L.............................................................."></a>
+<h2>番号なしリスト(リスト内に文字列がある場合)</h2>
+
+<p>構文:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="o">*</span> <span class="err">任意の文字列</span>
+</span><span class='line'><span class="p">(</span><span class="err">ブランク行</span><span class="p">)</span>
+</span><span class='line'><span class="p">[</span><span class="err">半角スペース</span><span class="p">][</span><span class="err">半角スペース</span><span class="p">]</span><span class="err">任意の文字列</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>使用例:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="o">*</span> <span class="err">リスト</span><span class="mi">1</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="err">これはリスト</span><span class="mi">1</span><span class="err">の説明文です。</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">*</span> <span class="err">リスト</span><span class="mi">2</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="err">これはリスト</span><span class="mi">2</span><span class="err">の説明文です。</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>HTML出力結果:</p>
+
+<ul>
+<li><p>リスト1</p>
+
+<p>これはリスト1の説明文です。</p></li>
+<li><p>リスト2</p>
+
+<p>これはリスト2の説明文です。</p></li>
+</ul>
+
+
+<a name="L.................................................."></a>
+<h2>番号なしリスト(ネストされたリスト)</h2>
+
+<p>構文:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="o">*</span> <span class="err">任意の文字列</span>
+</span><span class='line'><span class="p">(</span><span class="err">ブランク行</span><span class="p">)</span>
+</span><span class='line'><span class="p">[</span><span class="err">半角スペース</span><span class="p">][</span><span class="err">半角スペース</span><span class="p">]</span><span class="o">*</span> <span class="err">任意の文字列</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>使用例:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="o">*</span> <span class="err">リスト</span><span class="mi">1</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="o">*</span> <span class="err">ネストリスト</span><span class="mi">1</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">*</span> <span class="err">リスト</span><span class="mi">2</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="o">*</span> <span class="err">ネストリスト</span><span class="mi">2</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>HTML出力結果:</p>
+
+<ul>
+<li><p>リスト1</p>
+
+<ul>
+<li>ネストリスト1</li>
+</ul>
+</li>
+<li><p>リスト2</p>
+
+<ul>
+<li>ネストリスト2</li>
+</ul>
+</li>
+</ul>
+
+
+<a name="L....................."></a>
+<h2>番号付きリスト</h2>
+
+<p>構文:</p>
+
+<p>頭の数字は&#8221;1. 2. 3.&#8221;と、シーケンシャルに書くのではなく、全て&#8221;1. &#8220;にすると
+HTML出力時には自動的に順番がふられる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="mf">1.</span> <span class="err">任意の文字列</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>使用例:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="mf">1.</span> <span class="err">文字列</span><span class="mi">1</span>
+</span><span class='line'><span class="mf">1.</span> <span class="err">文字列</span><span class="mi">2</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>HTML出力結果:</p>
+
+<ol>
+<li>文字列1</li>
+<li>文字列2</li>
+</ol>
+
+
+<a name="L.............................................................."></a>
+<h2>番号付きリスト(リスト内に文字列がある場合)</h2>
+
+<p>構文:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="mf">1.</span> <span class="err">任意の文字列</span>
+</span><span class='line'><span class="p">(</span><span class="err">ブランク行</span><span class="p">)</span>
+</span><span class='line'><span class="p">[</span><span class="err">半角スペース</span><span class="p">][</span><span class="err">半角スペース</span><span class="p">][</span><span class="err">半角スペース</span><span class="p">]</span><span class="err">任意の文字列</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>使用例:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="mf">1.</span> <span class="err">リスト</span><span class="mi">1</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="err">これはリスト</span><span class="mi">1</span><span class="err">の説明文です。</span>
+</span><span class='line'>
+</span><span class='line'><span class="mf">1.</span> <span class="err">リスト</span><span class="mi">2</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="err">これはリスト</span><span class="mi">2</span><span class="err">の説明文です。</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>HTML出力結果:</p>
+
+<ol>
+<li><p>リスト1</p>
+
+<p>これはリスト1の説明文です。</p></li>
+<li><p>リスト2</p>
+
+<p>これはリスト2の説明文です。</p></li>
+</ol>
+
+
+<a name="L.................................................."></a>
+<h2>番号なしリスト(ネストされたリスト)</h2>
+
+<p>構文:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="mf">1.</span> <span class="err">任意の文字列</span>
+</span><span class='line'><span class="p">(</span><span class="err">ブランク行</span><span class="p">)</span>
+</span><span class='line'><span class="p">[</span><span class="err">半角スペース</span><span class="p">][</span><span class="err">半角スペース</span><span class="p">][</span><span class="err">半角スペース</span><span class="p">]</span><span class="mf">1.</span> <span class="err">任意の文字列</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>使用例:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="mf">1.</span> <span class="err">リスト</span><span class="mi">1</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="mf">1.</span> <span class="err">ネストリスト</span><span class="mi">1</span><span class="o">-</span><span class="mi">1</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="mf">1.</span> <span class="err">ネストリスト</span><span class="mi">1</span><span class="o">-</span><span class="mi">2</span>
+</span><span class='line'>
+</span><span class='line'><span class="mf">1.</span> <span class="err">リスト</span><span class="mi">2</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="mf">1.</span> <span class="err">ネストリスト</span><span class="mi">2</span><span class="o">-</span><span class="mi">1</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="mf">1.</span> <span class="err">ネストリスト</span><span class="mi">2</span><span class="o">-</span><span class="mi">2</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>HTML出力結果:</p>
+
+<ol>
+<li><p>リスト1</p>
+
+<ol>
+<li><p>ネストリスト1-1</p></li>
+<li><p>ネストリスト1-2</p></li>
+</ol>
+</li>
+<li><p>リスト2</p>
+
+<ol>
+<li><p>ネストリスト2-1</p></li>
+<li><p>ネストリスト2-2</p></li>
+</ol>
+</li>
+</ol>
+
+
+<a name="Blockquotes.-......."></a>
+<h2>Blockquotes - 引用</h2>
+
+<p>構文:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="o">&gt;</span> <span class="err">引用文</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>使用例:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="o">&gt;</span> <span class="err">文頭に</span><span class="o">&gt;</span><span class="err">を置くことで引用になります。</span>
+</span><span class='line'><span class="o">&gt;</span> <span class="err">複数行にまたがる場合、改行のたびにこの記号を置く必要があります。</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>HTML出力結果:</p>
+
+<blockquote><p>文頭に>を置くことで引用になります。
+複数行にまたがる場合、改行のたびにこの記号を置く必要があります。</p></blockquote>
+
+<a name="Horizontal.rules.-.........."></a>
+<h2>Horizontal rules - 水平線</h2>
+
+<p>構文:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="o">***</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>使用例:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="err">水平線より上です</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">***</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">水平線より下です</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>HTML出力結果:</p>
+
+<p>水平線より上です</p>
+
+<hr />
+
+<p>水平線より下です</p>
+
+<a name="L........."></a>
+<h2>リンク</h2>
+
+<p>構文:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="p">[</span><span class="err">リンクタイトル</span><span class="p">](</span><span class="n">URL</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>使用例:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="p">[</span><span class="n">GitHub</span> <span class="n">Preview</span><span class="p">](</span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">-</span><span class="n">preview</span><span class="o">.</span><span class="n">herokuapp</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>HTML出力結果:</p>
+
+<p><a href="http://github-preview.herokuapp.com/">GitHub Preview</a></p>
+
+<a name="L....................."></a>
+<h2>画像へのリンク</h2>
+
+<p>構文:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="err">!</span><span class="p">[</span><span class="err">代替テキスト</span><span class="p">](</span><span class="err">画像の</span><span class="n">URL</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>使用例:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="err">!</span><span class="p">[</span><span class="n">octcat</span><span class="p">](</span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">siliconangle</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">files</span><span class="o">/</span><span class="mi">2012</span><span class="o">/</span><span class="mo">03</span><span class="o">/</span><span class="n">github_logo</span><span class="o">-</span><span class="mi">300</span><span class="n">x300</span><span class="o">.</span><span class="n">jpg</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>HTML出力結果:</p>
+
+<p><img src="http://siliconangle.com/files/2012/03/github_logo-300x300.jpg" alt="octcat" /></p>
+
+<a name="L........................"></a>
+<h2>画像を貼りつける</h2>
+
+<p>画像を<code>ローカルリポジトリdir/sources/images</code>配下に配置して、下記のようにすると
+ブログに画像を貼りつけることができる</p>
+
+<p>構文:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="p">{</span><span class="o">%</span> <span class="n">img</span> <span class="p">[</span><span class="k">class</span> <span class="nc">names</span><span class="p">]</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">image</span> <span class="p">[</span><span class="n">width</span><span class="p">]</span> <span class="p">[</span><span class="n">height</span><span class="p">]</span> <span class="p">[</span><span class="n">title</span> <span class="n">text</span><span class="p">]</span> <span class="p">[</span><span class="n">alt</span> <span class="n">text</span><span class="p">]</span> <span class="o">%</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>使用例:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="p">{</span><span class="o">%</span> <span class="n">img</span> <span class="o">/</span><span class="n">images</span><span class="o">/</span><span class="mi">20140416</span><span class="o">/</span><span class="n">mickey</span><span class="o">.</span><span class="n">jpeg</span> <span class="s">&#39;mickey&#39;</span> <span class="s">&#39;this is a mickey image&#39;</span> <span class="o">%</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>HTML出力結果:</p>
+
+<p><img src="/images/20140416/mickey.jpeg" title="mickey" alt="this is a mickey image"></p>
+
+<a name="L.................."></a>
+<h2>テーブル記法</h2>
+
+<p>使用例:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">th1</span><span class="p">(</span><span class="n">left</span><span class="p">)</span><span class="o">|</span><span class="n">th2</span><span class="p">(</span><span class="n">center</span><span class="p">)</span><span class="o">|</span><span class="n">th3</span><span class="p">(</span><span class="n">right</span><span class="p">)</span><span class="o">|</span>
+</span><span class='line'><span class="p">:</span><span class="o">--------|</span><span class="p">:</span><span class="o">---------</span><span class="p">:</span><span class="o">|---------</span><span class="p">:</span><span class="o">|</span>
+</span><span class='line'><span class="n">td1</span>      <span class="o">|</span><span class="n">td2</span>        <span class="o">|</span><span class="n">td3</span>
+</span><span class='line'><span class="n">td4</span>      <span class="o">|</span><span class="n">td5</span>        <span class="o">|</span><span class="n">td6</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>HTML出力結果:</p>
+
+<table>
+<thead>
+<tr>
+<th align="left">th1(left)</th>
+<th align="center">th2(center)</th>
+<th align="right">th3(right)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">td1      </td>
+<td align="center">td2        </td>
+<td align="right">td3</td>
+</tr>
+<tr>
+<td align="left">td4      </td>
+<td align="center">td5        </td>
+<td align="right">td6</td>
+</tr>
+</tbody>
+</table>
+
+
+<a name="Markdown............"></a>
+<h2>Markdownの無効化</h2>
+
+<p>構文:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="p">(</span><span class="err">バックスラッシュ</span><span class="p">)</span><span class="n">Markdown</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>使用例:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'>\<span class="o">*</span> <span class="err">リストを無効化します</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>HTML出力結果</p>
+
+<p>* リストを無効化します</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">seak0503</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-24T06:45:10+09:00" pubdate data-updated="true">2014-04-24</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/markdown/'>Markdown</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.seak.jp.net/blog/2014/04/24/octopress-markdown-quick-reference/" data-via="" data-counturl="http://blog.seak.jp.net/blog/2014/04/24/octopress-markdown-quick-reference/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/04/17/octopress-pdca/" title="Previous Post: Octopress+GitHub+Bitbucketブログの運用管理について">&laquo; Octopress+GitHub+Bitbucketブログの運用管理について</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/04/24/merge-commit-and-fast-forward-merge/" title="Next Post: マージコミットとFast-forwardマージ">マージコミットとFast-forwardマージ &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/11/26/dev-octopress/">Octopressの環境移設</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/07/sublimetextmacterminal/">Sublime Textから素早くiTermを開く</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/04/sublimetextthemecursor/">Sublime Text 3のカーソルを変更する手順</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/04/sublimetextthemeitg/">Themeのカラースキームを編集する</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/17/sublimetextvim/">sublimeText3でVimライクな操作を可能にさせる</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+  <h1>Categories</h1>
+    <ul id="category-list"><li><a href='/blog/categories/apache/'>Apache (1)</a></li><li><a href='/blog/categories/benchmark/'>Benchmark (1)</a></li><li><a href='/blog/categories/chef/'>Chef (2)</a></li><li><a href='/blog/categories/git/'>Git (9)</a></li><li><a href='/blog/categories/github/'>GitHub (8)</a></li><li><a href='/blog/categories/html/'>HTML (1)</a></li><li><a href='/blog/categories/java/'>Java (4)</a></li><li><a href='/blog/categories/linux/'>Linux (7)</a></li><li><a href='/blog/categories/markdown/'>Markdown (2)</a></li><li><a href='/blog/categories/octopress/'>Octopress (3)</a></li><li><a href='/blog/categories/oracle/'>Oracle (1)</a></li><li><a href='/blog/categories/python/'>Python (1)</a></li><li><a href='/blog/categories/ruby/'>Ruby (2)</a></li><li><a href='/blog/categories/security/'>Security (2)</a></li><li><a href='/blog/categories/sublime-text/'>Sublime Text (4)</a></li></ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/seak0503">@seak0503</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'seak0503',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - seak0503 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'seak0503';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.seak.jp.net/blog/2014/04/24/octopress-markdown-quick-reference/';
+        var disqus_url = 'http://blog.seak.jp.net/blog/2014/04/24/octopress-markdown-quick-reference/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

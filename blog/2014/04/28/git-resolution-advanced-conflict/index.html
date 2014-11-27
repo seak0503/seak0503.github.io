@@ -1,0 +1,1179 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>高度な競合の解決(ファイル単位で解決を行う) - seak0503 Blog</title>
+  <meta name="author" content="seak0503">
+
+  
+  <meta name="description" content="目次 はじめに ファイル単位で解決を行う(マージするブランチ側を正とする場合) ファイル単位で解決を行う(現在のブランチ側を正とする場合) はじめに 競合が発生した場合、競合が発生したブロックレベルで解決を行っていくのは
+非常に大変です。(競合箇所が1か所とか2か所くらいならまぁいいですが) &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.seak.jp.net/blog/2014/04/28/git-resolution-advanced-conflict/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="seak0503 Blog" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <nav role="navigation"><ul class="subscription" data-subscription="rss email">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+    <li><a href="seak0503.gmail.com" rel="subscribe-email" title="subscribe via email">Email</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.seak.jp.net" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+    <li><a href="/">
+        <span class="blue_light">
+            seak0503 Blog
+        </span>
+       
+    </a></li>
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">高度な競合の解決(ファイル単位で解決を行う)</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-28T11:45:19+09:00" pubdate data-updated="true">2014-04-28</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><!-- more -->
+
+
+
+
+<h2>目次</h2>
+
+
+<p><ul>
+ <li><ul>
+  <li><a href="#L............">はじめに</a></li>
+  <li><a href="#L.........................................................................................">ファイル単位で解決を行う(マージするブランチ側を正とする場合)</a></li>
+  <li><a href="#L...................................................................................">ファイル単位で解決を行う(現在のブランチ側を正とする場合)</a></li>
+ </ul></li>
+</ul>
+
+</p>
+
+<a name="L............"></a>
+<h2>はじめに</h2>
+
+<p>競合が発生した場合、競合が発生したブロックレベルで解決を行っていくのは
+非常に大変です。(競合箇所が1か所とか2か所くらいならまぁいいですが)</p>
+
+<p>そのため、ファイル単位で現在のブランチの内容にしたいか、マージする
+ブランチの内容にしたいのかを選択したくなることがあります。</p>
+
+<p>ここではその手順を解説します。</p>
+
+<ul>
+<li><p>マージするブランチ側を採用する場合</p>
+
+<p><code>git checkout MERGE_HEAD [file_name]</code></p></li>
+<li><p>現在のブランチ側を採用する場合</p>
+
+<p><code>git checkout ORIG_HEAD [file_name]</code></p></li>
+</ul>
+
+
+<a name="L........................................................................................."></a>
+<h2>ファイル単位で解決を行う(マージするブランチ側を正とする場合)</h2>
+
+<p>現在のブランチを<strong>master</strong>として、マージするブランチを<strong>topic</strong>とします。</p>
+
+<p>ここではコンフリクトが起きた場合、<strong>topic</strong>ブランチ側のファイルを採用
+するケースを解説します。</p>
+
+<p>masterブランチでファイルを作成</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git branch -l
+</span><span class='line'>* master
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>vi MakeHtml.java
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="cm">/** 標準入力から1行づつ読み取って、htmlファイルを標準出力する</span>
+</span><span class='line'><span class="cm"> *  プログラムです</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.io.*</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MakeHtml</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;&lt;!DOCTYPE html&gt;&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;&lt;html&gt;&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;&lt;head&gt;&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;&lt;title&gt;My Page&lt;/title&gt;&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;&lt;/head&gt;&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;&lt;body&gt;&quot;</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">String</span> <span class="n">find_shikaku</span> <span class="o">=</span> <span class="s">&quot;■&quot;</span><span class="o">;</span>
+</span><span class='line'>        <span class="n">String</span> <span class="n">find_maru</span> <span class="o">=</span> <span class="s">&quot;●&quot;</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">BufferedReader</span> <span class="n">reader</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="n">InputStreamReader</span><span class="o">(</span><span class="n">System</span><span class="o">.</span><span class="na">in</span><span class="o">));</span>
+</span><span class='line'>        <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">String</span> <span class="n">line</span><span class="o">;</span>
+</span><span class='line'>            <span class="k">while</span> <span class="o">((</span><span class="n">line</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="na">readLine</span><span class="o">())</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>                <span class="kt">int</span> <span class="n">shikaku</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="na">indexOf</span><span class="o">(</span><span class="n">find_shikaku</span><span class="o">);</span>
+</span><span class='line'>                <span class="kt">int</span> <span class="n">maru</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="na">indexOf</span><span class="o">(</span><span class="n">find_maru</span><span class="o">);</span>
+</span><span class='line'>                <span class="k">if</span> <span class="o">(</span><span class="n">shikaku</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>                    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;&lt;h1&gt;&quot;</span> <span class="o">+</span> <span class="n">line</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="mi">1</span><span class="o">)</span> <span class="o">+</span> <span class="s">&quot;&lt;/h1&gt;&quot;</span><span class="o">);</span>
+</span><span class='line'>                <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">maru</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>                    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;&lt;h2&gt;&quot;</span> <span class="o">+</span> <span class="n">line</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="mi">1</span><span class="o">)</span> <span class="o">+</span> <span class="s">&quot;&lt;/h2&gt;&quot;</span><span class="o">);</span>
+</span><span class='line'>                <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>                    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;&lt;p&gt;&quot;</span> <span class="o">+</span> <span class="n">line</span> <span class="o">+</span> <span class="s">&quot;&lt;/p&gt;&quot;</span><span class="o">);</span>
+</span><span class='line'>                <span class="o">}</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">e</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;&lt;/body&gt;&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;&lt;/html&gt;&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git add MakeHtml.java
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git commit -m <span class="s2">&quot;add MakeHtml.java&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>topicブランチで<code>MakeHtml.java</code>を編集</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git checkout -b topic
+</span><span class='line'><span class="nv">$ </span>vi MakeHtml.java
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>全体的に編集を行う</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="cm">/** 標準入力から1行づつ読み取って、htmlファイルを標準出力にだす</span>
+</span><span class='line'><span class="cm"> *  プログラムです</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.io.*</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MakeHtml2</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">BufferedReader</span> <span class="n">reader</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="n">InputStreamReader</span><span class="o">(</span><span class="n">System</span><span class="o">.</span><span class="na">in</span><span class="o">));</span>
+</span><span class='line'>        <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">String</span> <span class="n">line</span><span class="o">;</span>
+</span><span class='line'>            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;&lt;!DOCTYPE html&gt;&quot;</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;&lt;html&gt;&quot;</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;&lt;head&gt;&quot;</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;&lt;title&gt;My Page&lt;/title&gt;&quot;</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;&lt;/head&gt;&quot;</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;&lt;body&gt;&quot;</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">while</span> <span class="o">((</span><span class="n">line</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="na">readLine</span><span class="o">())</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>                <span class="k">if</span> <span class="o">(</span><span class="n">line</span><span class="o">.</span><span class="na">startsWith</span><span class="o">(</span><span class="s">&quot;■&quot;</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>                    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;&lt;h1&gt;&quot;</span> <span class="o">+</span> <span class="n">line</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="mi">1</span><span class="o">)</span> <span class="o">+</span> <span class="s">&quot;&lt;/h1&gt;&quot;</span><span class="o">);</span>
+</span><span class='line'>                <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">line</span><span class="o">.</span><span class="na">startsWith</span><span class="o">(</span><span class="s">&quot;●&quot;</span><span class="o">)</span> <span class="o">){</span>
+</span><span class='line'>                    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;&lt;h2&gt;&quot;</span> <span class="o">+</span> <span class="n">line</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="mi">1</span><span class="o">)</span> <span class="o">+</span> <span class="s">&quot;&lt;/h2&gt;&quot;</span><span class="o">);</span>
+</span><span class='line'>                <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>                    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;&lt;p&gt;&quot;</span> <span class="o">+</span> <span class="n">line</span> <span class="o">+</span> <span class="s">&quot;&lt;/p&gt;&quot;</span><span class="o">);</span>
+</span><span class='line'>                <span class="o">}</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;&lt;/body&gt;&quot;</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;&lt;/html&gt;&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">e</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git commit -am <span class="s2">&quot;edit MakeHtml.java by topic branch&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>masterブランチで<code>MakeHtml.java</code>を編集</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git checkout master
+</span><span class='line'><span class="nv">$ </span>vi MakeHtml.java
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="cm">/** 標準入力から1行づつ読み取って、htmlファイルを標準出力する</span>
+</span><span class='line'><span class="cm"> *  プログラムです。今日はこれをmasterブランチで少し変種しました。</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.io.*</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MakeHtml1_2</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;&lt;!DOCTYPE html&gt;&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;&lt;html&gt;&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;&lt;head&gt;&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;&lt;title&gt;My Page&lt;/title&gt;&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;&lt;/head&gt;&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;&lt;body&gt;&quot;</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">String</span> <span class="n">find_shikaku</span> <span class="o">=</span> <span class="s">&quot;X&quot;</span><span class="o">;</span>
+</span><span class='line'>        <span class="n">String</span> <span class="n">find_maru</span> <span class="o">=</span> <span class="s">&quot;O&quot;</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">BufferedReader</span> <span class="n">reader</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="n">InputStreamReader</span><span class="o">(</span><span class="n">System</span><span class="o">.</span><span class="na">in</span><span class="o">));</span>
+</span><span class='line'>        <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">String</span> <span class="n">line</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="na">readLine</span><span class="o">();</span>
+</span><span class='line'>            <span class="k">while</span> <span class="o">(</span><span class="n">line</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>                <span class="k">if</span> <span class="o">(</span><span class="n">line</span><span class="o">.</span><span class="na">startsWith</span><span class="o">(</span><span class="s">&quot;X&quot;</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>                    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;&lt;h1&gt;&quot;</span> <span class="o">+</span> <span class="n">line</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="mi">1</span><span class="o">)</span> <span class="o">+</span> <span class="s">&quot;&lt;/h1&gt;&quot;</span><span class="o">);</span>
+</span><span class='line'>                <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">line</span><span class="o">.</span><span class="na">startsWith</span><span class="o">(</span><span class="s">&quot;O&quot;</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>                    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;&lt;h2&gt;&quot;</span> <span class="o">+</span> <span class="n">line</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="mi">1</span><span class="o">)</span> <span class="o">+</span> <span class="s">&quot;&lt;/h2&gt;&quot;</span><span class="o">);</span>
+</span><span class='line'>                <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>                    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;&lt;p&gt;&quot;</span> <span class="o">+</span> <span class="n">line</span> <span class="o">+</span> <span class="s">&quot;&lt;/p&gt;&quot;</span><span class="o">);</span>
+</span><span class='line'>                <span class="o">}</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">e</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;&lt;/body&gt;&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;&lt;/html&gt;&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git commit -am <span class="s2">&quot;edit MakeHtml.java by master branch&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>masterブランチでtopicブランチをマージ</p>
+
+<blockquote><p>ここでコンフリクトが発生する</p></blockquote>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+<span class='line-number'>132</span>
+<span class='line-number'>133</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git branch -l
+</span><span class='line'>* master
+</span><span class='line'>  topic
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git diff topic
+</span><span class='line'>diff --git a/MakeHtml.java b/MakeHtml.java
+</span><span class='line'>-public class MakeHtml2 <span class="o">{</span>
+</span><span class='line'>+public class MakeHtml1_2 <span class="o">{</span>
+</span><span class='line'>     public static void main<span class="o">(</span>String<span class="o">[]</span> args<span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>+        System.out.println<span class="o">(</span><span class="s2">&quot;&lt;!DOCTYPE html&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>+        System.out.println<span class="o">(</span><span class="s2">&quot;&lt;html&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>+        System.out.println<span class="o">(</span><span class="s2">&quot;&lt;head&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>+        System.out.println<span class="o">(</span><span class="s2">&quot;&lt;title&gt;My Page&lt;/title&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>+        System.out.println<span class="o">(</span><span class="s2">&quot;&lt;/head&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>+        System.out.println<span class="o">(</span><span class="s2">&quot;&lt;body&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>+
+</span><span class='line'>+        String <span class="nv">find_shikaku</span> <span class="o">=</span> <span class="s2">&quot;X&quot;</span>;
+</span><span class='line'>+        String <span class="nv">find_maru</span> <span class="o">=</span> <span class="s2">&quot;O&quot;</span>;
+</span><span class='line'>+
+</span><span class='line'>-public class MakeHtml2 <span class="o">{</span>
+</span><span class='line'>+public class MakeHtml1_2 <span class="o">{</span>
+</span><span class='line'>     public static void main<span class="o">(</span>String<span class="o">[]</span> args<span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>+        System.out.println<span class="o">(</span><span class="s2">&quot;&lt;!DOCTYPE html&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>+        System.out.println<span class="o">(</span><span class="s2">&quot;&lt;html&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>+        System.out.println<span class="o">(</span><span class="s2">&quot;&lt;head&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>+        System.out.println<span class="o">(</span><span class="s2">&quot;&lt;title&gt;My Page&lt;/title&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>+        System.out.println<span class="o">(</span><span class="s2">&quot;&lt;/head&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>+        System.out.println<span class="o">(</span><span class="s2">&quot;&lt;body&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>+
+</span><span class='line'>+        String <span class="nv">find_shikaku</span> <span class="o">=</span> <span class="s2">&quot;X&quot;</span>;
+</span><span class='line'>+        String <span class="nv">find_maru</span> <span class="o">=</span> <span class="s2">&quot;O&quot;</span>;
+</span><span class='line'>+
+</span><span class='line'>         BufferedReader <span class="nv">reader</span> <span class="o">=</span> new BufferedReader<span class="o">(</span>new InputStreamReader<span class="o">(</span>System.in<span class="o">))</span>
+</span><span class='line'>         try <span class="o">{</span>
+</span><span class='line'>-            String line;
+</span><span class='line'>-            System.out.println<span class="o">(</span><span class="s2">&quot;&lt;!DOCTYPE html&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>-            System.out.println<span class="o">(</span><span class="s2">&quot;&lt;html&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>-            System.out.println<span class="o">(</span><span class="s2">&quot;&lt;head&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>-            System.out.println<span class="o">(</span><span class="s2">&quot;&lt;title&gt;My Page&lt;/title&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>-            System.out.println<span class="o">(</span><span class="s2">&quot;&lt;/head&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>-            System.out.println<span class="o">(</span><span class="s2">&quot;&lt;body&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>-            <span class="k">while</span> <span class="o">((</span><span class="nv">line</span> <span class="o">=</span> reader.readLine<span class="o">())</span> !<span class="o">=</span> null<span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>-                <span class="k">if</span> <span class="o">(</span>line.startsWith<span class="o">(</span><span class="s2">&quot;■&quot;</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>+            String <span class="nv">line</span> <span class="o">=</span> reader.readLine<span class="o">()</span>;
+</span><span class='line'>+            <span class="k">while</span> <span class="o">(</span>line !<span class="o">=</span> null<span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>+                <span class="k">if</span> <span class="o">(</span>line.startsWith<span class="o">(</span><span class="s2">&quot;X&quot;</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>                     System.out.println<span class="o">(</span><span class="s2">&quot;&lt;h1&gt;&quot;</span> + line.substring<span class="o">(</span>1<span class="o">)</span> + <span class="s2">&quot;&lt;/h1&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>-                <span class="o">}</span> <span class="k">else if</span> <span class="o">(</span>line.startsWith<span class="o">(</span><span class="s2">&quot;●&quot;</span><span class="o">)</span> <span class="o">){</span>
+</span><span class='line'>+                <span class="o">}</span> <span class="k">else if</span> <span class="o">(</span>line.startsWith<span class="o">(</span><span class="s2">&quot;O&quot;</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>                     System.out.println<span class="o">(</span><span class="s2">&quot;&lt;h2&gt;&quot;</span> + line.substring<span class="o">(</span>1<span class="o">)</span> + <span class="s2">&quot;&lt;/h2&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>                 <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>                     System.out.println<span class="o">(</span><span class="s2">&quot;&lt;p&gt;&quot;</span> + line + <span class="s2">&quot;&lt;/p&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>                 <span class="o">}</span>
+</span><span class='line'>             <span class="o">}</span>
+</span><span class='line'>-            System.out.println<span class="o">(</span><span class="s2">&quot;&lt;/body&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>-            System.out.println<span class="o">(</span><span class="s2">&quot;&lt;/html&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>         <span class="o">}</span> catch <span class="o">(</span>IOException e<span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>             System.out.println<span class="o">(</span>e<span class="o">)</span>;
+</span><span class='line'>         <span class="o">}</span>
+</span><span class='line'>+        System.out.println<span class="o">(</span><span class="s2">&quot;&lt;/body&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>+        System.out.println<span class="o">(</span><span class="s2">&quot;&lt;/html&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>     <span class="o">}</span>
+</span><span class='line'> <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git merge topic
+</span><span class='line'>Auto-merging MakeHtml.java
+</span><span class='line'>CONFLICT <span class="o">(</span>content<span class="o">)</span>: Merge conflict in MakeHtml.java
+</span><span class='line'>Automatic merge failed; fix conflicts and <span class="k">then </span>commit the result.
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git status -s
+</span><span class='line'>UU MakeHtml.java
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>cat MakeHtml.java
+</span><span class='line'><span class="o">&lt;&lt;&lt;&lt;&lt;&lt;</span>&lt; HEAD
+</span><span class='line'>/** 標準入力から1行づつ読み取って、htmlファイルを標準出力する
+</span><span class='line'> *  プログラムです。今日はこれをmasterブランチで少し変種しました。
+</span><span class='line'><span class="o">=======</span>
+</span><span class='line'>/** 標準入力から1行づつ読み取って、htmlファイルを標準出力にだす
+</span><span class='line'> *  プログラムです
+</span><span class='line'>&gt;&gt;&gt;&gt;&gt;&gt;&gt; topic
+</span><span class='line'> */
+</span><span class='line'>
+</span><span class='line'>import java.io.*;
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;&lt;&lt;&lt;&lt;&lt;</span>&lt; HEAD
+</span><span class='line'>public class MakeHtml1_2 <span class="o">{</span>
+</span><span class='line'>    public static void main<span class="o">(</span>String<span class="o">[]</span> args<span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        System.out.println<span class="o">(</span><span class="s2">&quot;&lt;!DOCTYPE html&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>        System.out.println<span class="o">(</span><span class="s2">&quot;&lt;html&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>        System.out.println<span class="o">(</span><span class="s2">&quot;&lt;head&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>        System.out.println<span class="o">(</span><span class="s2">&quot;&lt;title&gt;My Page&lt;/title&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>        System.out.println<span class="o">(</span><span class="s2">&quot;&lt;/head&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>        System.out.println<span class="o">(</span><span class="s2">&quot;&lt;body&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>
+</span><span class='line'>        String <span class="nv">find_shikaku</span> <span class="o">=</span> <span class="s2">&quot;X&quot;</span>;
+</span><span class='line'>        String <span class="nv">find_maru</span> <span class="o">=</span> <span class="s2">&quot;O&quot;</span>;
+</span><span class='line'>
+</span><span class='line'>        BufferedReader <span class="nv">reader</span> <span class="o">=</span> new BufferedReader<span class="o">(</span>new InputStreamReader<span class="o">(</span>System.in<span class="o">))</span>;
+</span><span class='line'>        try <span class="o">{</span>
+</span><span class='line'>            String <span class="nv">line</span> <span class="o">=</span> reader.readLine<span class="o">()</span>;
+</span><span class='line'>            <span class="k">while</span> <span class="o">(</span>line !<span class="o">=</span> null<span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>                <span class="k">if</span> <span class="o">(</span>line.startsWith<span class="o">(</span><span class="s2">&quot;X&quot;</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>                    System.out.println<span class="o">(</span><span class="s2">&quot;&lt;h1&gt;&quot;</span> + line.substring<span class="o">(</span>1<span class="o">)</span> + <span class="s2">&quot;&lt;/h1&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>                <span class="o">}</span> <span class="k">else if</span> <span class="o">(</span>line.startsWith<span class="o">(</span><span class="s2">&quot;O&quot;</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="o">=======</span>
+</span><span class='line'>public class MakeHtml2 <span class="o">{</span>
+</span><span class='line'>    public static void main<span class="o">(</span>String<span class="o">[]</span> args<span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        BufferedReader <span class="nv">reader</span> <span class="o">=</span> new BufferedReader<span class="o">(</span>new InputStreamReader<span class="o">(</span>System.in<span class="o">))</span>;
+</span><span class='line'>        try <span class="o">{</span>
+</span><span class='line'>            String line;
+</span><span class='line'>            System.out.println<span class="o">(</span><span class="s2">&quot;&lt;!DOCTYPE html&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>            System.out.println<span class="o">(</span><span class="s2">&quot;&lt;html&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>            System.out.println<span class="o">(</span><span class="s2">&quot;&lt;head&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>            System.out.println<span class="o">(</span><span class="s2">&quot;&lt;title&gt;My Page&lt;/title&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>            System.out.println<span class="o">(</span><span class="s2">&quot;&lt;/head&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>            System.out.println<span class="o">(</span><span class="s2">&quot;&lt;body&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>            <span class="k">while</span> <span class="o">((</span><span class="nv">line</span> <span class="o">=</span> reader.readLine<span class="o">())</span> !<span class="o">=</span> null<span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>                <span class="k">if</span> <span class="o">(</span>line.startsWith<span class="o">(</span><span class="s2">&quot;■&quot;</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>                    System.out.println<span class="o">(</span><span class="s2">&quot;&lt;h1&gt;&quot;</span> + line.substring<span class="o">(</span>1<span class="o">)</span> + <span class="s2">&quot;&lt;/h1&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>                <span class="o">}</span> <span class="k">else if</span> <span class="o">(</span>line.startsWith<span class="o">(</span><span class="s2">&quot;●&quot;</span><span class="o">)</span> <span class="o">){</span>
+</span><span class='line'>&gt;&gt;&gt;&gt;&gt;&gt;&gt; topic
+</span><span class='line'>                    System.out.println<span class="o">(</span><span class="s2">&quot;&lt;h2&gt;&quot;</span> + line.substring<span class="o">(</span>1<span class="o">)</span> + <span class="s2">&quot;&lt;/h2&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>                <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>                    System.out.println<span class="o">(</span><span class="s2">&quot;&lt;p&gt;&quot;</span> + line + <span class="s2">&quot;&lt;/p&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>                <span class="o">}</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>            System.out.println<span class="o">(</span><span class="s2">&quot;&lt;/body&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>            System.out.println<span class="o">(</span><span class="s2">&quot;&lt;/html&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>        <span class="o">}</span> catch <span class="o">(</span>IOException e<span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            System.out.println<span class="o">(</span>e<span class="o">)</span>;
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>topicブランチ側の&#8217;MakeHtml.java&#8217;を正として採用する</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git checkout MERGE_HEAD MakeHtml.java
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git status -s
+</span><span class='line'>M  MakeHtml.java
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>cat MakeHtml.java
+</span><span class='line'>/** 標準入力から1行づつ読み取って、htmlファイルを標準出力にだす
+</span><span class='line'> *  プログラムです
+</span><span class='line'> */
+</span><span class='line'>
+</span><span class='line'>import java.io.*;
+</span><span class='line'>
+</span><span class='line'>public class MakeHtml2 <span class="o">{</span>
+</span><span class='line'>    public static void main<span class="o">(</span>String<span class="o">[]</span> args<span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        BufferedReader <span class="nv">reader</span> <span class="o">=</span> new BufferedReader<span class="o">(</span>new InputStreamReader<span class="o">(</span>System.in<span class="o">))</span>;
+</span><span class='line'>        try <span class="o">{</span>
+</span><span class='line'>            String line;
+</span><span class='line'>            System.out.println<span class="o">(</span><span class="s2">&quot;&lt;!DOCTYPE html&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>            System.out.println<span class="o">(</span><span class="s2">&quot;&lt;html&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>            System.out.println<span class="o">(</span><span class="s2">&quot;&lt;head&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>            System.out.println<span class="o">(</span><span class="s2">&quot;&lt;title&gt;My Page&lt;/title&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>            System.out.println<span class="o">(</span><span class="s2">&quot;&lt;/head&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>            System.out.println<span class="o">(</span><span class="s2">&quot;&lt;body&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>            <span class="k">while</span> <span class="o">((</span><span class="nv">line</span> <span class="o">=</span> reader.readLine<span class="o">())</span> !<span class="o">=</span> null<span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>                <span class="k">if</span> <span class="o">(</span>line.startsWith<span class="o">(</span><span class="s2">&quot;■&quot;</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>                    System.out.println<span class="o">(</span><span class="s2">&quot;&lt;h1&gt;&quot;</span> + line.substring<span class="o">(</span>1<span class="o">)</span> + <span class="s2">&quot;&lt;/h1&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>                <span class="o">}</span> <span class="k">else if</span> <span class="o">(</span>line.startsWith<span class="o">(</span><span class="s2">&quot;●&quot;</span><span class="o">)</span> <span class="o">){</span>
+</span><span class='line'>                    System.out.println<span class="o">(</span><span class="s2">&quot;&lt;h2&gt;&quot;</span> + line.substring<span class="o">(</span>1<span class="o">)</span> + <span class="s2">&quot;&lt;/h2&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>                <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>                    System.out.println<span class="o">(</span><span class="s2">&quot;&lt;p&gt;&quot;</span> + line + <span class="s2">&quot;&lt;/p&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>                <span class="o">}</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>            System.out.println<span class="o">(</span><span class="s2">&quot;&lt;/body&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>            System.out.println<span class="o">(</span><span class="s2">&quot;&lt;/html&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>        <span class="o">}</span> catch <span class="o">(</span>IOException e<span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            System.out.println<span class="o">(</span>e<span class="o">)</span>;
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最後に忘れずにコミットする</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git commit -m <span class="s2">&quot;topicブランチ側のファイルを採用&quot;</span>
+</span><span class='line'><span class="nv">$ </span>git log --graph
+</span><span class='line'>*   commit 285c9b2cde90479563e3a37bd9a40a8f378971a6
+</span><span class='line'>|<span class="se">\ </span> Merge: 4730de4 63494db
+</span><span class='line'>| | Author: spam ham
+</span><span class='line'>| | Date:   Mon Apr 28 12:37:44 2014 +0900
+</span><span class='line'>| |
+</span><span class='line'>| |     topicブランチ側のファイルを採用
+</span><span class='line'>| |
+</span><span class='line'>| * commit 63494dbda5d574deb8f1e15b092f77f0e852430f
+</span><span class='line'>| | Author: spam ham
+</span><span class='line'>| | Date:   Mon Apr 28 12:26:02 2014 +0900
+</span><span class='line'>| |
+</span><span class='line'>| |     edit MakeHtml.java by topic branch
+</span><span class='line'>| |
+</span><span class='line'>* | commit 4730de45f21b7c0b1b472b67527a0abcc2224a50
+</span><span class='line'>|/  Author: spam ham
+</span><span class='line'>|   Date:   Mon Apr 28 12:33:13 2014 +0900
+</span><span class='line'>|
+</span><span class='line'>|       edit MakeHtml.java by master branch
+</span><span class='line'>|
+</span><span class='line'>* commit 6888a07dfb84fbae958e2269b05ff84078a1480d
+</span><span class='line'>  Author: spam ham
+</span><span class='line'>  Date:   Mon Apr 28 12:20:16 2014 +0900
+</span><span class='line'>
+</span><span class='line'>      add MakeHtml.java
+</span></code></pre></td></tr></table></div></figure>
+
+
+<a name="L..................................................................................."></a>
+<h2>ファイル単位で解決を行う(現在のブランチ側を正とする場合)</h2>
+
+<p>現在のブランチを<strong>master</strong>として、マージするブランチを<strong>topic</strong>とします。</p>
+
+<p>ここではコンフリクトが起きた場合、<strong>master</strong>ブランチ側のファイルを採用
+するケースを解説します。</p>
+
+<p>マージする直後までの解説は<em>(マージするブランチ側を正とする場合)</em>と同じ内容
+なので、そちらを参照してください。</p>
+
+<p>topicブランチ側の&#8217;MakeHtml.java&#8217;を正として採用する</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git checkout ORIG_HEAD MakeHtml.java
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git status -s
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>cat MakeHtml.java
+</span><span class='line'>/** 標準入力から1行づつ読み取って、htmlファイルを標準出力する
+</span><span class='line'> *  プログラムです。今日はこれをmasterブランチで少し変種しました。
+</span><span class='line'> */
+</span><span class='line'>
+</span><span class='line'>import java.io.*;
+</span><span class='line'>
+</span><span class='line'>public class MakeHtml1_2 <span class="o">{</span>
+</span><span class='line'>    public static void main<span class="o">(</span>String<span class="o">[]</span> args<span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        System.out.println<span class="o">(</span><span class="s2">&quot;&lt;!DOCTYPE html&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>        System.out.println<span class="o">(</span><span class="s2">&quot;&lt;html&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>        System.out.println<span class="o">(</span><span class="s2">&quot;&lt;head&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>        System.out.println<span class="o">(</span><span class="s2">&quot;&lt;title&gt;My Page&lt;/title&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>        System.out.println<span class="o">(</span><span class="s2">&quot;&lt;/head&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>        System.out.println<span class="o">(</span><span class="s2">&quot;&lt;body&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>
+</span><span class='line'>        String <span class="nv">find_shikaku</span> <span class="o">=</span> <span class="s2">&quot;X&quot;</span>;
+</span><span class='line'>        String <span class="nv">find_maru</span> <span class="o">=</span> <span class="s2">&quot;O&quot;</span>;
+</span><span class='line'>
+</span><span class='line'>        BufferedReader <span class="nv">reader</span> <span class="o">=</span> new BufferedReader<span class="o">(</span>new InputStreamReader<span class="o">(</span>System.in<span class="o">))</span>;
+</span><span class='line'>        try <span class="o">{</span>
+</span><span class='line'>            String <span class="nv">line</span> <span class="o">=</span> reader.readLine<span class="o">()</span>;
+</span><span class='line'>            <span class="k">while</span> <span class="o">(</span>line !<span class="o">=</span> null<span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>                <span class="k">if</span> <span class="o">(</span>line.startsWith<span class="o">(</span><span class="s2">&quot;X&quot;</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>                    System.out.println<span class="o">(</span><span class="s2">&quot;&lt;h1&gt;&quot;</span> + line.substring<span class="o">(</span>1<span class="o">)</span> + <span class="s2">&quot;&lt;/h1&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>                <span class="o">}</span> <span class="k">else if</span> <span class="o">(</span>line.startsWith<span class="o">(</span><span class="s2">&quot;O&quot;</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>                    System.out.println<span class="o">(</span><span class="s2">&quot;&lt;h2&gt;&quot;</span> + line.substring<span class="o">(</span>1<span class="o">)</span> + <span class="s2">&quot;&lt;/h2&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>                <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>                    System.out.println<span class="o">(</span><span class="s2">&quot;&lt;p&gt;&quot;</span> + line + <span class="s2">&quot;&lt;/p&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>                <span class="o">}</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>        <span class="o">}</span> catch <span class="o">(</span>IOException e<span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            System.out.println<span class="o">(</span>e<span class="o">)</span>;
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        System.out.println<span class="o">(</span><span class="s2">&quot;&lt;/body&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>        System.out.println<span class="o">(</span><span class="s2">&quot;&lt;/html&gt;&quot;</span><span class="o">)</span>;
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最後に忘れずにコミットする</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git commit -m <span class="s2">&quot;masterブランチ側のファイルを採用&quot;</span>
+</span><span class='line'><span class="nv">$ </span>git log --graph
+</span><span class='line'>*   commit 4881e01fcd00638786f8be02f809d8a3c5416cf3
+</span><span class='line'>|<span class="se">\ </span> Merge: 4730de4 63494db
+</span><span class='line'>| | Author: spam ham
+</span><span class='line'>| | Date:   Mon Apr 28 12:49:30 2014 +0900
+</span><span class='line'>| |
+</span><span class='line'>| |     masterブランチ側のファイルを採用
+</span><span class='line'>| |
+</span><span class='line'>| * commit 63494dbda5d574deb8f1e15b092f77f0e852430f
+</span><span class='line'>| | Author: spam ham
+</span><span class='line'>| | Date:   Mon Apr 28 12:26:02 2014 +0900
+</span><span class='line'>| |
+</span><span class='line'>| |     edit MakeHtml.java by topic branch
+</span><span class='line'>| |
+</span><span class='line'>* | commit 4730de45f21b7c0b1b472b67527a0abcc2224a50
+</span><span class='line'>|/  Author: spam ham
+</span><span class='line'>|   Date:   Mon Apr 28 12:33:13 2014 +0900
+</span><span class='line'>|
+</span><span class='line'>|       edit MakeHtml.java by master branch
+</span><span class='line'>|
+</span><span class='line'>* commit 6888a07dfb84fbae958e2269b05ff84078a1480d
+</span><span class='line'>  Author: spam ham
+</span><span class='line'>  Date:   Mon Apr 28 12:20:16 2014 +0900
+</span><span class='line'>
+</span><span class='line'>      add MakeHtml.java
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">seak0503</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-28T11:45:19+09:00" pubdate data-updated="true">2014-04-28</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/git/'>Git</a>, <a class='category' href='/blog/categories/github/'>GitHub</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.seak.jp.net/blog/2014/04/28/git-resolution-advanced-conflict/" data-via="" data-counturl="http://blog.seak.jp.net/blog/2014/04/28/git-resolution-advanced-conflict/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/04/28/git-reset-merge/" title="Previous Post: マージで競合が発生した時に、マージをやり直す方法">&laquo; マージで競合が発生した時に、マージをやり直す方法</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/05/07/git-checkout-reset/" title="Next Post: git reset --hardでのファイル変更取り消しについて">git reset --hardでのファイル変更取り消しについて &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/11/26/dev-octopress/">Octopressの環境移設</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/07/sublimetextmacterminal/">Sublime Textから素早くiTermを開く</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/04/sublimetextthemecursor/">Sublime Text 3のカーソルを変更する手順</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/04/sublimetextthemeitg/">Themeのカラースキームを編集する</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/17/sublimetextvim/">sublimeText3でVimライクな操作を可能にさせる</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+  <h1>Categories</h1>
+    <ul id="category-list"><li><a href='/blog/categories/apache/'>Apache (1)</a></li><li><a href='/blog/categories/benchmark/'>Benchmark (1)</a></li><li><a href='/blog/categories/chef/'>Chef (2)</a></li><li><a href='/blog/categories/git/'>Git (9)</a></li><li><a href='/blog/categories/github/'>GitHub (8)</a></li><li><a href='/blog/categories/html/'>HTML (1)</a></li><li><a href='/blog/categories/java/'>Java (4)</a></li><li><a href='/blog/categories/linux/'>Linux (7)</a></li><li><a href='/blog/categories/markdown/'>Markdown (2)</a></li><li><a href='/blog/categories/octopress/'>Octopress (3)</a></li><li><a href='/blog/categories/oracle/'>Oracle (1)</a></li><li><a href='/blog/categories/python/'>Python (1)</a></li><li><a href='/blog/categories/ruby/'>Ruby (2)</a></li><li><a href='/blog/categories/security/'>Security (2)</a></li><li><a href='/blog/categories/sublime-text/'>Sublime Text (4)</a></li></ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/seak0503">@seak0503</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'seak0503',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - seak0503 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'seak0503';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.seak.jp.net/blog/2014/04/28/git-resolution-advanced-conflict/';
+        var disqus_url = 'http://blog.seak.jp.net/blog/2014/04/28/git-resolution-advanced-conflict/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

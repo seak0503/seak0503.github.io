@@ -1,0 +1,372 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Javaのsuper()を書く場所に注意 - seak0503 Blog</title>
+  <meta name="author" content="seak0503">
+
+  
+  <meta name="description" content="Javaでサブクラスをつくった場合、特に何か書かなくてもスーパークラスの
+引数なしのコンストラクタはコンパイラによって、自動的に挿入されます。 例えば下記のような、RectangleクラスのサブクラスNamedRectangleクラスをつくった場合
+NamedRectangle() &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.seak.jp.net/blog/2014/07/10/java-super/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="seak0503 Blog" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <nav role="navigation"><ul class="subscription" data-subscription="rss email">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+    <li><a href="seak0503.gmail.com" rel="subscribe-email" title="subscribe via email">Email</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.seak.jp.net" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+    <li><a href="/">
+        <span class="blue_light">
+            seak0503 Blog
+        </span>
+       
+    </a></li>
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Javaのsuper()を書く場所に注意</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-07-10T06:35:19+09:00" pubdate data-updated="true">2014-07-10</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><!-- more -->
+
+
+<p>Javaでサブクラスをつくった場合、特に何か書かなくてもスーパークラスの
+<strong>引数なし</strong>のコンストラクタはコンパイラによって、自動的に挿入されます。</p>
+
+<p>例えば下記のような、RectangleクラスのサブクラスNamedRectangleクラスをつくった場合
+<code>NamedRectangle()</code>コンストラクタのところに、スーパークラスのコンストラクタ呼び出しは
+書いていません。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">class</span> <span class="nc">NamedRectangle</span> <span class="kd">extends</span> <span class="n">Rectangle</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+</span><span class='line'>    <span class="n">NamedRectangle</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;NO NAME&quot;</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>この場合、コンパイル時に<code>super()</code>が自動的に挿入され、下記のように
+スーパークラスの引数なしのコンストラクタが呼び出せるようになっています。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">class</span> <span class="nc">NamedRectangle</span> <span class="kd">extends</span> <span class="n">Rectangle</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+</span><span class='line'>    <span class="n">NamedRectangle</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kd">super</span><span class="o">();</span> <span class="o">&lt;-</span><span class="err">これ</span>
+</span><span class='line'>        <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;NO NAME&quot;</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ではスーパークラスの<strong>引数付き</strong>のコンストラクタを呼び出す場合はどうでしょうか?
+そうです、明示的に書いてやる必要があります。
+例えば下記のような感じ</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">class</span> <span class="nc">NamedRectangle</span> <span class="kd">extends</span> <span class="n">Rectangle</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+</span><span class='line'>    <span class="n">NamedRectangle</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kd">super</span><span class="o">(</span><span class="mi">200</span><span class="o">,</span> <span class="mi">32</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;NO NAME&quot;</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>大変前置きが長かったですが、この<code>super()</code>を書く位置をずらしてコンパイルすると
+どうなってしまうでしょうか?</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">class</span> <span class="nc">NamedRectangle</span> <span class="kd">extends</span> <span class="n">Rectangle</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+</span><span class='line'>    <span class="n">NamedRectangle</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;NO NAME&quot;</span><span class="o">;</span>
+</span><span class='line'>        <span class="kd">super</span><span class="o">(</span><span class="mi">200</span><span class="o">,</span> <span class="mi">32</span><span class="o">);</span> <span class="o">&lt;-</span><span class="err">このように一行したに入れる</span>
+</span><span class='line'>    <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>コンパイルすると、、、</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>javac PlacedRectangle.java
+</span><span class='line'>PlacedRectangle.java:12: エラー: superの呼出しはコンストラクタの先頭文である必要があります
+</span><span class='line'>        super<span class="o">(</span>width, height<span class="o">)</span>;
+</span><span class='line'>             ^
+</span><span class='line'>エラー1個
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>superの呼出しはコンストラクタの先頭文である必要があります</code>と怒られてしまいました。</p>
+
+<p>Javaを書く方には「当然のこと!」と怒られそうですが、ちょっと気になってためした結果を
+せっかくですので、ブログにおこしました。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">seak0503</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-07-10T06:35:19+09:00" pubdate data-updated="true">2014-07-10</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/java/'>Java</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.seak.jp.net/blog/2014/07/10/java-super/" data-via="" data-counturl="http://blog.seak.jp.net/blog/2014/07/10/java-super/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/07/02/git-source-install/" title="Previous Post: gitのソースインストール">&laquo; gitのソースインストール</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/07/16/java-override/" title="Next Post: メソッドをオーバーライドする時のシグネチャにおける注意点">メソッドをオーバーライドする時のシグネチャにおける注意点 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/11/26/dev-octopress/">Octopressの環境移設</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/07/sublimetextmacterminal/">Sublime Textから素早くiTermを開く</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/04/sublimetextthemecursor/">Sublime Text 3のカーソルを変更する手順</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/04/sublimetextthemeitg/">Themeのカラースキームを編集する</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/17/sublimetextvim/">sublimeText3でVimライクな操作を可能にさせる</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+  <h1>Categories</h1>
+    <ul id="category-list"><li><a href='/blog/categories/apache/'>Apache (1)</a></li><li><a href='/blog/categories/benchmark/'>Benchmark (1)</a></li><li><a href='/blog/categories/chef/'>Chef (2)</a></li><li><a href='/blog/categories/git/'>Git (9)</a></li><li><a href='/blog/categories/github/'>GitHub (8)</a></li><li><a href='/blog/categories/html/'>HTML (1)</a></li><li><a href='/blog/categories/java/'>Java (4)</a></li><li><a href='/blog/categories/linux/'>Linux (7)</a></li><li><a href='/blog/categories/markdown/'>Markdown (2)</a></li><li><a href='/blog/categories/octopress/'>Octopress (3)</a></li><li><a href='/blog/categories/oracle/'>Oracle (1)</a></li><li><a href='/blog/categories/python/'>Python (1)</a></li><li><a href='/blog/categories/ruby/'>Ruby (2)</a></li><li><a href='/blog/categories/security/'>Security (2)</a></li><li><a href='/blog/categories/sublime-text/'>Sublime Text (4)</a></li></ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/seak0503">@seak0503</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'seak0503',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - seak0503 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'seak0503';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.seak.jp.net/blog/2014/07/10/java-super/';
+        var disqus_url = 'http://blog.seak.jp.net/blog/2014/07/10/java-super/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: HTML | seak0503 Blog]]></title>
+  <link href="http://blog.seak.jp.net/blog/categories/html/atom.xml" rel="self"/>
+  <link href="http://blog.seak.jp.net/"/>
+  <updated>2014-11-28T08:26:19+09:00</updated>
+  <id>http://blog.seak.jp.net/</id>
+  <author>
+    <name><![CDATA[seak0503]]></name>
+    <email><![CDATA[seak0503.gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[marginの相殺について]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/07/26/http-margin/"/>
+    <updated>2014-07-26T08:56:05+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/07/26/http-margin</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<p>cssのmarginを使う際、上下に隣接する要素のmarginが相殺される様子を
+確認してみました。</p>
+
+<p>HTMLのソースは下記のとおりです。</p>
+
+<p>```html
+&lt;!DOCTYPE html>
+<html lang="ja">
+  <head></p>
+
+<pre><code>&lt;meta charset="utf-8"&gt;
+&lt;title&gt;マージンの相殺&lt;/title&gt;
+&lt;link rel="stylesheet" href="../common/css/test.css"&gt;
+</code></pre>
+
+<p>  </head>
+  <body></p>
+
+<pre><code>&lt;p class="sample1"&gt;sample1&lt;/p&gt;
+&lt;p class="sample2"&gt;sample2&lt;/p&gt;
+</code></pre>
+
+<p>  </body>
+</html>
+```</p>
+
+<p>まずは上下に隣接する二つの要素のmarginを0pxにするところからやって
+みます。</p>
+
+<p>```css
+.sample1 {</p>
+
+<pre><code>    background-color: #f6fa0c;
+    border: dotted 3px #ffb700;
+    margin-bottom: 0px;
+</code></pre>
+
+<p>}</p>
+
+<p>.sample2 {</p>
+
+<pre><code>    background-color: #00f5c4;
+    border: dotted 3px #0400ff;
+    margin-top: 0px;
+</code></pre>
+
+<p>}
+```</p>
+
+<p>この結果は下記のようになります。</p>
+
+<p><img src="/images/20140726/1.jpg" title="image1" alt="image1"></p>
+
+<p>次は、上の要素(sample1)の下側に10pxのスペースを作ります。</p>
+
+<p>```css
+.sample1 {</p>
+
+<pre><code>    background-color: #f6fa0c;
+    border: dotted 3px #ffb700;
+    margin-bottom: 10px; &lt;-ここを変更
+</code></pre>
+
+<p>}</p>
+
+<p>.sample2 {</p>
+
+<pre><code>    background-color: #00f5c4;
+    border: dotted 3px #0400ff;
+    margin-top: 0px;
+</code></pre>
+
+<p>}
+```</p>
+
+<p>この結果は下記のようになります。</p>
+
+<p><img src="/images/20140726/2.jpg" title="image2" alt="image2"></p>
+
+<p>では、下の要素(sample2)の上側に10pxのスペースを作るとどうなるでしょうか?</p>
+
+<p>```css
+.sample1 {</p>
+
+<pre><code>    background-color: #f6fa0c;
+    border: dotted 3px #ffb700;
+    margin-bottom: 10px;
+</code></pre>
+
+<p>}</p>
+
+<p>.sample2 {</p>
+
+<pre><code>    background-color: #00f5c4;
+    border: dotted 3px #0400ff;
+    margin-top: 10px; &lt;-ここを変更
+</code></pre>
+
+<p>}
+```</p>
+
+<p>この結果は下記のようになります。</p>
+
+<p><img src="/images/20140726/3.jpg" title="image3" alt="image3"></p>
+
+<p>つまり、下記のように<code>10px + 10px = 20px</code>にはなりません。</p>
+
+<p><img src="/images/20140726/4.jpg" title="image4" alt="image4"></p>
+
+<p>では、下の要素(sample2)の上側のスペースを20pxに変更するとどうなるでしょう?</p>
+
+<p>```css
+.sample1 {</p>
+
+<pre><code>    background-color: #f6fa0c;
+    border: dotted 3px #ffb700;
+    margin-bottom: 10px;
+</code></pre>
+
+<p>}</p>
+
+<p>.sample2 {</p>
+
+<pre><code>    background-color: #00f5c4;
+    border: dotted 3px #0400ff;
+    margin-top: 20px; &lt;-ここを変更
+</code></pre>
+
+<p>}
+```</p>
+
+<p>この結果は下記のようになります。</p>
+
+<p><img src="/images/20140726/5.jpg" title="image5" alt="image5"></p>
+
+<p>ここで、上の要素(sample1)の市側のスペースを20pxに変更するとどうなるかは
+想像がつくと思います。</p>
+
+<p>試しに30pxにするとどうなるでしょうか?</p>
+
+<p>```css
+.sample1 {</p>
+
+<pre><code>    background-color: #f6fa0c;
+    border: dotted 3px #ffb700;
+    margin-bottom: 30px;
+</code></pre>
+
+<p>}</p>
+
+<p>.sample2 {</p>
+
+<pre><code>    background-color: #00f5c4;
+    border: dotted 3px #0400ff;
+    margin-top: 20px;
+</code></pre>
+
+<p>}
+```</p>
+
+<p>結果は下記のとおりとなります。</p>
+
+<p><img src="/images/20140726/6.jpg" title="image6" alt="image6"></p>
+
+<p>なんとなくイメージできるでしょうか?</p>
+]]></content>
+  </entry>
+  
+</feed>

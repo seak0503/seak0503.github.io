@@ -1,0 +1,443 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Octopress | seak0503 Blog]]></title>
+  <link href="http://blog.seak.jp.net/blog/categories/octopress/atom.xml" rel="self"/>
+  <link href="http://blog.seak.jp.net/"/>
+  <updated>2014-11-28T08:26:19+09:00</updated>
+  <id>http://blog.seak.jp.net/</id>
+  <author>
+    <name><![CDATA[seak0503]]></name>
+    <email><![CDATA[seak0503.gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Octopressの環境移設]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/11/26/dev-octopress/"/>
+    <updated>2014-11-26T14:23:42+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/11/26/dev-octopress</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+
+
+<h2>目次</h2>
+
+
+<p><ul>
+ <li><a href="#L............">はじめに</a></li>
+ <li><a href="#L......">前提</a></li>
+ <li><a href="#L......">手順</a></li>
+</ul>
+
+</p>
+
+<a name="L............"></a>
+<h1>はじめに</h1>
+
+<p>Git Pagesを使った、Octopressの環境、というかブログの原稿を書くローカルリポジトリの再構築の仕方に
+ついて説明します。</p>
+
+<p>手持ちのPCを買いかえたり、オフィスのPCと自宅のPCの両方から、ブログ記事を書きたい時に
+使える手順になります。</p>
+
+<a name="L......"></a>
+<h1>前提</h1>
+
+<ul>
+<li><p>すべてのソースコードをリモートのリポジトリで管理していること</p></li>
+<li><p>ローカル環境にはRuby, gitがインストールされていること</p></li>
+</ul>
+
+
+<a name="L......"></a>
+<h1>手順</h1>
+
+<p>ソースコードを管理しているリモートリポジトリから<code>git clone</code>する:
+<code>bash
+$ git clone git@bitbucket.org:username/username.github.io.git
+</code></p>
+
+<p>セットアップ
+```bash
+$ gem install bundler</p>
+
+<p>$ bundle install</p>
+
+<p>$ bundle exec rake install
+```</p>
+
+<p>GitHubに作成済みのリポジトリを登録する
+```bash
+$ bundle exec rake setup_github_pages
+Enter the read/write url for your repository
+(For example, 'git@github.com:your_username/your_username.github.io.git)</p>
+
+<pre><code>       or 'https://github.com/your_username/your_username.github.io')
+</code></pre>
+
+<p>Repository url: git@github.com:username/username.github.io.git
+```</p>
+
+<p>日本語タイトルのソースコードがあると<code>rake preview</code>や<code>rake generate</code>時に</p>
+
+<p><code>Liquid Exception: incompatible character encodings: UTF-8 and ASCII-8BIT in atom.xml</code></p>
+
+<p>というエラーになってしまうため、これを修正する</p>
+
+<p>下記は、rbenvでruby2.1.1をインストールしている場合の例
+```bash
+vim ./.rbenv/versions/2.1.1/lib/ruby/gems/2.1.0/gems/jekyll-0.12.0/lib/jekyll/converters/markdown.rb
+～略～</p>
+
+<pre><code>       if rd.generate_toc and html.include?(@config['rdiscount']['toc_token'])
+</code></pre>
+
+<ul>
+<li><pre><code>     html.gsub!(@config['rdiscount']['toc_token'], rd.toc_content)
+</code></pre></li>
+<li><pre><code>     html.gsub!(@config['rdiscount']['toc_token'], rd.toc_content.force_encoding('utf-8'))
+   end
+   html
+</code></pre>
+
+<p>～略～
+```</p></li>
+</ul>
+
+
+<p>テーマをデフォルトから変更している場合には、テーマを再インストールする
+```bash
+$ pwd
+[Octopressのソースコードをcloneしたディレクトリ]</p>
+
+<p>$ git clone https://github.com/wallace/justin-kelly-theme.git .themes/justin-kelly-theme</p>
+
+<p>$ bundle exec rake install['justin-kelly-theme']
+```</p>
+
+<p>あとは通常どおり使用できます。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Octopress+GitHub+Bitbucketブログの運用管理について]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/04/17/octopress-pdca/"/>
+    <updated>2014-04-17T10:39:32+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/04/17/octopress-pdca</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+
+
+<h2>目次</h2>
+
+
+<p><ul>
+ <li><ul>
+  <li><a href="#L............">はじめに</a></li>
+  <li><a href="#L............">コマンド</a></li>
+  <li><a href="#L........................">ソースコード管理</a></li>
+  <li><a href="#Octopress.........">Octopressの更新</a></li>
+ </ul></li>
+</ul>
+
+</p>
+
+<a name="L............"></a>
+<h2>はじめに</h2>
+
+<p>Octopress + GitHub + Bitbucketで構築したブログ環境の運用について
+最低限必要なことを書いています。</p>
+
+<a name="L............"></a>
+<h2>コマンド</h2>
+
+<p><code>
+$ rake new_post["title"] # 新規記事を作成
+$ rake new_page["title"] # 新規ページを作成
+$ rake generate          # 記事をhtmlに変換
+$ rake preview           # プレビュー(port:4000)
+$ rake deploy            # 記事を公開(GitHub Pagesにデプロイ)
+</code></p>
+
+<a name="L........................"></a>
+<h2>ソースコード管理</h2>
+
+<p>Bitbucketにソースをpushして、ソース管理します。</p>
+
+<p>Bitbucketリポジトリをリモートリポジトリとして登録:</p>
+
+<p><code>
+$ git remote add bitbucket git@bitbucket.org:username/[任意のリポジトリ名]
+</code></p>
+
+<p>Bitbucketにソースをpush:</p>
+
+<p><code>
+$ git push -u bitbucket source
+</code></p>
+
+<a name="Octopress........."></a>
+<h2>Octopressの更新</h2>
+
+<p>Octopress自体を更新する場合は、本家の更新を取り込んでマージします。その後、ソースとスタイルを更新してpush、デプロイします。</p>
+
+<p><code>
+$ git fetch octopress
+$ git pull octopress master
+$ bundle install
+$ rake update_source
+$ rake update_style
+$ rm -rf sass.old
+$ rm -rf source.old
+$ git push
+$ rake deploy
+</code></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Octopress+GitHub+Bitbucketでブログ環境構築]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/04/17/octopress-install/"/>
+    <updated>2014-04-17T04:22:10+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/04/17/octopress-install</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+
+
+<h2>目次</h2>
+
+
+<p><ul>
+ <li><ul>
+  <li><a href="#L............">はじめに</a></li>
+  <li><a href="#Octopress.Setup">Octopress Setup</a></li>
+  <li><a href="#GitHub........................">GitHubでリポジトリ作成</a></li>
+  <li><a href="#GitHub......deploy......">GitHubへのdeploy設定</a></li>
+  <li><a href="#L............">初期設定</a></li>
+  <li><a href="#L...............">テーマ変更</a></li>
+  <li><a href="#L...........................">独自ドメインの設定</a></li>
+  <li><a href="#Bitbucket........................">Bitbucketでリポジトリ作成</a></li>
+  <li><a href="#Bitbucket............................................................">Bitbucketリポジトリをリモートリポジトリとして登録</a></li>
+  <li><a href="#Bug......">Bug対応</a></li>
+  <li><a href="#L...........................">テスト用記事の作成</a></li>
+  <li><a href="#GitPage........................">GitPageへの記事のアップ</a></li>
+  <li><a href="#Bitbucket...........................Push">BitbucketへのソースコードのPush</a></li>
+ </ul></li>
+</ul>
+
+</p>
+
+<a name="L............"></a>
+<h2>はじめに</h2>
+
+<p>Octopress、GitHub、Bitbucketを使ってブログ環境を構築する手順です。</p>
+
+<p>Octopressを使ったブログ環境の構築については、他に多くの方が詳細を
+書いているようですので、ここでは簡単な説明しかしていません。</p>
+
+<ul>
+<li><p>ローカル環境</p>
+
+<ul>
+<li>OS: CentOS release 6.4(2.6.32-358.23.2.el6.x86_64)</li>
+</ul>
+</li>
+<li><p>ホスティング環境</p>
+
+<ul>
+<li>GitHub</li>
+</ul>
+</li>
+<li><p>ソースコード管理</p>
+
+<ul>
+<li>Bitbucket</li>
+</ul>
+</li>
+<li><p>必要条件</p>
+
+<ul>
+<li>ruby 1.9.3 以上</li>
+</ul>
+</li>
+</ul>
+
+
+<a name="Octopress.Setup"></a>
+<h2>Octopress Setup</h2>
+
+<p>```
+$ git clone git@github.com:imathis/octopress.git [任意のディレクト名]</p>
+
+<p>$ cd [Octopressのソースコードをcloneしたディレクトリ]</p>
+
+<p>$ gem install bundler</p>
+
+<p>$ bundle install</p>
+
+<p>$ bundle exec rake install
+```</p>
+
+<blockquote><p>私の環境の場合、<code>rake install</code>とやると下記のようなエラーになってしまいます。
+<code>rake</code>コマンドを使う時は<code>bundle exec</code>をつける必要があるようです。
+ちょっと面倒なのでとりあえず<code>.bashrc</code>に<code>alias rake='bundle exec rake'</code>と定義しておきました。</p></blockquote>
+
+<p><code>
+$ rake install
+rake aborted!
+You have already activated rake 10.1.0, but your Gemfile requires rake 0.9.6. Prepending `bundle exec` to your command may solve this.
+</code></p>
+
+<a name="GitHub........................"></a>
+<h2>GitHubでリポジトリ作成</h2>
+
+<p>GitHubにログインして、GitHubリポジトリを作成します。</p>
+
+<ul>
+<li>リポジトリ名: username.github.io (usernameのところは自分のGitHubのアカウント名に読み替える)</li>
+</ul>
+
+
+<a name="GitHub......deploy......"></a>
+<h2>GitHubへのdeploy設定</h2>
+
+<p>GitHubで先ほど作成したリポジトリを登録します。</p>
+
+<p><code>
+$ rake setup_github_pages
+Enter the read/write url for your repository: git@github.com: username/username.github.com.git
+</code></p>
+
+<a name="L............"></a>
+<h2>初期設定</h2>
+
+<p><code>_config.yml</code>の初期設定を行います。まずは<code>url, title, subtitle, author</code>を変更
+しておけば良いと思います。</p>
+
+<p>使っていくうちに色々変更したくなったらカスタマイズしていけば良いと思います。</p>
+
+<a name="L..............."></a>
+<h2>テーマ変更</h2>
+
+<p><a href="http://opthemes.com/">Octopress Themes</a>を参考に好きなテーマを選び、変更します。</p>
+
+<p>私の場合"justin-kelly"を下記の手順で導入しました。</p>
+
+<p>```
+$ pwd
+[Octopressのソースコードをcloneしたディレクトリ]</p>
+
+<p>$ git clone https://github.com/wallace/justin-kelly-theme.git .themes/justin-kelly-theme</p>
+
+<p>$ rake install['justin-kelly-theme']
+```</p>
+
+<a name="L..........................."></a>
+<h2>独自ドメインの設定</h2>
+
+<p>自前のドメインを所有している場合、自前ドメインでブログを公開することができます。</p>
+
+<p>ここでは自前のドメインをspam.comと仮定して説明します。</p>
+
+<ol>
+<li><p>自前のドメインを管理しているDNSサーバでCNAMEレコードを追加します。</p>
+
+<p><code>blog.spam.com CNAME username.github.io</code></p></li>
+<li><p>sourceディレクトリ配下にCNAMEというファイルを追加します。</p></li>
+</ol>
+
+
+<p><code>
+$ echo 'blog.spam.com' &gt;&gt; source/CNAME
+</code></p>
+
+<a name="Bitbucket........................"></a>
+<h2>Bitbucketでリポジトリ作成</h2>
+
+<ul>
+<li><p>Name: 任意</p></li>
+<li><p>Access level: This is a private repository</p></li>
+<li><p>Repository type: Git</p></li>
+</ul>
+
+
+<a name="Bitbucket............................................................"></a>
+<h2>Bitbucketリポジトリをリモートリポジトリとして登録</h2>
+
+<p><code>
+$ git remote add bitbucket git@bitbucket.org:username/[任意のリポジトリ名]
+</code></p>
+
+<a name="Bug......"></a>
+<h2>Bug対応</h2>
+
+<p>ブログ記事のタイトルが日本語の場合、<code>rake preview</code>や<code>rake generate</code>の時に
+<code>Liquid Exception: incompatible character encodings: UTF-8 and ASCII-8BIT in atom.xml</code>という
+エラーになってしまうので、これを修正する</p>
+
+<p>下記は、rbenvでruby2.1.1をインストールしている場合の例
+```bash
+vim ./.rbenv/versions/2.1.1/lib/ruby/gems/2.1.0/gems/jekyll-0.12.0/lib/jekyll/converters/markdown.rb
+～略～</p>
+
+<pre><code>       if rd.generate_toc and html.include?(@config['rdiscount']['toc_token'])
+</code></pre>
+
+<ul>
+<li><pre><code>     html.gsub!(@config['rdiscount']['toc_token'], rd.toc_content)
+</code></pre></li>
+<li><pre><code>     html.gsub!(@config['rdiscount']['toc_token'], rd.toc_content.force_encoding('utf-8'))
+   end
+   html
+</code></pre>
+
+<p>～略～
+```</p></li>
+</ul>
+
+
+<a name="L..........................."></a>
+<h2>テスト用記事の作成</h2>
+
+<p><code>
+$ rake new_post['test']
+</code></p>
+
+<p><code>source/_post/YYYY-MM-DD-test.markdown</code>というファイルが出来上がるのでプレビューして確認します。</p>
+
+<p><code>
+$ rake preview
+</code></p>
+
+<p>ブラウザでport4000にアクセスすればプレビュー結果を確認することができます。</p>
+
+<a name="GitPage........................"></a>
+<h2>GitPageへの記事のアップ</h2>
+
+<p><code>
+$ rake gen_deploy
+</code></p>
+
+<p>初回のみ反映までに10分ほどかかります。</p>
+
+<a name="Bitbucket...........................Push"></a>
+<h2>BitbucketへのソースコードのPush</h2>
+
+<p>最後にBitbucketにソースコードをpushします。</p>
+
+<p>```
+$ git add -A</p>
+
+<p>$ git commit "add post"</p>
+
+<p>$ git push -u bitbucket source
+```</p>
+]]></content>
+  </entry>
+  
+</feed>

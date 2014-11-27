@@ -1,0 +1,827 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>git rebaseでsquashした場合とfixupした場合の違い - seak0503 Blog</title>
+  <meta name="author" content="seak0503">
+
+  
+  <meta name="description" content="目次 はじめに squashの場合 fixupの場合 はじめに ここではgit rebase -i [commit]コマンドでsquashした場合と
+fixupした場合の違いについて実行例を説明します。 squashの場合 ファイルを作成 1
+2
+3
+4
+5
+6
+7
+$ vi file1
+add &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.seak.jp.net/blog/2014/05/26/git-rebase-squash-fixup/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="seak0503 Blog" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <nav role="navigation"><ul class="subscription" data-subscription="rss email">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+    <li><a href="seak0503.gmail.com" rel="subscribe-email" title="subscribe via email">Email</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.seak.jp.net" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+    <li><a href="/">
+        <span class="blue_light">
+            seak0503 Blog
+        </span>
+       
+    </a></li>
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Git Rebaseでsquashした場合とfixupした場合の違い</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-26T14:27:11+09:00" pubdate data-updated="true">2014-05-26</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><!-- more -->
+
+
+
+
+<h2>目次</h2>
+
+
+<p><ul>
+ <li><ul>
+  <li><a href="#L............">はじめに</a></li>
+  <li><a href="#squash.........">squashの場合</a></li>
+  <li><a href="#fixup.........">fixupの場合</a></li>
+ </ul></li>
+</ul>
+
+</p>
+
+<a name="L............"></a>
+<h2>はじめに</h2>
+
+<p>ここでは<code>git rebase -i [commit]</code>コマンドでsquashした場合と
+fixupした場合の違いについて実行例を説明します。</p>
+
+<a name="squash........."></a>
+<h2>squashの場合</h2>
+
+<p>ファイルを作成</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vi file1
+</span><span class='line'>add file
+</span><span class='line'>:wq
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git add file1
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git commit -m <span class="s2">&quot;add file1&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>何度かファイルを更新する</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vi file1
+</span><span class='line'>edit 1
+</span><span class='line'>:wq
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git commit -am <span class="s2">&quot;edit 1&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>vi file1
+</span><span class='line'>edit 2
+</span><span class='line'>:wq
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git commit -am <span class="s2">&quot;edit 2&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>vi file1
+</span><span class='line'>edit 3
+</span><span class='line'>:wq
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git commit -am <span class="s2">&quot;edit 3&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ファイルを参照する</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>cat file1
+</span><span class='line'>add file
+</span><span class='line'>edit 1
+</span><span class='line'>edit 2
+</span><span class='line'>edit 3
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ログを確認する</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git log
+</span><span class='line'>commit 7bce8c8e38c743073c2e889fd9cdd235274b99c2
+</span><span class='line'>Author: spam ham
+</span><span class='line'>Date:   Mon May 26 16:33:39 2014 +0900
+</span><span class='line'>
+</span><span class='line'>    edit 3
+</span><span class='line'>
+</span><span class='line'>commit 146a328333019dabf0c53747298c514cedf195e0
+</span><span class='line'>Author: spam ham
+</span><span class='line'>Date:   Mon May 26 16:33:26 2014 +0900
+</span><span class='line'>
+</span><span class='line'>    edit 2
+</span><span class='line'>
+</span><span class='line'>commit aa5b78285219c6dbc5b1c84a2820fef70cade33f
+</span><span class='line'>Author: spam ham
+</span><span class='line'>Date:   Mon May 26 16:33:11 2014 +0900
+</span><span class='line'>
+</span><span class='line'>    edit 1
+</span><span class='line'>
+</span><span class='line'>commit dce39a9bc0a05cc98d6f4c6028a584f9f64b0eb8
+</span><span class='line'>Author: spam ham
+</span><span class='line'>Date:   Mon May 26 16:31:50 2014 +0900
+</span><span class='line'>
+</span><span class='line'>    add file1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>squashする</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git rebase -i HEAD~3
+</span><span class='line'>pick aa5b782 edit 1
+</span><span class='line'>pick 146a328 edit 2
+</span><span class='line'>squash 7bce8c8 edit 3 &lt;- これをsquashする
+</span><span class='line'>
+</span><span class='line'><span class="c"># Rebase dce39a9..7bce8c8 onto dce39a9</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c"># Commands:</span>
+</span><span class='line'><span class="c">#  p, pick = use commit</span>
+</span><span class='line'><span class="c">#  r, reword = use commit, but edit the commit message</span>
+</span><span class='line'><span class="c">#  e, edit = use commit, but stop for amending</span>
+</span><span class='line'><span class="c">#  s, squash = use commit, but meld into previous commit</span>
+</span><span class='line'><span class="c">#  f, fixup = like &quot;squash&quot;, but discard this commit&#39;s log message</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c"># If you remove a line here THAT COMMIT WILL BE LOST.</span>
+</span><span class='line'><span class="c"># However, if you remove everything, the rebase will be aborted.</span>
+</span><span class='line'><span class="c">#</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>squashを指定したあとに<code>:wq</code>でエディタを保存すると、コミットメッセージを
+編集する画面に切り替わる</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># This is a combination of 2 commits.</span>
+</span><span class='line'><span class="c"># The first commit&#39;s message is:</span>
+</span><span class='line'>
+</span><span class='line'>edit 2
+</span><span class='line'>
+</span><span class='line'><span class="c"># This is the 2nd commit message:</span>
+</span><span class='line'>
+</span><span class='line'>edit 3
+</span><span class='line'>
+</span><span class='line'><span class="c"># Please enter the commit message for your changes. Lines starting</span>
+</span><span class='line'><span class="c"># with &#39;#&#39; will be ignored, and an empty message aborts the commit.</span>
+</span><span class='line'><span class="c"># Not currently on any branch.</span>
+</span><span class='line'><span class="c"># Changes to be committed:</span>
+</span><span class='line'><span class="c">#   (use &quot;git reset HEAD &lt;file&gt;...&quot; to unstage)</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c">#       modified:   file1</span>
+</span><span class='line'><span class="c">#</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>下記のようにコミットメッセージを変更して保存します</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># This is the 2nd commit message:</span>
+</span><span class='line'>
+</span><span class='line'>edit 2 &amp; 3
+</span><span class='line'>
+</span><span class='line'><span class="c"># Please enter the commit message for your changes. Lines starting</span>
+</span><span class='line'><span class="c"># with &#39;#&#39; will be ignored, and an empty message aborts the commit.</span>
+</span><span class='line'><span class="c"># Not currently on any branch.</span>
+</span><span class='line'><span class="c"># Changes to be committed:</span>
+</span><span class='line'><span class="c">#   (use &quot;git reset HEAD &lt;file&gt;...&quot; to unstage)</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c">#       modified:   file1</span>
+</span><span class='line'><span class="c">#</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ログを見てみると、コミットが一つにまとめられ、編集したとおりの
+メッセージになっています</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git log
+</span><span class='line'>commit 098d8e633eac2e4c6af0cbc84bb88aefe65c5e39
+</span><span class='line'>Author: spam ham
+</span><span class='line'>Date:   Mon May 26 16:33:26 2014 +0900
+</span><span class='line'>
+</span><span class='line'>    edit 2 &amp; 3
+</span><span class='line'>
+</span><span class='line'>commit aa5b78285219c6dbc5b1c84a2820fef70cade33f
+</span><span class='line'>Author: spam ham
+</span><span class='line'>Date:   Mon May 26 16:33:11 2014 +0900
+</span><span class='line'>
+</span><span class='line'>    edit 1
+</span><span class='line'>
+</span><span class='line'>commit dce39a9bc0a05cc98d6f4c6028a584f9f64b0eb8
+</span><span class='line'>Author: spam ham
+</span><span class='line'>Date:   Mon May 26 16:31:50 2014 +0900
+</span><span class='line'>
+</span><span class='line'>    add file1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ファイルを参照する</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>cat file1
+</span><span class='line'>add file
+</span><span class='line'>edit 1
+</span><span class='line'>edit 2
+</span><span class='line'>edit 3
+</span></code></pre></td></tr></table></div></figure>
+
+
+<a name="fixup........."></a>
+<h2>fixupの場合</h2>
+
+<p>ファイルを作成</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vi file1
+</span><span class='line'>add file
+</span><span class='line'>:wq
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git add file1
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git commit -m <span class="s2">&quot;add file1&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>何度かファイルを更新する</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vi file1
+</span><span class='line'>edit 1
+</span><span class='line'>:wq
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git commit -am <span class="s2">&quot;edit 1&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>vi file1
+</span><span class='line'>edit 2
+</span><span class='line'>:wq
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git commit -am <span class="s2">&quot;edit 2&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>vi file1
+</span><span class='line'>edit 3
+</span><span class='line'>:wq
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git commit -am <span class="s2">&quot;edit 3&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ファイルを参照する</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>cat file1
+</span><span class='line'>add file
+</span><span class='line'>edit 1
+</span><span class='line'>edit 2
+</span><span class='line'>edit 3
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ログを確認する</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git log
+</span><span class='line'>commit c27b39074da477ba9aa5f1b435d35dd6cffbf2f6
+</span><span class='line'>Author: spam ham
+</span><span class='line'>Date:   Mon May 26 16:41:18 2014 +0900
+</span><span class='line'>
+</span><span class='line'>    edit 3
+</span><span class='line'>
+</span><span class='line'>commit da03e7917c373046f71cf9f14a56fadf8371dc5d
+</span><span class='line'>Author: spam ham
+</span><span class='line'>Date:   Mon May 26 16:41:04 2014 +0900
+</span><span class='line'>
+</span><span class='line'>    edit 2
+</span><span class='line'>
+</span><span class='line'>commit d0c4d4aa71e2eabc4a075a24d1bdd49c2a35d486
+</span><span class='line'>Author: spam ham
+</span><span class='line'>Date:   Mon May 26 16:40:52 2014 +0900
+</span><span class='line'>
+</span><span class='line'>    edit 1
+</span><span class='line'>
+</span><span class='line'>commit 74893929df6cd79a4679dc2c739ca197381fee95
+</span><span class='line'>Author: spam ham
+</span><span class='line'>Date:   Mon May 26 16:40:35 2014 +0900
+</span><span class='line'>
+</span><span class='line'>    add file1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>fixupする</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git rebase -i HEAD~3
+</span><span class='line'>pick d0c4d4a edit 1
+</span><span class='line'>pick da03e79 edit 2
+</span><span class='line'>fixup c27b390 edit 3 &lt;- これをfixupする
+</span><span class='line'>
+</span><span class='line'><span class="c"># Rebase 7489392..c27b390 onto 7489392</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c"># Commands:</span>
+</span><span class='line'><span class="c">#  p, pick = use commit</span>
+</span><span class='line'><span class="c">#  r, reword = use commit, but edit the commit message</span>
+</span><span class='line'><span class="c">#  e, edit = use commit, but stop for amending</span>
+</span><span class='line'><span class="c">#  s, squash = use commit, but meld into previous commit</span>
+</span><span class='line'><span class="c">#  f, fixup = like &quot;squash&quot;, but discard this commit&#39;s log message</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c"># If you remove a line here THAT COMMIT WILL BE LOST.</span>
+</span><span class='line'><span class="c"># However, if you remove everything, the rebase will be aborted.</span>
+</span><span class='line'><span class="c">#</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>fixupの場合はsquashのようにメッセージの編集は開かれず
+fixupしたメッセージはなくなります。</p>
+
+<p>ログを見てみると、コミットが一つにまとめられ、fixupした
+コミットのメッセージが消えています。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git log
+</span><span class='line'>commit c819c6cc2479daf0ce1a27216899db120d7c7800
+</span><span class='line'>Author: spam ham
+</span><span class='line'>Date:   Mon May 26 16:41:04 2014 +0900
+</span><span class='line'>
+</span><span class='line'>    edit 2
+</span><span class='line'>
+</span><span class='line'>commit d0c4d4aa71e2eabc4a075a24d1bdd49c2a35d486
+</span><span class='line'>Author: spam ham
+</span><span class='line'>Date:   Mon May 26 16:40:52 2014 +0900
+</span><span class='line'>
+</span><span class='line'>    edit 1
+</span><span class='line'>
+</span><span class='line'>commit 74893929df6cd79a4679dc2c739ca197381fee95
+</span><span class='line'>Author: spam ham
+</span><span class='line'>Date:   Mon May 26 16:40:35 2014 +0900
+</span><span class='line'>
+</span><span class='line'>    add file1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ファイルを参照する</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>cat file1
+</span><span class='line'>add file
+</span><span class='line'>edit 1
+</span><span class='line'>edit 2
+</span><span class='line'>edit 3
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">seak0503</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-26T14:27:11+09:00" pubdate data-updated="true">2014-05-26</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/git/'>Git</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.seak.jp.net/blog/2014/05/26/git-rebase-squash-fixup/" data-via="" data-counturl="http://blog.seak.jp.net/blog/2014/05/26/git-rebase-squash-fixup/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/05/20/sqlmap/" title="Previous Post: sqlmapでSQLインジェクションの検証">&laquo; sqlmapでSQLインジェクションの検証</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/05/26/git-rebase-edit/" title="Next Post: git rebase でeditする">git rebase でeditする &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/11/26/dev-octopress/">Octopressの環境移設</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/07/sublimetextmacterminal/">Sublime Textから素早くiTermを開く</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/04/sublimetextthemecursor/">Sublime Text 3のカーソルを変更する手順</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/04/sublimetextthemeitg/">Themeのカラースキームを編集する</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/17/sublimetextvim/">sublimeText3でVimライクな操作を可能にさせる</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+  <h1>Categories</h1>
+    <ul id="category-list"><li><a href='/blog/categories/apache/'>Apache (1)</a></li><li><a href='/blog/categories/benchmark/'>Benchmark (1)</a></li><li><a href='/blog/categories/chef/'>Chef (2)</a></li><li><a href='/blog/categories/git/'>Git (9)</a></li><li><a href='/blog/categories/github/'>GitHub (8)</a></li><li><a href='/blog/categories/html/'>HTML (1)</a></li><li><a href='/blog/categories/java/'>Java (4)</a></li><li><a href='/blog/categories/linux/'>Linux (7)</a></li><li><a href='/blog/categories/markdown/'>Markdown (2)</a></li><li><a href='/blog/categories/octopress/'>Octopress (3)</a></li><li><a href='/blog/categories/oracle/'>Oracle (1)</a></li><li><a href='/blog/categories/python/'>Python (1)</a></li><li><a href='/blog/categories/ruby/'>Ruby (2)</a></li><li><a href='/blog/categories/security/'>Security (2)</a></li><li><a href='/blog/categories/sublime-text/'>Sublime Text (4)</a></li></ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/seak0503">@seak0503</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'seak0503',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - seak0503 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'seak0503';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.seak.jp.net/blog/2014/05/26/git-rebase-squash-fixup/';
+        var disqus_url = 'http://blog.seak.jp.net/blog/2014/05/26/git-rebase-squash-fixup/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

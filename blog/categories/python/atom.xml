@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Python | seak0503 Blog]]></title>
+  <link href="http://blog.seak.jp.net/blog/categories/python/atom.xml" rel="self"/>
+  <link href="http://blog.seak.jp.net/"/>
+  <updated>2014-11-28T08:26:19+09:00</updated>
+  <id>http://blog.seak.jp.net/</id>
+  <author>
+    <name><![CDATA[seak0503]]></name>
+    <email><![CDATA[seak0503.gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[pythonとrubyでコマンドラインで引数を受け取るプログラムをつくる]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/06/30/argv-of-python-and-ruby/"/>
+    <updated>2014-06-30T15:31:47+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/06/30/argv-of-python-and-ruby</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+
+
+<h2>目次</h2>
+
+
+<p><ul>
+ <li><ul>
+  <li><a href="#L............">はじめに</a></li>
+  <li><a href="#L..................">ソースコード</a></li>
+ </ul></li>
+ <li><a href="#coding:.utf-8">coding: utf-8</a></li>
+ <li><a href="#cofing:.utf-8">cofing: utf-8</a></li>
+ <li><ul>
+  <li><a href="#L.....................">プログラム実行</a></li>
+  <li><a href="#L......">比較</a></li>
+  <li><a href="#L......">感想</a></li>
+ </ul></li>
+</ul>
+
+</p>
+
+<a name="L............"></a>
+<h2>はじめに</h2>
+
+<p>最近Rubyを勉強しはじめましたが、日常的にPythonを書く私にとって
+「便利だなぁ」と思うところと、「なんか覚えにくいなぁ、というか
+とっつきにくいなぁ」と思うところの両者がかけめぐってますが、それは
+それで面白いところだし、とても勉強になります。</p>
+
+<p>そんなわけで、今日はコマンドラインから引数を受け取るプログラムを
+PythonとRubyの両方で書いてみました。</p>
+
+<a name="L.................."></a>
+<h2>ソースコード</h2>
+
+<p>python(argv.py):
+```python</p>
+
+<a name="coding:.utf-8"></a>
+<h1>coding: utf-8</h1>
+
+<p>import sys
+print(u"これは第1引数です: " + sys.argv[0])
+print(u"これは第2引数です: " + sys.argv[1])
+print(u"これは第3引数です: " + sys.argv[2])
+```</p>
+
+<p>ruby(argv.rb)
+```ruby</p>
+
+<a name="cofing:.utf-8"></a>
+<h1>cofing: utf-8</h1>
+
+<p>puts("これは第1引数です: #{ARGV[0]}")
+puts("これは第2引数です: #{ARGV[1]}")
+puts("これは第3引数です: #{ARGV[2]}")
+```</p>
+
+<a name="L....................."></a>
+<h2>プログラム実行</h2>
+
+<p>python:
+<code>bash
+$ python argv.py 1st 2nd
+これは第1引数です: argv.py
+これは第2引数です: 1st
+これは第3引数です: 2nd
+</code></p>
+
+<p>ruby:
+<code>bash
+$ ruby argv.rb 1st 2nd 3rd
+これは第1引数です: 1st
+これは第2引数です: 2nd
+これは第3引数です: 3rd
+</code></p>
+
+<a name="L......"></a>
+<h2>比較</h2>
+
+<ul>
+<li><p>まず決定的に異なるのは、インデント0が何になるかです。pythonの場合はコマンド名(スクリプト名)
+そのものになっているのに対し、rubyでは一つ目の引数になっています。
+どちらが正しいかは別として、直感的にはrubyの方がわかりやすい気がします。</p></li>
+<li><p>次に異なるのは、pythonではsysモジュールを呼び出しているのに対し、rubyではモジュールの
+呼び出しが必要ない点です。
+何がいいかは別として、rubyの方が楽です。</p></li>
+</ul>
+
+
+<a name="L......"></a>
+<h2>感想</h2>
+
+<p>今回のお題のプログラムをつくるなら、rubyの方が直感的にわかりやすくていいなぁという気持ちになりました。</p>
+]]></content>
+  </entry>
+  
+</feed>

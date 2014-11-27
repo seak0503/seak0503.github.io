@@ -1,0 +1,1897 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Git | seak0503 Blog]]></title>
+  <link href="http://blog.seak.jp.net/blog/categories/git/atom.xml" rel="self"/>
+  <link href="http://blog.seak.jp.net/"/>
+  <updated>2014-11-28T08:26:19+09:00</updated>
+  <id>http://blog.seak.jp.net/</id>
+  <author>
+    <name><![CDATA[seak0503]]></name>
+    <email><![CDATA[seak0503.gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[gitのソースインストール]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/07/02/git-source-install/"/>
+    <updated>2014-07-02T10:11:52+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/07/02/git-source-install</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+
+
+<h2>目次</h2>
+
+
+<p><ul>
+ <li><ul>
+  <li><a href="#L............">はじめに</a></li>
+  <li><a href="#L......">環境</a></li>
+  <li><a href="#L........................">インストール手順</a></li>
+ </ul></li>
+ <li><a href="#cd..usr.local.data.src.git-1.8.5.5">cd /usr/local/data/src/git-1.8.5.5</a></li>
+ <li><a href="#L..configure.-prefix..usr.local">./configure -prefix=/usr/local</a></li>
+ <li><a href="#make">make</a></li>
+ <li><a href="#make.install">make install</a></li>
+ <li><a href="#source....bash_profile">source ~/.bash_profile</a></li>
+ <li><a href="#git.--version">git --version</a></li>
+</ul>
+
+</p>
+
+<a name="L............"></a>
+<h2>はじめに</h2>
+
+<p>CentOS6の環境でgitを使っているんですが、pre-push hookを作りたいと
+思った時に、gitのバージョンが1.8.2以上である必要があることを知りました。</p>
+
+<p>CentOS6でyumからインストールしたものだとバージョンが低いので、ソースから
+インストールしました。</p>
+
+<a name="L......"></a>
+<h2>環境</h2>
+
+<ul>
+<li>OS: CentOS6.4 x86_64</li>
+</ul>
+
+
+<a name="L........................"></a>
+<h2>インストール手順</h2>
+
+<p>現状のgitのバージョンを確認します
+<code>bash
+$ git --version
+git version 1.7.1
+</code></p>
+
+<p>適当な場所にソースをダウンロードします。今回はこのブログを書いた時の
+安定版の最新である<code>1.8.5</code>をダウンロードしました
+```bash
+$ cd /usr/local/data/src/</p>
+
+<p>$ wget "https://git-core.googlecode.com/files/git-1.8.5.5.tar.gz"</p>
+
+<p>$ tar zxvf git-1.8.5.5.tar.gz
+```</p>
+
+<p>一応root権限になって、インストールを行いました
+```bash
+$ su -</p>
+
+<a name="cd..usr.local.data.src.git-1.8.5.5"></a>
+<h1>cd /usr/local/data/src/git-1.8.5.5</h1>
+
+<a name="L..configure.-prefix..usr.local"></a>
+<h1>./configure -prefix=/usr/local</h1>
+
+<a name="make"></a>
+<h1>make</h1>
+
+<a name="make.install"></a>
+<h1>make install</h1>
+
+<p>```</p>
+
+<p>ここで、自分のアカウントの<code>.pash_profile</code>を実行してからバージョンを確認すると
+バージョンが上がっているはずです。
+```bash</p>
+
+<a name="source....bash_profile"></a>
+<h1>source ~/.bash_profile</h1>
+
+<a name="git.--version"></a>
+<h1>git --version</h1>
+
+<p>git version 1.8.5.5
+```</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[色々なコミット修正方法]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/06/11/git-correction/"/>
+    <updated>2014-06-11T00:48:48+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/06/11/git-correction</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+
+
+<h2>目次</h2>
+
+
+<p><ul>
+ <li><ul>
+  <li><a href="#L............">はじめに</a></li>
+  <li><a href="#HEAD.....................">HEADコミットを修正</a></li>
+ </ul></li>
+ <li><a href="#Please.enter.the.commit.message.for.your.changes..Lines.starting">Please enter the commit message for your changes. Lines starting</a></li>
+ <li><a href="#with.....will.be.ignored..and.an.empty.message.aborts.the.commit.">with '#' will be ignored, and an empty message aborts the commit.</a></li>
+ <li><a href="#On.branch.master">On branch master</a></li>
+ <li><a href="#Changes.to.be.committed:">Changes to be committed:</a></li>
+ <li><a href="#L.use..git.reset.HEAD.sup.1..sup...file......to.unstage.">(use "git reset HEAD<sup>1</sup> <file>..." to unstage)</a></li>
+ <li><a href="#new.file:...testfile2">new file:   testfile2</a></li>
+ <li><a href="#On.branch.master">On branch master</a></li>
+ <li><a href="#Untracked.files:">Untracked files:</a></li>
+ <li><a href="#L.use..git.add..file......to.include.in.what.will.be.committed.">(use "git add <file>..." to include in what will be committed)</a></li>
+ <li><a href="#testfile4....lt.-testfile4...add..................">testfile4　&lt;-testfile4がaddされていない</a></li>
+ <li><a href="#Please.enter.the.commit.message.for.your.changes..Lines.starting">Please enter the commit message for your changes. Lines starting</a></li>
+ <li><a href="#with.....will.be.ignored..and.an.empty.message.aborts.the.commit.">with '#' will be ignored, and an empty message aborts the commit.</a></li>
+ <li><a href="#On.branch.master">On branch master</a></li>
+ <li><a href="#Changes.to.be.committed:">Changes to be committed:</a></li>
+ <li><a href="#L.use..git.reset.HEAD.sup.1..sup...file......to.unstage.">(use "git reset HEAD<sup>1</sup> <file>..." to unstage)</a></li>
+ <li><a href="#new.file:...testfile3">new file:   testfile3</a></li>
+ <li><a href="#new.file:...testfile4">new file:   testfile4</a></li>
+ <li><a href="#On.branch.master">On branch master</a></li>
+ <li><ul>
+  <li><a href="#L...................................................................................">指定したコミットにリセットする(そのコミットまで巻き戻す)</a></li>
+  <li><a href="#L.........................code.git.reset.--hard..code......................">間違って実行した<code>git reset --hard</code>を取り消したい</a></li>
+  <li><a href="#L.code.git.add..code.................................................................................."><code>git add</code>でインデックスに追加したファイルをインデックスから外す</a></li>
+ </ul></li>
+ <li><a href="#On.branch.master">On branch master</a></li>
+ <li><a href="#Changes.to.be.committed:">Changes to be committed:</a></li>
+ <li><a href="#L.use..git.reset.HEAD..file......to.unstage.">(use "git reset HEAD <file>..." to unstage)</a></li>
+ <li><a href="#new.file:...testfile2">new file:   testfile2</a></li>
+ <li><a href="#On.branch.master">On branch master</a></li>
+ <li><a href="#Untracked.files:">Untracked files:</a></li>
+ <li><a href="#L.use..git.add..file......to.include.in.what.will.be.committed.">(use "git add <file>..." to include in what will be committed)</a></li>
+ <li><a href="#testfile2">testfile2</a></li>
+ <li><ul>
+  <li><a href="#L....................................">過去のコミットの取り消し</a></li>
+  <li><a href="#L.............................................">ファイルを過去のある時点に戻す</a></li>
+ </ul></li>
+</ul>
+
+</p>
+
+<a name="L............"></a>
+<h2>はじめに</h2>
+
+<p>Gitには、複数のコミット修正方法があります。</p>
+
+<p>ここではその使い分けについて説明しています。</p>
+
+<a name="HEAD....................."></a>
+<h2>HEADコミットを修正</h2>
+
+<ul>
+<li><p>コマンド
+<code>git commit --amend</code></p></li>
+<li><p>目的</p>
+
+<ul>
+<li>HEADコミットのコミットメッセージを修正したり、ファイルの登録漏れを追加したい場合。</li>
+</ul>
+</li>
+<li><p>特徴</p>
+
+<ul>
+<li>履歴は残らない。</li>
+</ul>
+</li>
+<li><p>実行例</p></li>
+</ul>
+
+
+<p>HEADコミットのコミットメッセージを修正</p>
+
+<p>```bash
+$ touch testfile2</p>
+
+<p>$ git add testfile2</p>
+
+<p>$ git commit -m "add teste4re" &lt;-メッセージを間違えた
+[master f95faeb] add teste4re
+ 0 files changed, 0 insertions(+), 0 deletions(-)
+ create mode 100644 testfile2</p>
+
+<p>$ git log --oneline
+f95faeb add teste4re &lt;-メッセージを間違えたコミット
+2fa37ff add test1</p>
+
+<p>$ git commit --amend</p>
+
+<p>viの編集画面が表示される
+add teste4re　&lt;-これを正しいメッセージ"add testfile2"に修正する</p>
+
+<a name="Please.enter.the.commit.message.for.your.changes..Lines.starting"></a>
+<h1>Please enter the commit message for your changes. Lines starting</h1>
+
+<a name="with.....will.be.ignored..and.an.empty.message.aborts.the.commit."></a>
+<h1>with '#' will be ignored, and an empty message aborts the commit.</h1>
+
+<a name="On.branch.master"></a>
+<h1>On branch master</h1>
+
+<a name="Changes.to.be.committed:"></a>
+<h1>Changes to be committed:</h1>
+
+<a name="L.use..git.reset.HEAD.sup.1..sup...file......to.unstage."></a>
+<h1>(use "git reset HEAD<sup>1</sup> <file>..." to unstage)</h1>
+
+<p>#</p>
+
+<a name="new.file:...testfile2"></a>
+<h1>new file:   testfile2</h1>
+
+<p>#
+:wp</p>
+
+<p>[master 262c490] add testfile2
+ 0 files changed, 0 insertions(+), 0 deletions(-)
+ create mode 100644 testfile2</p>
+
+<p>$ git log --oneline
+262c490 add testfile2 &lt;-メッセージが修正されている
+2fa37ff add test1
+```</p>
+
+<p>ファイルの登録漏れがあったため、HEADコミットにファイルを追加したい場合</p>
+
+<p>```bash
+$ touch testfile3</p>
+
+<p>$ touch testfile4</p>
+
+<p>$ git add testfile3 &lt;-testfile4をaddし忘れた</p>
+
+<p>$ git commit -m "add testfile3 &amp; testfile4"
+[master d75d6bb] add testfile3 &amp; testfile4
+ 0 files changed, 0 insertions(+), 0 deletions(-)
+ create mode 100644 testfile3</p>
+
+<p>$ git status</p>
+
+<a name="On.branch.master"></a>
+<h1>On branch master</h1>
+
+<a name="Untracked.files:"></a>
+<h1>Untracked files:</h1>
+
+<a name="L.use..git.add..file......to.include.in.what.will.be.committed."></a>
+<h1>(use "git add <file>..." to include in what will be committed)</h1>
+
+<p>#</p>
+
+<a name="testfile4....lt.-testfile4...add.................."></a>
+<h1>testfile4　&lt;-testfile4がaddされていない</h1>
+
+<p>nothing added to commit but untracked files present (use "git add" to track)</p>
+
+<p>$ git add testfile4</p>
+
+<p>$ git commit --amend</p>
+
+<p>viの編集画面が表示されるが、特に問題なければメッセージを変更せずに、:wqする
+add testfile3 &amp; testfile4</p>
+
+<a name="Please.enter.the.commit.message.for.your.changes..Lines.starting"></a>
+<h1>Please enter the commit message for your changes. Lines starting</h1>
+
+<a name="with.....will.be.ignored..and.an.empty.message.aborts.the.commit."></a>
+<h1>with '#' will be ignored, and an empty message aborts the commit.</h1>
+
+<a name="On.branch.master"></a>
+<h1>On branch master</h1>
+
+<a name="Changes.to.be.committed:"></a>
+<h1>Changes to be committed:</h1>
+
+<a name="L.use..git.reset.HEAD.sup.1..sup...file......to.unstage."></a>
+<h1>(use "git reset HEAD<sup>1</sup> <file>..." to unstage)</h1>
+
+<p>#</p>
+
+<a name="new.file:...testfile3"></a>
+<h1>new file:   testfile3</h1>
+
+<a name="new.file:...testfile4"></a>
+<h1>new file:   testfile4</h1>
+
+<p>#
+:wq</p>
+
+<p>master 8999e57] add testfile3 &amp; testfile4
+ 0 files changed, 0 insertions(+), 0 deletions(-)
+ create mode 100644 testfile3
+ create mode 100644 testfile4</p>
+
+<p>$ git log --oneline &lt;-新しいコミットは作成されていない
+8999e57 add testfile3 &amp; testfile4
+262c490 add testfile2
+2fa37ff add test1</p>
+
+<p>$ git status</p>
+
+<a name="On.branch.master"></a>
+<h1>On branch master</h1>
+
+<p>nothing to commit (working directory clean)
+```</p>
+
+<a name="L..................................................................................."></a>
+<h2>指定したコミットにリセットする(そのコミットまで巻き戻す)</h2>
+
+<ul>
+<li><p>コマンド
+<code>git reset --hard [コミット]</code></p></li>
+<li><p>目的</p>
+
+<ul>
+<li>指定したコミットにリセットする(現在～指定したコミットの間のコミットを取り消す)</li>
+</ul>
+</li>
+<li><p>特徴</p>
+
+<ul>
+<li>作業ツリーやインデックス情報も<strong>指定したコミットの状態</strong>にする(そのコミットの状態まで巻き戻す)</li>
+<li>履歴は残らない。</li>
+<li>コミット単位でのみ巻き戻し可能。ファイル単位の操作はできない。</li>
+</ul>
+</li>
+<li><p>注意</p>
+
+<ul>
+<li><p>過去のコミットを指定することで、そのコミットまで巻き戻すことができるが、その途中経過のコミットは
+消えてしまう。なので、直近のコミットを取り消す場合以外は、なるべく<code>git revert</code>を使った
+方がよい。</p></li>
+<li><p><code>git reset</code>は指定したコミットの状態にするのに対し、<code>git revert</code>は指定したコミットをピンポイントで取り消す。
+つまり、<code>git reset</code>の場合は"現在～指定したコミットの間のコミット"を取り消すことになり、指定したコミットが
+取り消されるわけではない。</p></li>
+</ul>
+</li>
+<li><p>実行例</p></li>
+</ul>
+
+
+<p>現在のコミット(HEAD)を取り消し、1つ前の状態(HEAD^)まで巻き戻したい場合</p>
+
+<p>```bash
+$ git add testfile5</p>
+
+<p>$ git commit -m "add testfile5"
+[master 6e1dd4b] add testfile5
+ 0 files changed, 0 insertions(+), 0 deletions(-)
+ create mode 100644 testfile5</p>
+
+<p>$ ls
+test1  testfile2  testfile3  testfile4  testfile5</p>
+
+<p>$ touch testfile6</p>
+
+<p>$ git add testfile6</p>
+
+<p>$ git commit -m "add testfile6"
+[master ae67e63] add testfile6
+ 0 files changed, 0 insertions(+), 0 deletions(-)
+ create mode 100644 testfile6</p>
+
+<p>$ ls
+test1  testfile2  testfile3  testfile4  testfile5  testfile6</p>
+
+<p>$ git log
+commit ae67e63bf95df640341098e32efdc1338d5891ca
+Author: spam ham
+Date:   Fri Jun 13 07:05:18 2014 +0900</p>
+
+<pre><code>add testfile6
+</code></pre>
+
+<p>commit 6e1dd4b9855ee4454863aee24930a5c05ee2e862
+Author: spam ham
+Date:   Fri Jun 13 07:04:48 2014 +0900</p>
+
+<pre><code>add testfile5
+</code></pre>
+
+<p>$ git reset --hard HEAD^ &lt;-これは"git reset --hard 6e1dd4"のようにコミットを指定しても良い
+HEAD is now at 6e1dd4b add testfile5</p>
+
+<p>$ ls &lt;-testfile6が消えている
+test1  testfile2  testfile3  testfile4  testfile5</p>
+
+<p>$ git log &lt;-コミットae67e6が消えている
+commit 6e1dd4b9855ee4454863aee24930a5c05ee2e862
+Author: spam ham
+Date:   Fri Jun 13 07:04:48 2014 +0900</p>
+
+<pre><code>add testfile5
+</code></pre>
+
+<p>```</p>
+
+<p>マージをやり直したい時</p>
+
+<p>```bash
+$ git checkout -b new
+Switched to a new branch 'new'</p>
+
+<p>$ git branch -l
+  master
+* new</p>
+
+<p>$ touch new_file1</p>
+
+<p>$ git add new_file1</p>
+
+<p>$ git commit -m "add new_file1"
+[new cf904aa] add new_file1
+ 0 files changed, 0 insertions(+), 0 deletions(-)
+ create mode 100644 new_file1</p>
+
+<p>$ git branch -l
+* master
+  new</p>
+
+<p>$ ls
+master_file1</p>
+
+<p>$ git merge --no-ff new
+Merge made by recursive.
+ 0 files changed, 0 insertions(+), 0 deletions(-)
+ create mode 100644 new_file1</p>
+
+<p>$ ls
+master_file1  new_file1</p>
+
+<p>$ git log --graph
+*   commit 945cb8efb71cdc41bad7cda657754bbfa6a5ff0f
+|\  Merge: 1566a75 cf904aa
+| | Author: spam ham
+| | Date:   Fri Jun 13 07:18:10 2014 +0900
+| |
+| |     Merge branch 'new'
+| |
+| * commit cf904aaea51881fd56c0d2524074306ce192a6b8
+|/  Author: spam ham
+|   Date:   Fri Jun 13 07:17:20 2014 +0900
+|
+|       add new_file1
+|
+* commit 1566a75df4f3e81fb115ccbe4e9897efa0094703
+  Author: spam ham
+  Date:   Fri Jun 13 07:16:02 2014 +0900</p>
+
+<pre><code>  add master_file1
+</code></pre>
+
+<p>$ git reset --hard HEAD^
+HEAD is now at 1566a75 add master_file1</p>
+
+<p>$ ls &lt;-newブランチからマージしたファイルが消えている
+master_file1</p>
+
+<p>$ git log --graph &lt;-ログからもマージした履歴が消えている
+* commit 1566a75df4f3e81fb115ccbe4e9897efa0094703
+  Author: spam ham
+  Date:   Fri Jun 13 07:16:02 2014 +0900</p>
+
+<pre><code>  add master_file1
+</code></pre>
+
+<p>```</p>
+
+<a name="L.........................code.git.reset.--hard..code......................"></a>
+<h2>間違って実行した<code>git reset --hard</code>を取り消したい</h2>
+
+<ul>
+<li><p>コマンド</p>
+
+<ul>
+<li><code>git reflog</code>でリポジトリの操作履歴を確認</li>
+<li><code>git reset --hard</code>で間違いを修正する</li>
+</ul>
+</li>
+<li><p>目的</p>
+
+<ul>
+<li>間違って<code>git reset --hard</code>を実行した場合に、その操作を取り消し、コミットを復活させる</li>
+</ul>
+</li>
+<li><p>特徴</p>
+
+<ul>
+<li><code>git reflog</code>コマンドによって、過去の操作履歴を確認し、その履歴情報をもとに、<code>git reset --hard</code>で
+　  削除されたコミットを復活します。
+<code>git reflog</code>で閲覧できる履歴情報はデフォルト設定で<strong>30日間</strong>保持されます。</li>
+</ul>
+</li>
+<li><p>実行例</p></li>
+</ul>
+
+
+<p>ここでは、<code>git reset --hard HEAD^</code>として、最新のコミット(4ac1275)を取り消し、1つ前のコミット(0394e66)に
+リセットしようとしたが、誤って<code>git reset --hard HEAD^^</code>として、2つ前のコミット(24ed0b8)にリセットして
+しまった場合を想定しています。</p>
+
+<p>```bash
+$ git log --oneline
+4ac1275 add testfile4　: 現在(HEAD)
+0394e66 add testfile3  : 1つ前のコミット(HEAD^)
+24ed0b8 add testfile2  : 2つ前のコミット(HEAD^^)
+81e4af0 add testfile1  : 3つ前のコミット(HEAD^^^)</p>
+
+<p>$ ls
+testfile1  testfile2  testfile3  testfile4</p>
+
+<p>$ git reset --hard HEAD^^ &lt;-誤った操作
+HEAD is now at 24ed0b8 add testfile2</p>
+
+<p>$ git log --oneline
+24ed0b8 add testfile2
+81e4af0 add testfile1</p>
+
+<p>$ ls
+testfile1  testfile2</p>
+
+<p>[shyamahira@www 20140616]$ git reflog
+24ed0b8 HEAD@{0}: HEAD^^: updating HEAD
+4ac1275 HEAD@{1}: commit: add testfile4
+0394e66 HEAD@{2}: commit: add testfile3 &lt;-これを復活させたい
+24ed0b8 HEAD@{3}: commit: add testfile2
+81e4af0 HEAD@{4}: commit (initial): add testfile1</p>
+
+<p>$ git reset --hard HEAD@{2}
+HEAD is now at 0394e66 add testfile3</p>
+
+<p>$ git log --oneline
+0394e66 add testfile3
+24ed0b8 add testfile2
+81e4af0 add testfile1</p>
+
+<p>$ ls
+testfile1  testfile2  testfile3
+```</p>
+
+<a name="L.code.git.add..code.................................................................................."></a>
+<h2><code>git add</code>でインデックスに追加したファイルをインデックスから外す</h2>
+
+<ul>
+<li><p>コマンド
+<code>git reset [filename]</code></p></li>
+<li><p>目的
+<code>git add</code>でインデックスに追加したファイルをインデックスから外す</p></li>
+<li><p>実行例</p></li>
+</ul>
+
+
+<p>```bash
+$ touch testfile2</p>
+
+<p>$ git add testfile2</p>
+
+<p>$ git status</p>
+
+<a name="On.branch.master"></a>
+<h1>On branch master</h1>
+
+<a name="Changes.to.be.committed:"></a>
+<h1>Changes to be committed:</h1>
+
+<a name="L.use..git.reset.HEAD..file......to.unstage."></a>
+<h1>(use "git reset HEAD <file>..." to unstage)</h1>
+
+<p>#</p>
+
+<a name="new.file:...testfile2"></a>
+<h1>new file:   testfile2</h1>
+
+<p>#</p>
+
+<p>$ git reset testfile2</p>
+
+<p>$ git status &lt;-インデックスから外れていることが確認できる。</p>
+
+<a name="On.branch.master"></a>
+<h1>On branch master</h1>
+
+<a name="Untracked.files:"></a>
+<h1>Untracked files:</h1>
+
+<a name="L.use..git.add..file......to.include.in.what.will.be.committed."></a>
+<h1>(use "git add <file>..." to include in what will be committed)</h1>
+
+<p>#</p>
+
+<a name="testfile2"></a>
+<h1>testfile2</h1>
+
+<p>nothing added to commit but untracked files present (use "git add" to track)
+```</p>
+
+<a name="L...................................."></a>
+<h2>過去のコミットの取り消し</h2>
+
+<ul>
+<li><p>コマンド
+<code>git revert</code></p></li>
+<li><p>目的</p>
+
+<ul>
+<li>過去のコミットを取り消したい場合に利用</li>
+</ul>
+</li>
+<li><p>特徴</p>
+
+<ul>
+<li>取り消した履歴を明示的に残す</li>
+</ul>
+</li>
+<li><p><code>git reset</code>をすべきか? <code>git revert</code>をすべきか?</p>
+
+<ul>
+<li><p>取り消したいコミットが直前のものではない場合、なるべく<code>git revert</code>をした方がよい。
+なぜなら、<code>git reset</code>の場合、指定したコミットまで巻き戻ることになる。
+つまり、<code>git reset --hard HEAD^^</code>とした場合、現在(HEAD)からHEAD^^までが取り消されるため
+途中経過のHEAD^も失うことになる。
+<code>git revert</code>の場合は、指定したコミットのみを取り消すため、そのようなことにならない。</p></li>
+<li><p>取り消したい<strong>コミット</strong>がリモートリポジトリに公開済みの場合は、リモートリポジトリバージョンとの
+整合性がとれなくなるため、<code>git revert</code>をした方がよい。</p></li>
+</ul>
+</li>
+<li><p>注意</p>
+
+<ul>
+<li><code>git reset</code>は指定したコミットの状態にするのに対し、<code>git revert</code>は指定したコミットをピンポイントで取り消す。
+つまり、<code>git reset</code>の場合は"現在～指定したコミットの間のコミット"を取り消すことになり、指定したコミットが
+取り消されるわけではない。</li>
+</ul>
+</li>
+<li><p>実行例</p></li>
+</ul>
+
+
+<p>```bash
+$ git log --oneline
+0394e66 add testfile3
+24ed0b8 add testfile2
+81e4af0 add testfile1</p>
+
+<p>$ ls
+testfile1  testfile2  testfile3</p>
+
+<p>$ git revert --no-edit 24ed0b8 &lt;--HEAD^を取り消す
+Finished one revert.
+[master 1c6720d] Revert "add testfile2"
+ 0 files changed, 0 insertions(+), 0 deletions(-)
+ delete mode 100644 testfile2</p>
+
+<p>$ git log --oneline
+1c6720d Revert "add testfile2"
+0394e66 add testfile3
+24ed0b8 add testfile2
+81e4af0 add testfile1</p>
+
+<p>$ ls &lt;- HEAD^でコミットしたファイルのみが消えており、HEADでのコミットファイルは消えていない
+testfile1  testfile3
+```</p>
+
+<a name="L............................................."></a>
+<h2>ファイルを過去のある時点に戻す</h2>
+
+<ul>
+<li><p>コマンド
+<code>git checkout [commit] [filename]</code></p></li>
+<li><p>目的</p>
+
+<ul>
+<li><code>git rm</code>で誤ってファイルを削除してしまった場合や、特定のファイルのみを過去の状態に戻したい時に使用</li>
+</ul>
+</li>
+<li><p>特徴</p>
+
+<ul>
+<li><code>git reset</code>コマンドの場合、<code>--mixed</code>、<code>--hard</code>、<code>--soft</code>のオプションを使用すると 引数には、
+コミットしか指定できません。そのため、特定のファイルのみを過去のある時点に戻す場合は
+<code>git checkout</code>を利用します。</li>
+</ul>
+</li>
+<li><p>実行例</p></li>
+</ul>
+
+
+<p><code>git rm</code>でファイルを削除してしまった場合
+```bash
+$ ls
+file1  file2  file3</p>
+
+<p>$ git rm file2 &lt;-誤ってファイルを消してしまった
+rm 'file2'</p>
+
+<p>$ ls
+file1  file3</p>
+
+<p>$ git checkout HEAD -- file2</p>
+
+<p>$ ls &lt;-file2が復活している
+file1  file2  file3
+```</p>
+
+<p>特定のファイルを過去の状態に戻したい時
+```bash
+$ vi testfile1
+add</p>
+
+<p>$ git add testfile1</p>
+
+<p>$ git commit -m "add testfile1"
+[master (root-commit) 4c9d6bb] add testfile1
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+ create mode 100644 testfile1</p>
+
+<p>$ vi testfile1
+edit1 &lt;-testfile1に追記</p>
+
+<p>$ git commit -am "edit1 testfile1"
+[master 70161ba] edit1 testfile1
+ 1 files changed, 1 insertions(+), 0 deletions(-)</p>
+
+<p>$ vi testfile1
+edit2 &lt;-testfile1に追記</p>
+
+<p>$ git commit -am "edit2 testfile1"
+[master f83f195] edit2 testfile1
+ 1 files changed, 1 insertions(+), 0 deletions(-)</p>
+
+<p>$ vi testfile1
+edit3 &lt;-testfile1に追記</p>
+
+<p>$ git commit -am "edit3 testfile1"
+[master 2a335fe] edit3 testfile1
+ 1 files changed, 1 insertions(+), 0 deletions(-)</p>
+
+<p>$ git log --oneline
+2a335fe edit3 testfile1
+f83f195 edit2 testfile1
+70161ba edit1 testfile1
+4c9d6bb add testfile1</p>
+
+<p>$ cat testfile1
+add
+edit1
+edit2
+edit3</p>
+
+<p>$ git checkout f83f195 -- testfile1 &lt;-testfile1を過去の状態に戻す</p>
+
+<p>$ cat testfile1
+add
+edit1
+edit2
+```</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[git rebaseでsquashした場合とfixupした場合の違い]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/05/26/git-rebase-squash-fixup/"/>
+    <updated>2014-05-26T14:27:11+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/05/26/git-rebase-squash-fixup</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+
+
+<h2>目次</h2>
+
+
+<p><ul>
+ <li><ul>
+  <li><a href="#L............">はじめに</a></li>
+  <li><a href="#squash.........">squashの場合</a></li>
+ </ul></li>
+ <li><a href="#Rebase.dce39a9..7bce8c8.onto.dce39a9">Rebase dce39a9..7bce8c8 onto dce39a9</a></li>
+ <li><a href="#Commands:">Commands:</a></li>
+ <li><a href="#p..pick...use.commit">p, pick = use commit</a></li>
+ <li><a href="#r..reword...use.commit..but.edit.the.commit.message">r, reword = use commit, but edit the commit message</a></li>
+ <li><a href="#e..edit...use.commit..but.stop.for.amending">e, edit = use commit, but stop for amending</a></li>
+ <li><a href="#s..squash...use.commit..but.meld.into.previous.commit">s, squash = use commit, but meld into previous commit</a></li>
+ <li><a href="#f..fixup...like..squash...but.discard.this.commit.s.log.message">f, fixup = like "squash", but discard this commit's log message</a></li>
+ <li><a href="#If.you.remove.a.line.here.THAT.COMMIT.WILL.BE.LOST.">If you remove a line here THAT COMMIT WILL BE LOST.</a></li>
+ <li><a href="#However..if.you.remove.everything..the.rebase.will.be.aborted.">However, if you remove everything, the rebase will be aborted.</a></li>
+ <li><a href="#This.is.a.combination.of.2.commits.">This is a combination of 2 commits.</a></li>
+ <li><a href="#The.first.commit.s.message.is:">The first commit's message is:</a></li>
+ <li><a href="#This.is.the.2nd.commit.message:">This is the 2nd commit message:</a></li>
+ <li><a href="#Please.enter.the.commit.message.for.your.changes..Lines.starting">Please enter the commit message for your changes. Lines starting</a></li>
+ <li><a href="#with.....will.be.ignored..and.an.empty.message.aborts.the.commit.">with '#' will be ignored, and an empty message aborts the commit.</a></li>
+ <li><a href="#Not.currently.on.any.branch.">Not currently on any branch.</a></li>
+ <li><a href="#Changes.to.be.committed:">Changes to be committed:</a></li>
+ <li><a href="#L.use..git.reset.HEAD..file......to.unstage.">(use "git reset HEAD <file>..." to unstage)</a></li>
+ <li><a href="#modified:...file1">modified:   file1</a></li>
+ <li><a href="#This.is.the.2nd.commit.message:">This is the 2nd commit message:</a></li>
+ <li><a href="#Please.enter.the.commit.message.for.your.changes..Lines.starting">Please enter the commit message for your changes. Lines starting</a></li>
+ <li><a href="#with.....will.be.ignored..and.an.empty.message.aborts.the.commit.">with '#' will be ignored, and an empty message aborts the commit.</a></li>
+ <li><a href="#Not.currently.on.any.branch.">Not currently on any branch.</a></li>
+ <li><a href="#Changes.to.be.committed:">Changes to be committed:</a></li>
+ <li><a href="#L.use..git.reset.HEAD..file......to.unstage.">(use "git reset HEAD <file>..." to unstage)</a></li>
+ <li><a href="#modified:...file1">modified:   file1</a></li>
+ <li><ul>
+  <li><a href="#fixup.........">fixupの場合</a></li>
+ </ul></li>
+ <li><a href="#Rebase.7489392..c27b390.onto.7489392">Rebase 7489392..c27b390 onto 7489392</a></li>
+ <li><a href="#Commands:">Commands:</a></li>
+ <li><a href="#p..pick...use.commit">p, pick = use commit</a></li>
+ <li><a href="#r..reword...use.commit..but.edit.the.commit.message">r, reword = use commit, but edit the commit message</a></li>
+ <li><a href="#e..edit...use.commit..but.stop.for.amending">e, edit = use commit, but stop for amending</a></li>
+ <li><a href="#s..squash...use.commit..but.meld.into.previous.commit">s, squash = use commit, but meld into previous commit</a></li>
+ <li><a href="#f..fixup...like..squash...but.discard.this.commit.s.log.message">f, fixup = like "squash", but discard this commit's log message</a></li>
+ <li><a href="#If.you.remove.a.line.here.THAT.COMMIT.WILL.BE.LOST.">If you remove a line here THAT COMMIT WILL BE LOST.</a></li>
+ <li><a href="#However..if.you.remove.everything..the.rebase.will.be.aborted.">However, if you remove everything, the rebase will be aborted.</a></li>
+</ul>
+
+</p>
+
+<a name="L............"></a>
+<h2>はじめに</h2>
+
+<p>ここでは<code>git rebase -i [commit]</code>コマンドでsquashした場合と
+fixupした場合の違いについて実行例を説明します。</p>
+
+<a name="squash........."></a>
+<h2>squashの場合</h2>
+
+<p>ファイルを作成</p>
+
+<p>```bash
+$ vi file1
+add file
+:wq</p>
+
+<p>$ git add file1</p>
+
+<p>$ git commit -m "add file1"
+```</p>
+
+<p>何度かファイルを更新する</p>
+
+<p>```bash
+$ vi file1
+edit 1
+:wq</p>
+
+<p>$ git commit -am "edit 1"</p>
+
+<p>$ vi file1
+edit 2
+:wq</p>
+
+<p>$ git commit -am "edit 2"</p>
+
+<p>$ vi file1
+edit 3
+:wq</p>
+
+<p>$ git commit -am "edit 3"
+```</p>
+
+<p>ファイルを参照する</p>
+
+<p><code>bash
+$ cat file1
+add file
+edit 1
+edit 2
+edit 3
+</code></p>
+
+<p>ログを確認する</p>
+
+<p>```bash
+$ git log                                                <br/>
+commit 7bce8c8e38c743073c2e889fd9cdd235274b99c2
+Author: spam ham
+Date:   Mon May 26 16:33:39 2014 +0900</p>
+
+<pre><code>edit 3
+</code></pre>
+
+<p>commit 146a328333019dabf0c53747298c514cedf195e0
+Author: spam ham
+Date:   Mon May 26 16:33:26 2014 +0900</p>
+
+<pre><code>edit 2
+</code></pre>
+
+<p>commit aa5b78285219c6dbc5b1c84a2820fef70cade33f
+Author: spam ham
+Date:   Mon May 26 16:33:11 2014 +0900</p>
+
+<pre><code>edit 1
+</code></pre>
+
+<p>commit dce39a9bc0a05cc98d6f4c6028a584f9f64b0eb8
+Author: spam ham
+Date:   Mon May 26 16:31:50 2014 +0900</p>
+
+<pre><code>add file1
+</code></pre>
+
+<p>```</p>
+
+<p>squashする</p>
+
+<p>```bash
+$ git rebase -i HEAD~3
+pick aa5b782 edit 1
+pick 146a328 edit 2
+squash 7bce8c8 edit 3 &lt;- これをsquashする</p>
+
+<a name="Rebase.dce39a9..7bce8c8.onto.dce39a9"></a>
+<h1>Rebase dce39a9..7bce8c8 onto dce39a9</h1>
+
+<p>#</p>
+
+<a name="Commands:"></a>
+<h1>Commands:</h1>
+
+<a name="p..pick...use.commit"></a>
+<h1>p, pick = use commit</h1>
+
+<a name="r..reword...use.commit..but.edit.the.commit.message"></a>
+<h1>r, reword = use commit, but edit the commit message</h1>
+
+<a name="e..edit...use.commit..but.stop.for.amending"></a>
+<h1>e, edit = use commit, but stop for amending</h1>
+
+<a name="s..squash...use.commit..but.meld.into.previous.commit"></a>
+<h1>s, squash = use commit, but meld into previous commit</h1>
+
+<a name="f..fixup...like..squash...but.discard.this.commit.s.log.message"></a>
+<h1>f, fixup = like "squash", but discard this commit's log message</h1>
+
+<p>#</p>
+
+<a name="If.you.remove.a.line.here.THAT.COMMIT.WILL.BE.LOST."></a>
+<h1>If you remove a line here THAT COMMIT WILL BE LOST.</h1>
+
+<a name="However..if.you.remove.everything..the.rebase.will.be.aborted."></a>
+<h1>However, if you remove everything, the rebase will be aborted.</h1>
+
+<p>#
+```</p>
+
+<p>squashを指定したあとに<code>:wq</code>でエディタを保存すると、コミットメッセージを
+編集する画面に切り替わる</p>
+
+<p>```bash</p>
+
+<a name="This.is.a.combination.of.2.commits."></a>
+<h1>This is a combination of 2 commits.</h1>
+
+<a name="The.first.commit.s.message.is:"></a>
+<h1>The first commit's message is:</h1>
+
+<p>edit 2</p>
+
+<a name="This.is.the.2nd.commit.message:"></a>
+<h1>This is the 2nd commit message:</h1>
+
+<p>edit 3</p>
+
+<a name="Please.enter.the.commit.message.for.your.changes..Lines.starting"></a>
+<h1>Please enter the commit message for your changes. Lines starting</h1>
+
+<a name="with.....will.be.ignored..and.an.empty.message.aborts.the.commit."></a>
+<h1>with '#' will be ignored, and an empty message aborts the commit.</h1>
+
+<a name="Not.currently.on.any.branch."></a>
+<h1>Not currently on any branch.</h1>
+
+<a name="Changes.to.be.committed:"></a>
+<h1>Changes to be committed:</h1>
+
+<a name="L.use..git.reset.HEAD..file......to.unstage."></a>
+<h1>(use "git reset HEAD <file>..." to unstage)</h1>
+
+<p>#</p>
+
+<a name="modified:...file1"></a>
+<h1>modified:   file1</h1>
+
+<p>#
+```</p>
+
+<p>下記のようにコミットメッセージを変更して保存します</p>
+
+<p>```bash</p>
+
+<a name="This.is.the.2nd.commit.message:"></a>
+<h1>This is the 2nd commit message:</h1>
+
+<p>edit 2 &amp; 3</p>
+
+<a name="Please.enter.the.commit.message.for.your.changes..Lines.starting"></a>
+<h1>Please enter the commit message for your changes. Lines starting</h1>
+
+<a name="with.....will.be.ignored..and.an.empty.message.aborts.the.commit."></a>
+<h1>with '#' will be ignored, and an empty message aborts the commit.</h1>
+
+<a name="Not.currently.on.any.branch."></a>
+<h1>Not currently on any branch.</h1>
+
+<a name="Changes.to.be.committed:"></a>
+<h1>Changes to be committed:</h1>
+
+<a name="L.use..git.reset.HEAD..file......to.unstage."></a>
+<h1>(use "git reset HEAD <file>..." to unstage)</h1>
+
+<p>#</p>
+
+<a name="modified:...file1"></a>
+<h1>modified:   file1</h1>
+
+<p>#
+```</p>
+
+<p>ログを見てみると、コミットが一つにまとめられ、編集したとおりの
+メッセージになっています</p>
+
+<p>```bash
+$ git log
+commit 098d8e633eac2e4c6af0cbc84bb88aefe65c5e39
+Author: spam ham
+Date:   Mon May 26 16:33:26 2014 +0900</p>
+
+<pre><code>edit 2 &amp; 3
+</code></pre>
+
+<p>commit aa5b78285219c6dbc5b1c84a2820fef70cade33f
+Author: spam ham
+Date:   Mon May 26 16:33:11 2014 +0900</p>
+
+<pre><code>edit 1
+</code></pre>
+
+<p>commit dce39a9bc0a05cc98d6f4c6028a584f9f64b0eb8
+Author: spam ham
+Date:   Mon May 26 16:31:50 2014 +0900</p>
+
+<pre><code>add file1
+</code></pre>
+
+<p>```</p>
+
+<p>ファイルを参照する</p>
+
+<p><code>bash
+$ cat file1
+add file
+edit 1
+edit 2
+edit 3
+</code></p>
+
+<a name="fixup........."></a>
+<h2>fixupの場合</h2>
+
+<p>ファイルを作成</p>
+
+<p>```bash
+$ vi file1
+add file
+:wq</p>
+
+<p>$ git add file1</p>
+
+<p>$ git commit -m "add file1"
+```</p>
+
+<p>何度かファイルを更新する</p>
+
+<p>```bash
+$ vi file1
+edit 1
+:wq</p>
+
+<p>$ git commit -am "edit 1"</p>
+
+<p>$ vi file1
+edit 2
+:wq</p>
+
+<p>$ git commit -am "edit 2"</p>
+
+<p>$ vi file1
+edit 3
+:wq</p>
+
+<p>$ git commit -am "edit 3"
+```</p>
+
+<p>ファイルを参照する</p>
+
+<p><code>bash
+$ cat file1
+add file
+edit 1
+edit 2
+edit 3
+</code></p>
+
+<p>ログを確認する</p>
+
+<p>```bash
+$ git log
+commit c27b39074da477ba9aa5f1b435d35dd6cffbf2f6
+Author: spam ham
+Date:   Mon May 26 16:41:18 2014 +0900</p>
+
+<pre><code>edit 3
+</code></pre>
+
+<p>commit da03e7917c373046f71cf9f14a56fadf8371dc5d
+Author: spam ham
+Date:   Mon May 26 16:41:04 2014 +0900</p>
+
+<pre><code>edit 2
+</code></pre>
+
+<p>commit d0c4d4aa71e2eabc4a075a24d1bdd49c2a35d486
+Author: spam ham
+Date:   Mon May 26 16:40:52 2014 +0900</p>
+
+<pre><code>edit 1
+</code></pre>
+
+<p>commit 74893929df6cd79a4679dc2c739ca197381fee95
+Author: spam ham
+Date:   Mon May 26 16:40:35 2014 +0900</p>
+
+<pre><code>add file1
+</code></pre>
+
+<p>```</p>
+
+<p>fixupする</p>
+
+<p>```bash
+$ git rebase -i HEAD~3
+pick d0c4d4a edit 1
+pick da03e79 edit 2
+fixup c27b390 edit 3 &lt;- これをfixupする</p>
+
+<a name="Rebase.7489392..c27b390.onto.7489392"></a>
+<h1>Rebase 7489392..c27b390 onto 7489392</h1>
+
+<p>#</p>
+
+<a name="Commands:"></a>
+<h1>Commands:</h1>
+
+<a name="p..pick...use.commit"></a>
+<h1>p, pick = use commit</h1>
+
+<a name="r..reword...use.commit..but.edit.the.commit.message"></a>
+<h1>r, reword = use commit, but edit the commit message</h1>
+
+<a name="e..edit...use.commit..but.stop.for.amending"></a>
+<h1>e, edit = use commit, but stop for amending</h1>
+
+<a name="s..squash...use.commit..but.meld.into.previous.commit"></a>
+<h1>s, squash = use commit, but meld into previous commit</h1>
+
+<a name="f..fixup...like..squash...but.discard.this.commit.s.log.message"></a>
+<h1>f, fixup = like "squash", but discard this commit's log message</h1>
+
+<p>#</p>
+
+<a name="If.you.remove.a.line.here.THAT.COMMIT.WILL.BE.LOST."></a>
+<h1>If you remove a line here THAT COMMIT WILL BE LOST.</h1>
+
+<a name="However..if.you.remove.everything..the.rebase.will.be.aborted."></a>
+<h1>However, if you remove everything, the rebase will be aborted.</h1>
+
+<p>#
+```</p>
+
+<p>fixupの場合はsquashのようにメッセージの編集は開かれず
+fixupしたメッセージはなくなります。</p>
+
+<p>ログを見てみると、コミットが一つにまとめられ、fixupした
+コミットのメッセージが消えています。</p>
+
+<p>```bash
+$ git log                                                <br/>
+commit c819c6cc2479daf0ce1a27216899db120d7c7800
+Author: spam ham
+Date:   Mon May 26 16:41:04 2014 +0900</p>
+
+<pre><code>edit 2
+</code></pre>
+
+<p>commit d0c4d4aa71e2eabc4a075a24d1bdd49c2a35d486
+Author: spam ham
+Date:   Mon May 26 16:40:52 2014 +0900</p>
+
+<pre><code>edit 1
+</code></pre>
+
+<p>commit 74893929df6cd79a4679dc2c739ca197381fee95
+Author: spam ham
+Date:   Mon May 26 16:40:35 2014 +0900</p>
+
+<pre><code>add file1
+</code></pre>
+
+<p>```</p>
+
+<p>ファイルを参照する</p>
+
+<p><code>bash
+$ cat file1
+add file
+edit 1
+edit 2
+edit 3
+</code></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[git reset --hardでのファイル変更取り消しについて]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/05/07/git-checkout-reset/"/>
+    <updated>2014-05-07T15:34:39+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/05/07/git-checkout-reset</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+
+
+<h2>目次</h2>
+
+
+<p><ul>
+ <li><ul>
+  <li><a href="#L............">はじめに</a></li>
+  <li><a href="#L.........">対処法</a></li>
+ </ul></li>
+</ul>
+
+</p>
+
+<a name="L............"></a>
+<h2>はじめに</h2>
+
+<p>作業中に、まだインデックスに登録していない作業ツリーのファイルを
+HEADの状態に戻したいことがあります。</p>
+
+<p>そこでためしに、<code>git reset --hard HEAD -- [任意のfilename]</code>とやったところ
+<code>fatal: Cannot do hard reset with paths.</code>と怒られました。</p>
+
+<p>このような場合の対処について説明します。</p>
+
+<a name="L........."></a>
+<h2>対処法</h2>
+
+<p><code>git reset</code>コマンドの場合、<code>--mixed</code>、<code>--hard</code>、<code>--soft</code>のオプションを使用すると
+引数には、<code>&lt;commit&gt;</code>しか指定できません。</p>
+
+<p>そのため、特定のファイルのみを過去のある時点に戻す場合は<code>git checkout</code>を利用します。</p>
+
+<p>例えばファイル<code>test_file.txt</code>をHEADの状態に戻す場合は、下記のように実施します。</p>
+
+<p><code>bash
+$ git checkout HEAD -- test_file.txt
+</code></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[高度な競合の解決(ファイル単位で解決を行う)]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/04/28/git-resolution-advanced-conflict/"/>
+    <updated>2014-04-28T11:45:19+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/04/28/git-resolution-advanced-conflict</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+
+
+<h2>目次</h2>
+
+
+<p><ul>
+ <li><ul>
+  <li><a href="#L............">はじめに</a></li>
+  <li><a href="#L.........................................................................................">ファイル単位で解決を行う(マージするブランチ側を正とする場合)</a></li>
+ </ul></li>
+ <li><a href="#L..............................................master.........................................."> *  プログラムです。今日はこれをmasterブランチで少し変種しました。</a></li>
+ <li><ul>
+  <li><a href="#L...................................................................................">ファイル単位で解決を行う(現在のブランチ側を正とする場合)</a></li>
+ </ul></li>
+</ul>
+
+</p>
+
+<a name="L............"></a>
+<h2>はじめに</h2>
+
+<p>競合が発生した場合、競合が発生したブロックレベルで解決を行っていくのは
+非常に大変です。(競合箇所が1か所とか2か所くらいならまぁいいですが)</p>
+
+<p>そのため、ファイル単位で現在のブランチの内容にしたいか、マージする
+ブランチの内容にしたいのかを選択したくなることがあります。</p>
+
+<p>ここではその手順を解説します。</p>
+
+<ul>
+<li><p>マージするブランチ側を採用する場合</p>
+
+<p><code>git checkout MERGE_HEAD [file_name]</code></p></li>
+<li><p>現在のブランチ側を採用する場合</p>
+
+<p><code>git checkout ORIG_HEAD [file_name]</code></p></li>
+</ul>
+
+
+<a name="L........................................................................................."></a>
+<h2>ファイル単位で解決を行う(マージするブランチ側を正とする場合)</h2>
+
+<p>現在のブランチを<strong>master</strong>として、マージするブランチを<strong>topic</strong>とします。</p>
+
+<p>ここではコンフリクトが起きた場合、<strong>topic</strong>ブランチ側のファイルを採用
+するケースを解説します。</p>
+
+<p>masterブランチでファイルを作成</p>
+
+<p>```bash
+$ git branch -l
+* master</p>
+
+<p>$ vi MakeHtml.java
+```</p>
+
+<p>```java
+/<em>* 標準入力から1行づつ読み取って、htmlファイルを標準出力する
+ *  プログラムです
+ </em>/</p>
+
+<p>import java.io.*;</p>
+
+<p>public class MakeHtml {</p>
+
+<pre><code>public static void main(String[] args) {
+    System.out.println("&lt;!DOCTYPE html&gt;");
+    System.out.println("&lt;html&gt;");
+    System.out.println("&lt;head&gt;");
+    System.out.println("&lt;title&gt;My Page&lt;/title&gt;");
+    System.out.println("&lt;/head&gt;");
+    System.out.println("&lt;body&gt;");
+
+    String find_shikaku = "■";
+    String find_maru = "●";
+
+    BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+    try {
+        String line;
+        while ((line = reader.readLine()) != null) {
+            int shikaku = line.indexOf(find_shikaku);
+            int maru = line.indexOf(find_maru);
+            if (shikaku == 0) {
+                System.out.println("&lt;h1&gt;" + line.substring(1) + "&lt;/h1&gt;");
+            } else if (maru == 0) {
+                System.out.println("&lt;h2&gt;" + line.substring(1) + "&lt;/h2&gt;");
+            } else {
+                System.out.println("&lt;p&gt;" + line + "&lt;/p&gt;");
+            }
+        }
+    } catch (IOException e) {
+        System.out.println(e);
+    }
+    System.out.println("&lt;/body&gt;");
+    System.out.println("&lt;/html&gt;");
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>```bash
+$ git add MakeHtml.java</p>
+
+<p>$ git commit -m "add MakeHtml.java"
+```</p>
+
+<p>topicブランチで<code>MakeHtml.java</code>を編集</p>
+
+<p><code>bash
+$ git checkout -b topic
+$ vi MakeHtml.java
+</code></p>
+
+<p>全体的に編集を行う</p>
+
+<p>```java
+/<em>* 標準入力から1行づつ読み取って、htmlファイルを標準出力にだす
+ *  プログラムです
+ </em>/</p>
+
+<p>import java.io.*;</p>
+
+<p>public class MakeHtml2 {</p>
+
+<pre><code>public static void main(String[] args) {
+    BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+    try {
+        String line;
+        System.out.println("&lt;!DOCTYPE html&gt;");
+        System.out.println("&lt;html&gt;");
+        System.out.println("&lt;head&gt;");
+        System.out.println("&lt;title&gt;My Page&lt;/title&gt;");
+        System.out.println("&lt;/head&gt;");
+        System.out.println("&lt;body&gt;");
+        while ((line = reader.readLine()) != null) {
+            if (line.startsWith("■")) {
+                System.out.println("&lt;h1&gt;" + line.substring(1) + "&lt;/h1&gt;");
+            } else if (line.startsWith("●") ){
+                System.out.println("&lt;h2&gt;" + line.substring(1) + "&lt;/h2&gt;");
+            } else {
+                System.out.println("&lt;p&gt;" + line + "&lt;/p&gt;");
+            }
+        }
+        System.out.println("&lt;/body&gt;");
+        System.out.println("&lt;/html&gt;");
+    } catch (IOException e) {
+        System.out.println(e);
+    }
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p><code>bash
+$ git commit -am "edit MakeHtml.java by topic branch"
+</code></p>
+
+<p>masterブランチで<code>MakeHtml.java</code>を編集</p>
+
+<p><code>bash
+$ git checkout master
+$ vi MakeHtml.java
+</code></p>
+
+<p>```java
+/<em>* 標準入力から1行づつ読み取って、htmlファイルを標準出力する
+ *  プログラムです。今日はこれをmasterブランチで少し変種しました。
+ </em>/</p>
+
+<p>import java.io.*;</p>
+
+<p>public class MakeHtml1_2 {</p>
+
+<pre><code>public static void main(String[] args) {
+    System.out.println("&lt;!DOCTYPE html&gt;");
+    System.out.println("&lt;html&gt;");
+    System.out.println("&lt;head&gt;");
+    System.out.println("&lt;title&gt;My Page&lt;/title&gt;");
+    System.out.println("&lt;/head&gt;");
+    System.out.println("&lt;body&gt;");
+
+    String find_shikaku = "X";
+    String find_maru = "O";
+
+    BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+    try {
+        String line = reader.readLine();
+        while (line != null) {
+            if (line.startsWith("X")) {
+                System.out.println("&lt;h1&gt;" + line.substring(1) + "&lt;/h1&gt;");
+            } else if (line.startsWith("O") {
+                System.out.println("&lt;h2&gt;" + line.substring(1) + "&lt;/h2&gt;");
+            } else {
+                System.out.println("&lt;p&gt;" + line + "&lt;/p&gt;");
+            }
+        }
+    } catch (IOException e) {
+        System.out.println(e);
+    }
+    System.out.println("&lt;/body&gt;");
+    System.out.println("&lt;/html&gt;");
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p><code>bash
+$ git commit -am "edit MakeHtml.java by master branch"
+</code></p>
+
+<p>masterブランチでtopicブランチをマージ</p>
+
+<blockquote><p>ここでコンフリクトが発生する</p></blockquote>
+
+<p>```bash
+$ git branch -l
+* master
+  topic</p>
+
+<p>$ git diff topic                                        <br/>
+diff --git a/MakeHtml.java b/MakeHtml.java
+-public class MakeHtml2 {
++public class MakeHtml1_2 {</p>
+
+<pre><code> public static void main(String[] args) {
+</code></pre>
+
+<ul>
+<li><pre><code> System.out.println("&lt;!DOCTYPE html&gt;");
+</code></pre></li>
+<li><pre><code> System.out.println("&lt;html&gt;");
+</code></pre></li>
+<li><pre><code> System.out.println("&lt;head&gt;");
+</code></pre></li>
+<li><pre><code> System.out.println("&lt;title&gt;My Page&lt;/title&gt;");
+</code></pre></li>
+<li><pre><code> System.out.println("&lt;/head&gt;");
+</code></pre></li>
+<li><pre><code> System.out.println("&lt;body&gt;");
+</code></pre>
+
+<p>+</p></li>
+<li><pre><code> String find_shikaku = "X";
+</code></pre></li>
+<li><pre><code> String find_maru = "O";
+</code></pre>
+
+<p>+
+-public class MakeHtml2 {
++public class MakeHtml1_2 {
+ public static void main(String[] args) {</p></li>
+<li><pre><code> System.out.println("&lt;!DOCTYPE html&gt;");
+</code></pre></li>
+<li><pre><code> System.out.println("&lt;html&gt;");
+</code></pre></li>
+<li><pre><code> System.out.println("&lt;head&gt;");
+</code></pre></li>
+<li><pre><code> System.out.println("&lt;title&gt;My Page&lt;/title&gt;");
+</code></pre></li>
+<li><pre><code> System.out.println("&lt;/head&gt;");
+</code></pre></li>
+<li><pre><code> System.out.println("&lt;body&gt;");
+</code></pre>
+
+<p>+</p></li>
+<li><pre><code> String find_shikaku = "X";
+</code></pre></li>
+<li><pre><code> String find_maru = "O";
+</code></pre>
+
+<p>+
+     BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))
+     try {</p></li>
+<li><pre><code>     String line;
+</code></pre></li>
+<li><pre><code>     System.out.println("&lt;!DOCTYPE html&gt;");
+</code></pre></li>
+<li><pre><code>     System.out.println("&lt;html&gt;");
+</code></pre></li>
+<li><pre><code>     System.out.println("&lt;head&gt;");
+</code></pre></li>
+<li><pre><code>     System.out.println("&lt;title&gt;My Page&lt;/title&gt;");
+</code></pre></li>
+<li><pre><code>     System.out.println("&lt;/head&gt;");
+</code></pre></li>
+<li><pre><code>     System.out.println("&lt;body&gt;");
+</code></pre></li>
+<li><pre><code>     while ((line = reader.readLine()) != null) {
+</code></pre></li>
+<li><pre><code>         if (line.startsWith("■")) {
+</code></pre></li>
+<li><pre><code>     String line = reader.readLine();
+</code></pre></li>
+<li><pre><code>     while (line != null) {
+</code></pre></li>
+<li><pre><code>         if (line.startsWith("X")) {
+             System.out.println("&lt;h1&gt;" + line.substring(1) + "&lt;/h1&gt;");
+</code></pre></li>
+<li><pre><code>         } else if (line.startsWith("●") ){
+</code></pre></li>
+<li><pre><code>         } else if (line.startsWith("O") {
+             System.out.println("&lt;h2&gt;" + line.substring(1) + "&lt;/h2&gt;");
+         } else {                                                            
+             System.out.println("&lt;p&gt;" + line + "&lt;/p&gt;");
+         }
+     }
+</code></pre></li>
+<li><pre><code>     System.out.println("&lt;/body&gt;");
+</code></pre></li>
+<li><pre><code>     System.out.println("&lt;/html&gt;");
+ } catch (IOException e) {
+     System.out.println(e);
+ }
+</code></pre></li>
+<li><pre><code> System.out.println("&lt;/body&gt;");
+</code></pre></li>
+<li><pre><code> System.out.println("&lt;/html&gt;");
+</code></pre>
+
+<p> }
+}</p></li>
+</ul>
+
+
+<p>$ git merge topic
+Auto-merging MakeHtml.java
+CONFLICT (content): Merge conflict in MakeHtml.java
+Automatic merge failed; fix conflicts and then commit the result.</p>
+
+<p>$ git status -s                                         <br/>
+UU MakeHtml.java</p>
+
+<p>$ cat MakeHtml.java                                     <br/>
+&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+/** 標準入力から1行づつ読み取って、htmlファイルを標準出力する</p>
+
+<a name="L..............................................master.........................................."></a>
+<h1> *  プログラムです。今日はこれをmasterブランチで少し変種しました。</h1>
+
+<p>/** 標準入力から1行づつ読み取って、htmlファイルを標準出力にだす
+ *  プログラムです</p>
+
+<blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><p>topic
+ */</p></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote>
+
+<p>import java.io.*;</p>
+
+<p>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+public class MakeHtml1_2 {</p>
+
+<pre><code>public static void main(String[] args) {
+    System.out.println("&lt;!DOCTYPE html&gt;");
+    System.out.println("&lt;html&gt;");
+    System.out.println("&lt;head&gt;");
+    System.out.println("&lt;title&gt;My Page&lt;/title&gt;");
+    System.out.println("&lt;/head&gt;");
+    System.out.println("&lt;body&gt;");
+
+    String find_shikaku = "X";
+    String find_maru = "O";
+
+    BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+    try {
+        String line = reader.readLine();
+        while (line != null) {
+            if (line.startsWith("X")) {
+                System.out.println("&lt;h1&gt;" + line.substring(1) + "&lt;/h1&gt;");
+            } else if (line.startsWith("O") {
+</code></pre>
+
+<p>=======
+public class MakeHtml2 {</p>
+
+<pre><code>public static void main(String[] args) {
+    BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+    try {
+        String line;
+        System.out.println("&lt;!DOCTYPE html&gt;");
+        System.out.println("&lt;html&gt;");
+        System.out.println("&lt;head&gt;");
+        System.out.println("&lt;title&gt;My Page&lt;/title&gt;");
+        System.out.println("&lt;/head&gt;");
+        System.out.println("&lt;body&gt;");
+        while ((line = reader.readLine()) != null) {
+            if (line.startsWith("■")) {
+                System.out.println("&lt;h1&gt;" + line.substring(1) + "&lt;/h1&gt;");
+            } else if (line.startsWith("●") ){
+</code></pre>
+
+<blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><blockquote><p>topic</p>
+
+<pre><code>                System.out.println("&lt;h2&gt;" + line.substring(1) + "&lt;/h2&gt;");
+            } else {
+                System.out.println("&lt;p&gt;" + line + "&lt;/p&gt;");
+            }
+        }
+        System.out.println("&lt;/body&gt;");
+        System.out.println("&lt;/html&gt;");
+    } catch (IOException e) {
+        System.out.println(e);
+    }
+}
+</code></pre>
+
+<p>}
+```</p></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote></blockquote>
+
+<p>topicブランチ側の'MakeHtml.java'を正として採用する</p>
+
+<p>```bash
+$ git checkout MERGE_HEAD MakeHtml.java</p>
+
+<p>$ git status -s                                         <br/>
+M  MakeHtml.java</p>
+
+<p>$ cat MakeHtml.java
+/<em>* 標準入力から1行づつ読み取って、htmlファイルを標準出力にだす
+ *  プログラムです
+ </em>/</p>
+
+<p>import java.io.*;</p>
+
+<p>public class MakeHtml2 {</p>
+
+<pre><code>public static void main(String[] args) {
+    BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+    try {
+        String line;
+        System.out.println("&lt;!DOCTYPE html&gt;");
+        System.out.println("&lt;html&gt;");
+        System.out.println("&lt;head&gt;");
+        System.out.println("&lt;title&gt;My Page&lt;/title&gt;");
+        System.out.println("&lt;/head&gt;");
+        System.out.println("&lt;body&gt;");
+        while ((line = reader.readLine()) != null) {
+            if (line.startsWith("■")) {
+                System.out.println("&lt;h1&gt;" + line.substring(1) + "&lt;/h1&gt;");
+            } else if (line.startsWith("●") ){
+                System.out.println("&lt;h2&gt;" + line.substring(1) + "&lt;/h2&gt;");
+            } else {
+                System.out.println("&lt;p&gt;" + line + "&lt;/p&gt;");
+            }
+        }
+        System.out.println("&lt;/body&gt;");
+        System.out.println("&lt;/html&gt;");
+    } catch (IOException e) {
+        System.out.println(e);
+    }
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>最後に忘れずにコミットする</p>
+
+<p>```bash
+$ git commit -m "topicブランチ側のファイルを採用"
+$ git log --graph                                       <br/>
+*   commit 285c9b2cde90479563e3a37bd9a40a8f378971a6
+|\  Merge: 4730de4 63494db
+| | Author: spam ham
+| | Date:   Mon Apr 28 12:37:44 2014 +0900
+| |
+| |     topicブランチ側のファイルを採用
+| | <br/>
+| * commit 63494dbda5d574deb8f1e15b092f77f0e852430f
+| | Author: spam ham
+| | Date:   Mon Apr 28 12:26:02 2014 +0900
+| |
+| |     edit MakeHtml.java by topic branch
+| | <br/>
+* | commit 4730de45f21b7c0b1b472b67527a0abcc2224a50
+|/  Author: spam ham
+|   Date:   Mon Apr 28 12:33:13 2014 +0900
+| <br/>
+|       edit MakeHtml.java by master branch
+|<br/>
+* commit 6888a07dfb84fbae958e2269b05ff84078a1480d
+  Author: spam ham
+  Date:   Mon Apr 28 12:20:16 2014 +0900</p>
+
+<pre><code>  add MakeHtml.java
+</code></pre>
+
+<p>```</p>
+
+<a name="L..................................................................................."></a>
+<h2>ファイル単位で解決を行う(現在のブランチ側を正とする場合)</h2>
+
+<p>現在のブランチを<strong>master</strong>として、マージするブランチを<strong>topic</strong>とします。</p>
+
+<p>ここではコンフリクトが起きた場合、<strong>master</strong>ブランチ側のファイルを採用
+するケースを解説します。</p>
+
+<p>マージする直後までの解説は<em>(マージするブランチ側を正とする場合)</em>と同じ内容
+なので、そちらを参照してください。</p>
+
+<p>topicブランチ側の'MakeHtml.java'を正として採用する</p>
+
+<p>```bash
+$ git checkout ORIG_HEAD MakeHtml.java</p>
+
+<p>$ git status -s</p>
+
+<p>$ cat MakeHtml.java
+/<em>* 標準入力から1行づつ読み取って、htmlファイルを標準出力する
+ *  プログラムです。今日はこれをmasterブランチで少し変種しました。
+ </em>/</p>
+
+<p>import java.io.*;</p>
+
+<p>public class MakeHtml1_2 {</p>
+
+<pre><code>public static void main(String[] args) {
+    System.out.println("&lt;!DOCTYPE html&gt;");
+    System.out.println("&lt;html&gt;");
+    System.out.println("&lt;head&gt;");
+    System.out.println("&lt;title&gt;My Page&lt;/title&gt;");
+    System.out.println("&lt;/head&gt;");
+    System.out.println("&lt;body&gt;");
+
+    String find_shikaku = "X";
+    String find_maru = "O";
+
+    BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+    try {
+        String line = reader.readLine();
+        while (line != null) {
+            if (line.startsWith("X")) {
+                System.out.println("&lt;h1&gt;" + line.substring(1) + "&lt;/h1&gt;");
+            } else if (line.startsWith("O") {
+                System.out.println("&lt;h2&gt;" + line.substring(1) + "&lt;/h2&gt;");
+            } else {
+                System.out.println("&lt;p&gt;" + line + "&lt;/p&gt;");
+            }
+        }
+    } catch (IOException e) {
+        System.out.println(e);
+    }
+    System.out.println("&lt;/body&gt;");
+    System.out.println("&lt;/html&gt;");
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>最後に忘れずにコミットする</p>
+
+<p>```bash
+$ git commit -m "masterブランチ側のファイルを採用"
+$ git log --graph
+*   commit 4881e01fcd00638786f8be02f809d8a3c5416cf3
+|\  Merge: 4730de4 63494db
+| | Author: spam ham
+| | Date:   Mon Apr 28 12:49:30 2014 +0900
+| |
+| |     masterブランチ側のファイルを採用
+| | <br/>
+| * commit 63494dbda5d574deb8f1e15b092f77f0e852430f
+| | Author: spam ham
+| | Date:   Mon Apr 28 12:26:02 2014 +0900
+| |
+| |     edit MakeHtml.java by topic branch
+| | <br/>
+* | commit 4730de45f21b7c0b1b472b67527a0abcc2224a50
+|/  Author: spam ham
+|   Date:   Mon Apr 28 12:33:13 2014 +0900
+| <br/>
+|       edit MakeHtml.java by master branch
+|<br/>
+* commit 6888a07dfb84fbae958e2269b05ff84078a1480d
+  Author: spam ham
+  Date:   Mon Apr 28 12:20:16 2014 +0900</p>
+
+<pre><code>  add MakeHtml.java
+</code></pre>
+
+<p>```</p>
+]]></content>
+  </entry>
+  
+</feed>

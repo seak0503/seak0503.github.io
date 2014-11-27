@@ -1,0 +1,536 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Octopress+GitHub+Bitbucketでブログ環境構築 - seak0503 Blog</title>
+  <meta name="author" content="seak0503">
+
+  
+  <meta name="description" content="目次 はじめに Octopress Setup GitHubでリポジトリ作成 GitHubへのdeploy設定 初期設定 テーマ変更 独自ドメインの設定 Bitbucketでリポジトリ作成 Bitbucketリポジトリをリモートリポジトリとして登録 Bug対応 テスト用記事の作成 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.seak.jp.net/blog/2014/04/17/octopress-install/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="seak0503 Blog" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <nav role="navigation"><ul class="subscription" data-subscription="rss email">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+    <li><a href="seak0503.gmail.com" rel="subscribe-email" title="subscribe via email">Email</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.seak.jp.net" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+    <li><a href="/">
+        <span class="blue_light">
+            seak0503 Blog
+        </span>
+       
+    </a></li>
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Octopress+GitHub+Bitbucketでブログ環境構築</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-17T04:22:10+09:00" pubdate data-updated="true">2014-04-17</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><!-- more -->
+
+
+
+
+<h2>目次</h2>
+
+
+<p><ul>
+ <li><ul>
+  <li><a href="#L............">はじめに</a></li>
+  <li><a href="#Octopress.Setup">Octopress Setup</a></li>
+  <li><a href="#GitHub........................">GitHubでリポジトリ作成</a></li>
+  <li><a href="#GitHub......deploy......">GitHubへのdeploy設定</a></li>
+  <li><a href="#L............">初期設定</a></li>
+  <li><a href="#L...............">テーマ変更</a></li>
+  <li><a href="#L...........................">独自ドメインの設定</a></li>
+  <li><a href="#Bitbucket........................">Bitbucketでリポジトリ作成</a></li>
+  <li><a href="#Bitbucket............................................................">Bitbucketリポジトリをリモートリポジトリとして登録</a></li>
+  <li><a href="#Bug......">Bug対応</a></li>
+  <li><a href="#L...........................">テスト用記事の作成</a></li>
+  <li><a href="#GitPage........................">GitPageへの記事のアップ</a></li>
+  <li><a href="#Bitbucket...........................Push">BitbucketへのソースコードのPush</a></li>
+ </ul></li>
+</ul>
+
+</p>
+
+<a name="L............"></a>
+<h2>はじめに</h2>
+
+<p>Octopress、GitHub、Bitbucketを使ってブログ環境を構築する手順です。</p>
+
+<p>Octopressを使ったブログ環境の構築については、他に多くの方が詳細を
+書いているようですので、ここでは簡単な説明しかしていません。</p>
+
+<ul>
+<li><p>ローカル環境</p>
+
+<ul>
+<li>OS: CentOS release 6.4(2.6.32-358.23.2.el6.x86_64)</li>
+</ul>
+</li>
+<li><p>ホスティング環境</p>
+
+<ul>
+<li>GitHub</li>
+</ul>
+</li>
+<li><p>ソースコード管理</p>
+
+<ul>
+<li>Bitbucket</li>
+</ul>
+</li>
+<li><p>必要条件</p>
+
+<ul>
+<li>ruby 1.9.3 以上</li>
+</ul>
+</li>
+</ul>
+
+
+<a name="Octopress.Setup"></a>
+<h2>Octopress Setup</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ git clone git@github.com:imathis/octopress.git [任意のディレクト名]
+</span><span class='line'>
+</span><span class='line'>$ cd [Octopressのソースコードをcloneしたディレクトリ]
+</span><span class='line'>
+</span><span class='line'>$ gem install bundler
+</span><span class='line'>
+</span><span class='line'>$ bundle install
+</span><span class='line'>
+</span><span class='line'>$ bundle exec rake install</span></code></pre></td></tr></table></div></figure>
+
+
+<blockquote><p>私の環境の場合、<code>rake install</code>とやると下記のようなエラーになってしまいます。
+<code>rake</code>コマンドを使う時は<code>bundle exec</code>をつける必要があるようです。
+ちょっと面倒なのでとりあえず<code>.bashrc</code>に<code>alias rake='bundle exec rake'</code>と定義しておきました。</p></blockquote>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ rake install
+</span><span class='line'>rake aborted!
+</span><span class='line'>You have already activated rake 10.1.0, but your Gemfile requires rake 0.9.6. Prepending `bundle exec` to your command may solve this.</span></code></pre></td></tr></table></div></figure>
+
+
+<a name="GitHub........................"></a>
+<h2>GitHubでリポジトリ作成</h2>
+
+<p>GitHubにログインして、GitHubリポジトリを作成します。</p>
+
+<ul>
+<li>リポジトリ名: username.github.io (usernameのところは自分のGitHubのアカウント名に読み替える)</li>
+</ul>
+
+
+<a name="GitHub......deploy......"></a>
+<h2>GitHubへのdeploy設定</h2>
+
+<p>GitHubで先ほど作成したリポジトリを登録します。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ rake setup_github_pages
+</span><span class='line'>Enter the read/write url for your repository: git@github.com: username/username.github.com.git</span></code></pre></td></tr></table></div></figure>
+
+
+<a name="L............"></a>
+<h2>初期設定</h2>
+
+<p><code>_config.yml</code>の初期設定を行います。まずは<code>url, title, subtitle, author</code>を変更
+しておけば良いと思います。</p>
+
+<p>使っていくうちに色々変更したくなったらカスタマイズしていけば良いと思います。</p>
+
+<a name="L..............."></a>
+<h2>テーマ変更</h2>
+
+<p><a href="http://opthemes.com/">Octopress Themes</a>を参考に好きなテーマを選び、変更します。</p>
+
+<p>私の場合&#8221;justin-kelly&#8221;を下記の手順で導入しました。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ pwd
+</span><span class='line'>[Octopressのソースコードをcloneしたディレクトリ]
+</span><span class='line'>
+</span><span class='line'>$ git clone https://github.com/wallace/justin-kelly-theme.git .themes/justin-kelly-theme
+</span><span class='line'>
+</span><span class='line'>$ rake install['justin-kelly-theme']</span></code></pre></td></tr></table></div></figure>
+
+
+<a name="L..........................."></a>
+<h2>独自ドメインの設定</h2>
+
+<p>自前のドメインを所有している場合、自前ドメインでブログを公開することができます。</p>
+
+<p>ここでは自前のドメインをspam.comと仮定して説明します。</p>
+
+<ol>
+<li><p>自前のドメインを管理しているDNSサーバでCNAMEレコードを追加します。</p>
+
+<p><code>blog.spam.com CNAME username.github.io</code></p></li>
+<li><p>sourceディレクトリ配下にCNAMEというファイルを追加します。</p></li>
+</ol>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ echo 'blog.spam.com' &gt;&gt; source/CNAME</span></code></pre></td></tr></table></div></figure>
+
+
+<a name="Bitbucket........................"></a>
+<h2>Bitbucketでリポジトリ作成</h2>
+
+<ul>
+<li><p>Name: 任意</p></li>
+<li><p>Access level: This is a private repository</p></li>
+<li><p>Repository type: Git</p></li>
+</ul>
+
+
+<a name="Bitbucket............................................................"></a>
+<h2>Bitbucketリポジトリをリモートリポジトリとして登録</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ git remote add bitbucket git@bitbucket.org:username/[任意のリポジトリ名]</span></code></pre></td></tr></table></div></figure>
+
+
+<a name="Bug......"></a>
+<h2>Bug対応</h2>
+
+<p>ブログ記事のタイトルが日本語の場合、<code>rake preview</code>や<code>rake generate</code>の時に
+<code>Liquid Exception: incompatible character encodings: UTF-8 and ASCII-8BIT in atom.xml</code>という
+エラーになってしまうので、これを修正する</p>
+
+<p>下記は、rbenvでruby2.1.1をインストールしている場合の例</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>vim ./.rbenv/versions/2.1.1/lib/ruby/gems/2.1.0/gems/jekyll-0.12.0/lib/jekyll/converters/markdown.rb
+</span><span class='line'>～略～
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>           <span class="k">if </span>rd.generate_toc and html.include?<span class="o">(</span>@config<span class="o">[</span><span class="s1">&#39;rdiscount&#39;</span><span class="o">][</span><span class="s1">&#39;toc_token&#39;</span><span class="o">])</span>
+</span><span class='line'>-            html.gsub!<span class="o">(</span>@config<span class="o">[</span><span class="s1">&#39;rdiscount&#39;</span><span class="o">][</span><span class="s1">&#39;toc_token&#39;</span><span class="o">]</span>, rd.toc_content<span class="o">)</span>
+</span><span class='line'>+            html.gsub!<span class="o">(</span>@config<span class="o">[</span><span class="s1">&#39;rdiscount&#39;</span><span class="o">][</span><span class="s1">&#39;toc_token&#39;</span><span class="o">]</span>, rd.toc_content.force_encoding<span class="o">(</span><span class="s1">&#39;utf-8&#39;</span><span class="o">))</span>
+</span><span class='line'>           end
+</span><span class='line'>           html
+</span><span class='line'>～略～
+</span></code></pre></td></tr></table></div></figure>
+
+
+<a name="L..........................."></a>
+<h2>テスト用記事の作成</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>rake new_post<span class="o">[</span><span class="s1">&#39;test&#39;</span><span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>source/_post/YYYY-MM-DD-test.markdown</code>というファイルが出来上がるのでプレビューして確認します。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>rake preview
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ブラウザでport4000にアクセスすればプレビュー結果を確認することができます。</p>
+
+<a name="GitPage........................"></a>
+<h2>GitPageへの記事のアップ</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>rake gen_deploy
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>初回のみ反映までに10分ほどかかります。</p>
+
+<a name="Bitbucket...........................Push"></a>
+<h2>BitbucketへのソースコードのPush</h2>
+
+<p>最後にBitbucketにソースコードをpushします。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git add -A
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git commit <span class="s2">&quot;add post&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>git push -u bitbucket <span class="nb">source</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">seak0503</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-17T04:22:10+09:00" pubdate data-updated="true">2014-04-17</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/github/'>GitHub</a>, <a class='category' href='/blog/categories/octopress/'>Octopress</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.seak.jp.net/blog/2014/04/17/octopress-install/" data-via="" data-counturl="http://blog.seak.jp.net/blog/2014/04/17/octopress-install/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/04/16/oracle-orion-intoroduction/" title="Previous Post: Oracle ORIONとは">&laquo; Oracle ORIONとは</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/04/17/octopress-pdca/" title="Next Post: Octopress+GitHub+Bitbucketブログの運用管理について">Octopress+GitHub+Bitbucketブログの運用管理について &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/11/26/dev-octopress/">Octopressの環境移設</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/07/sublimetextmacterminal/">Sublime Textから素早くiTermを開く</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/04/sublimetextthemecursor/">Sublime Text 3のカーソルを変更する手順</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/04/sublimetextthemeitg/">Themeのカラースキームを編集する</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/17/sublimetextvim/">sublimeText3でVimライクな操作を可能にさせる</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+  <h1>Categories</h1>
+    <ul id="category-list"><li><a href='/blog/categories/apache/'>Apache (1)</a></li><li><a href='/blog/categories/benchmark/'>Benchmark (1)</a></li><li><a href='/blog/categories/chef/'>Chef (2)</a></li><li><a href='/blog/categories/git/'>Git (9)</a></li><li><a href='/blog/categories/github/'>GitHub (8)</a></li><li><a href='/blog/categories/html/'>HTML (1)</a></li><li><a href='/blog/categories/java/'>Java (4)</a></li><li><a href='/blog/categories/linux/'>Linux (7)</a></li><li><a href='/blog/categories/markdown/'>Markdown (2)</a></li><li><a href='/blog/categories/octopress/'>Octopress (3)</a></li><li><a href='/blog/categories/oracle/'>Oracle (1)</a></li><li><a href='/blog/categories/python/'>Python (1)</a></li><li><a href='/blog/categories/ruby/'>Ruby (2)</a></li><li><a href='/blog/categories/security/'>Security (2)</a></li><li><a href='/blog/categories/sublime-text/'>Sublime Text (4)</a></li></ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/seak0503">@seak0503</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'seak0503',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - seak0503 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'seak0503';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.seak.jp.net/blog/2014/04/17/octopress-install/';
+        var disqus_url = 'http://blog.seak.jp.net/blog/2014/04/17/octopress-install/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

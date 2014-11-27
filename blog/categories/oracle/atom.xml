@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Oracle | seak0503 Blog]]></title>
+  <link href="http://blog.seak.jp.net/blog/categories/oracle/atom.xml" rel="self"/>
+  <link href="http://blog.seak.jp.net/"/>
+  <updated>2014-11-28T08:26:19+09:00</updated>
+  <id>http://blog.seak.jp.net/</id>
+  <author>
+    <name><![CDATA[seak0503]]></name>
+    <email><![CDATA[seak0503.gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Oracle ORIONとは]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/04/16/oracle-orion-intoroduction/"/>
+    <updated>2014-04-16T01:09:21+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/04/16/oracle-orion-intoroduction</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+
+
+<h2>目次</h2>
+
+
+<p><ul>
+ <li><ul>
+  <li><a href="#L............">はじめに</a></li>
+  <li><a href="#L......URL">参考URL</a></li>
+  <li><a href="#L............">参考資料</a></li>
+ </ul></li>
+</ul>
+
+</p>
+
+<a name="L............"></a>
+<h2>はじめに</h2>
+
+<p>これまで、LinuxサーバのDiskパフォーマンスを検証するにあたり、
+<strong>Bonnie++</strong>や<strong>IOZone</strong>を使っていましたが、なんとなくしっくりきて
+いませんでした。</p>
+
+<p>というかBonnie++はあまり現実感がないし、IOZoneは私のようなパフォーマンス測定
+素人野郎には使いこなすのが難しい、、、</p>
+
+<p>esxiなどの仮想基盤上のLinux仮想マシンのベンチをIOZoneを使ってとってみましたが、
+スループットが恐ろしく遅い結果になったり、はたまたシーケンシャルI/Oよりも
+ランダムI/Oの結果の方がスループットが良かったりなど、不思議なことが起こってしまい
+意味のあるデータがとれなかったりと悩んでいました。</p>
+
+<p>IaaSとかでDBを使うお客さんとかに上手く説明できるような測定をしたいなぁ、、、</p>
+
+<p>そんな時、Oracleの<strong>ORION</strong>というベンチマークソフトに出会いました。</p>
+
+<p>なんでも、<strong>Oracle Database（DB）のI/O ワークロードをシュミレートできるフリーの
+ディスクI/O 性能測定ツール</strong>、ということで、現実味があり、とてもよさそう。</p>
+
+<p>検証はこれからとして、わかりやすかった情報をメモしておきます。</p>
+
+<a name="L......URL"></a>
+<h2>参考URL</h2>
+
+<ul>
+<li><p><a href="http://hesonogoma.com/linux/oracle_orion_disk_performance_benchmark.html">Oracle ORIONの使用方法 （Linuxディスクベンチマーク）</a></p>
+
+<p><a href="/files/20140416/Oracle_ORION_Linux_disk_benchmark.pdf">PDF版はこちら</a></p></li>
+<li><p><a href="http://hesonogoma.com/Windows/oracle_orion_disk_benchmark.html">Oracle ORIONの使用方法 （Windowsディスクベンチマーク）</a></p>
+
+<p><a href="/files/20140416/Oracle_ORION_Windows_disk_benchmark.pdf">PDF版はこちら</a></p></li>
+<li><p><a href="http://docs.oracle.com/cd/E16338_01/server.112/b56312/iodesign.htm#CACJEEDI">Oracle Orion測定ツールによるI/O測定</a></p>
+
+<p><a href="/files/20140416/iodesign.pdf">PDF版はこちら</a></p></li>
+</ul>
+
+
+<a name="L............"></a>
+<h2>参考資料</h2>
+
+<ul>
+<li><a href="/files/20140416/OracleOrion20081219ver1.1.pdf">Oracle ORION version 11.1 for Linux x86-64 とりあえずORIONでテストをしたい人向け</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>
