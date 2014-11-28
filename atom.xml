@@ -4,7 +4,7 @@
   <title><![CDATA[seak0503 Blog]]></title>
   <link href="http://blog.seak.jp.net/atom.xml" rel="self"/>
   <link href="http://blog.seak.jp.net/"/>
-  <updated>2014-11-28T08:26:19+09:00</updated>
+  <updated>2014-11-28T09:19:40+09:00</updated>
   <id>http://blog.seak.jp.net/</id>
   <author>
     <name><![CDATA[seak0503]]></name>
@@ -12,6 +12,96 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Ubunts環境のSublime Text3で日本語入力を可能にする]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/11/28/sublimetext-japan/"/>
+    <updated>2014-11-28T08:48:43+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/11/28/sublimetext-japan</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+
+
+<h2>目次</h2>
+
+
+<p><ul>
+ <li><a href="#L............">はじめに</a></li>
+ <li><a href="#L............">環境説明</a></li>
+ <li><a href="#L...........................">日本語入力対応方法</a></li>
+ <li><a href="#L..............................">キーバインド設定変更</a></li>
+</ul>
+
+</p>
+
+<a name="L............"></a>
+<h1>はじめに</h1>
+
+<p>Sublime TextはMac, Windows, Linuxに対応していますが、このうちWindowsとLinuxに関しては
+デフォルトでは日本語入力に対応していません。</p>
+
+<p>特にLinuxにおいては、パッケージ追加のみで対応できる内容になっていません。</p>
+
+<p>ここではLinuxにおける対応方法について解説します。</p>
+
+<p>ここで解説しているディストリビューションはUbuntsです。</p>
+
+<p>以前、CentOSでも試したことがありますが、mozcとemacs-mozcが標準リポジトリや拡張リポジトリ(epel)に
+含まれておらず、他のディストリビューションのrpmファイルを持ってきて<code>rpm</code>コマンドでインストールする
+ことになります。</p>
+
+<p>mozcのインストールは<code>rpm</code>コマンドでのインストールでもなんとかなりますが、emacs-mozcのインストールは
+依存関係地獄になり、あきらめました。</p>
+
+<p>なお、<a href="http://yasuyuky.github.io/SublimeMozcInput/">こちら</a>には、CentOSにmozcとemacs-mozcをインストール
+する場合に、<code>http://download.opensuse.org/repositories/home:/sawaa/</code>というリポジトリを追加して<code>yum install</code>が
+できることが書かれていますが、2014年11月に確認した時には、このリポジトリは存在していませんでした。</p>
+
+<a name="L............"></a>
+<h1>環境説明</h1>
+
+<ul>
+<li><p>OS: Ubuntu 14.04.1 LTS</p></li>
+<li><p>Sublime Text: Sublime Text3</p>
+
+<ul>
+<li>Sublime Text2では調査していません。</li>
+</ul>
+</li>
+</ul>
+
+
+<a name="L..........................."></a>
+<h1>日本語入力対応方法</h1>
+
+<p>mozcとemacs-mozcをインストールする</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo yum install ibus-mozc emacs-mozc
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Sublime Textにてコマンドパレットを開き、<code>Package Control:Add Repository</code>を選択し、<code>https://github.com/yasuyuky/SublimeMozcInput</code>
+と入力してリポジトリを追加</p>
+
+<p>コマンドパレットから<code>Package Control:Install Package</code>で<code>SublimeMozcInput</code>を選択してインストール</p>
+
+<a name="L.............................."></a>
+<h1>キーバインド設定変更</h1>
+
+<p>日本語入力の切り替えは、<code>半角/全角</code>キーではなく、デフォルトでは<code>ctrl+\</code>です。</p>
+
+<p>例えばキーバインドを<code>ctrl+space</code>に変更するには、<code>Preferences -&gt; Key Bindings - User</code>を開き</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">{</span> <span class="s2">&quot;keys&quot;</span>: <span class="o">[</span><span class="s2">&quot;ctrl+space&quot;</span><span class="o">]</span>, <span class="s2">&quot;command&quot;</span>: <span class="s2">&quot;toggle_mozc&quot;</span> <span class="o">}</span>,
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>の設定を追加します</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Octopressの環境移設]]></title>
@@ -2774,133 +2864,6 @@ PythonとRubyの両方で書いてみました。</p>
 </span><span class='line'>edit1
 </span><span class='line'>edit2
 </span></code></pre></td></tr></table></div></figure>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Zeroconfを使用しないようにする]]></title>
-    <link href="http://blog.seak.jp.net/blog/2014/06/10/zeroconf/"/>
-    <updated>2014-06-10T16:45:49+09:00</updated>
-    <id>http://blog.seak.jp.net/blog/2014/06/10/zeroconf</id>
-    <content type="html"><![CDATA[<!-- more -->
-
-
-
-
-<h2>目次</h2>
-
-
-<p><ul>
- <li><ul>
-  <li><a href="#L............">はじめに</a></li>
-  <li><a href="#Zeroconf..............">Zeroconfとは(引用)</a></li>
-  <li><a href="#APIPA..............">APIPAとは(引用)</a></li>
-  <li><a href="#Zeroconf............">Zeroconfを無効に</a></li>
- </ul></li>
-</ul>
-
-</p>
-
-<a name="L............"></a>
-<h2>はじめに</h2>
-
-<p>RHEL6やCentOS6を普通にインストールして、ルーティングテーブルを
-見ると下記のような感じになっています。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># netstat -rn</span>
-</span><span class='line'>Kernel IP routing table
-</span><span class='line'>Destination     Gateway         Genmask         Flags   MSS Window  irtt Iface
-</span><span class='line'>10.0.0.0        0.0.0.0         255.255.255.0   U         0 0          0 eth0
-</span><span class='line'>169.254.0.0     0.0.0.0         255.255.0.0     U         0 0          0 eth0
-</span><span class='line'>0.0.0.0         10.0.0.254      0.0.0.0         UG        0 0          0 eth0
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>169.254.0.0/16のルーティングテーブルがありますが、これは何だろう?</p>
-
-<p>これはZeroconfによって自動的に作られたものだそうです。</p>
-
-<a name="Zeroconf.............."></a>
-<h2>Zeroconfとは(引用)</h2>
-
-<blockquote><p>動的ホスト構成プロトコル(DHCP)が見つからなかった時(IPアドレスを取得できなかった時)に、
-TCP/IPがプライベートIPアドレスを自動的に割り当てる機能<strong>(APIPA:Automatic Private IP Address)</strong>を実装しています。
-この為、ルーティングに「169.254.0.0」が登録されています。</p></blockquote>
-
-<a name="APIPA.............."></a>
-<h2>APIPAとは(引用)</h2>
-
-<blockquote><p>ネットワーク機器に対して、IPアドレスを自動的に割り当て、利用するための機能。</p>
-
-<p>　TCP/IPを実装したネットワーク機器やシステムでは、それぞれのシステムに対して、
-重複しない固有のIPアドレスを割り当てておかなければお互いに通信することはできない。
-しかしネットワークに詳しい管理者がいなかったり、DHCPサーバも用意されていないような
-小規模なネットワークでは、IPアドレスを秩序立てて割り当てたり管理するのは困難である。
-そこで考案されたのがAPIPAというIPアドレスの自動的な割り当て、管理機能である。</p>
-
-<p>　APIPAを実装したシステムでは、最初に自分のシステムに割り当てるIPアドレスを
-「169.254.1.0～169.254.254.255」の範囲内からランダムに1つ選択する。
-そして、ARP要求をネットワークにブロードキャストすることによって、そのIPアドレスがほかの
-システムで利用されていないかどうかを確認する。もしどこかのシステムからARPの応答が返ってくれば、
-そのIPアドレスは使用中であるとみなし、別のIPアドレスで再試行する。このようにして
-未使用のIPアドレスを見つけ、それを自分のシステムに割り当てることによって、
-IPアドレスが重複しないことを保障する。
-「169.254.<em>.</em>」というIPアドレスはLINKLOCALアドレスといい、一般的なプライベートIPアドレスではないが、
-どこの組織にも割り当てられていないことが保証された、APIPAでのみ有効な、特別なIPアドレスである。</p>
-
-<p>　このように、APIPAを利用することにより、ユーザーはネットワークのIPアドレスをまったく意識することなく、
-ネットワーク上のほかのシステムと通信をすることができる。</p>
-
-<p>　ただしAPIPAは、小規模なネットワークで使うことを前提としているため、複数のネットワークをまたいで使うことはできない。
-APIPAで割り当てられたIPアドレスを持つパケットは、ルータでルーティングしてはいけないことになっている。
-そのため通信できる範囲は同一のネットワーク（ブロードキャストが届く範囲）に限定されることになる。
-インターネットへ接続するのではなく、ローカルのLAN上でファイル共有やプリンタ共有しか使わないという用途にはこれでも十分である。</p>
-
-<p>　APIPAは、最近のWindowsやMacintoshシステムなどで実装されている。これらのシステムでは、最初にDHCPなどでIPアドレスの
-取得を試みるが、それが失敗するとAPIPAによってランダムなIPアドレスを割り当てるようになっている。
-だがハブが壊れるなど、何らかの事情でネットワークが利用できない場合でも、自動的にランダムなIPアドレスが割り当てられたまま
-システムが起動してしまうことになるので、一見するとネットワークが正常に機能しているようにみえることがある。
-そのため、トラブルの原因を究明するのが困難になることもある。</p></blockquote>
-
-<a name="Zeroconf............"></a>
-<h2>Zeroconfを無効に</h2>
-
-<p>結局のところサーバ用途ではほぼ不要と思われるので、これを無効化します。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># vi /etc/sysconfig/network</span>
-</span><span class='line'><span class="nv">NOZEROCONF</span><span class="o">=</span>yes &lt;-これを追記する
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>ネットワークを再起動して、再びルーティングテーブルを確認すると、無効化されることが
-確認できますね。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># service network restart</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># netstat -rn</span>
-</span><span class='line'>Kernel IP routing table
-</span><span class='line'>Destination     Gateway         Genmask         Flags   MSS Window  irtt Iface
-</span><span class='line'>10.0.0.0        0.0.0.0         255.255.255.0   U         0 0          0 eth0
-</span><span class='line'>0.0.0.0         10.0.0.254      0.0.0.0         UG        0 0          0 eth0
-</span></code></pre></td></tr></table></div></figure>
-
-
 
 ]]></content>
   </entry>

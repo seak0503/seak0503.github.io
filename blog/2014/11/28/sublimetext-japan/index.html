@@ -5,13 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>git reset --hardでのファイル変更取り消しについて - seak0503 Blog</title>
+  <title>Ubunts環境のSublime Text3で日本語入力を可能にする - seak0503 Blog</title>
   <meta name="author" content="seak0503">
 
   
-  <meta name="description" content="目次 はじめに 対処法 はじめに 作業中に、まだインデックスに登録していない作業ツリーのファイルを
-HEADの状態に戻したいことがあります。 そこでためしに、git reset --hard HEAD -- [任意のfilename]とやったところ
-fatal: Cannot do hard &hellip;">
+  <meta name="description" content="目次 はじめに 環境説明 日本語入力対応方法 キーバインド設定変更 はじめに Sublime TextはMac, Windows, Linuxに対応していますが、このうちWindowsとLinuxに関しては
+デフォルトでは日本語入力に対応していません。 特にLinuxにおいては、 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -20,7 +19,7 @@ fatal: Cannot do hard &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.seak.jp.net/blog/2014/05/07/git-checkout-reset/">
+  <link rel="canonical" href="http://blog.seak.jp.net/blog/2014/11/28/sublimetext-japan/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -70,7 +69,7 @@ fatal: Cannot do hard &hellip;">
   
   <header>
     
-      <h1 class="entry-title">Git Reset --hardでのファイル変更取り消しについて</h1>
+      <h1 class="entry-title">Ubunts環境のSublime Text3で日本語入力を可能にする</h1>
     
     
       <p class="meta">
@@ -86,7 +85,7 @@ fatal: Cannot do hard &hellip;">
   
 
 
-<time datetime="2014-05-07T15:34:39+09:00" pubdate data-updated="true">2014-05-07</time>
+<time datetime="2014-11-28T08:48:43+09:00" pubdate data-updated="true">2014-11-28</time>
         
       </p>
     
@@ -102,41 +101,79 @@ fatal: Cannot do hard &hellip;">
 
 
 <p><ul>
- <li><ul>
-  <li><a href="#L............">はじめに</a></li>
-  <li><a href="#L.........">対処法</a></li>
- </ul></li>
+ <li><a href="#L............">はじめに</a></li>
+ <li><a href="#L............">環境説明</a></li>
+ <li><a href="#L...........................">日本語入力対応方法</a></li>
+ <li><a href="#L..............................">キーバインド設定変更</a></li>
 </ul>
 
 </p>
 
 <a name="L............"></a>
-<h2>はじめに</h2>
+<h1>はじめに</h1>
 
-<p>作業中に、まだインデックスに登録していない作業ツリーのファイルを
-HEADの状態に戻したいことがあります。</p>
+<p>Sublime TextはMac, Windows, Linuxに対応していますが、このうちWindowsとLinuxに関しては
+デフォルトでは日本語入力に対応していません。</p>
 
-<p>そこでためしに、<code>git reset --hard HEAD -- [任意のfilename]</code>とやったところ
-<code>fatal: Cannot do hard reset with paths.</code>と怒られました。</p>
+<p>特にLinuxにおいては、パッケージ追加のみで対応できる内容になっていません。</p>
 
-<p>このような場合の対処について説明します。</p>
+<p>ここではLinuxにおける対応方法について解説します。</p>
 
-<a name="L........."></a>
-<h2>対処法</h2>
+<p>ここで解説しているディストリビューションはUbuntsです。</p>
 
-<p><code>git reset</code>コマンドの場合、<code>--mixed</code>、<code>--hard</code>、<code>--soft</code>のオプションを使用すると
-引数には、<code>&lt;commit&gt;</code>しか指定できません。</p>
+<p>以前、CentOSでも試したことがありますが、mozcとemacs-mozcが標準リポジトリや拡張リポジトリ(epel)に
+含まれておらず、他のディストリビューションのrpmファイルを持ってきて<code>rpm</code>コマンドでインストールする
+ことになります。</p>
 
-<p>そのため、特定のファイルのみを過去のある時点に戻す場合は<code>git checkout</code>を利用します。</p>
+<p>mozcのインストールは<code>rpm</code>コマンドでのインストールでもなんとかなりますが、emacs-mozcのインストールは
+依存関係地獄になり、あきらめました。</p>
 
-<p>例えばファイル<code>test_file.txt</code>をHEADの状態に戻す場合は、下記のように実施します。</p>
+<p>なお、<a href="http://yasuyuky.github.io/SublimeMozcInput/">こちら</a>には、CentOSにmozcとemacs-mozcをインストール
+する場合に、<code>http://download.opensuse.org/repositories/home:/sawaa/</code>というリポジトリを追加して<code>yum install</code>が
+できることが書かれていますが、2014年11月に確認した時には、このリポジトリは存在していませんでした。</p>
+
+<a name="L............"></a>
+<h1>環境説明</h1>
+
+<ul>
+<li><p>OS: Ubuntu 14.04.1 LTS</p></li>
+<li><p>Sublime Text: Sublime Text3</p>
+
+<ul>
+<li>Sublime Text2では調査していません。</li>
+</ul>
+</li>
+</ul>
+
+
+<a name="L..........................."></a>
+<h1>日本語入力対応方法</h1>
+
+<p>mozcとemacs-mozcをインストールする</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git checkout HEAD -- test_file.txt
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo yum install ibus-mozc emacs-mozc
 </span></code></pre></td></tr></table></div></figure>
 
 
+<p>Sublime Textにてコマンドパレットを開き、<code>Package Control:Add Repository</code>を選択し、<code>https://github.com/yasuyuky/SublimeMozcInput</code>
+と入力してリポジトリを追加</p>
 
+<p>コマンドパレットから<code>Package Control:Install Package</code>で<code>SublimeMozcInput</code>を選択してインストール</p>
+
+<a name="L.............................."></a>
+<h1>キーバインド設定変更</h1>
+
+<p>日本語入力の切り替えは、<code>半角/全角</code>キーではなく、デフォルトでは<code>ctrl+\</code>です。</p>
+
+<p>例えばキーバインドを<code>ctrl+space</code>に変更するには、<code>Preferences -&gt; Key Bindings - User</code>を開き</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">{</span> <span class="s2">&quot;keys&quot;</span>: <span class="o">[</span><span class="s2">&quot;ctrl+space&quot;</span><span class="o">]</span>, <span class="s2">&quot;command&quot;</span>: <span class="s2">&quot;toggle_mozc&quot;</span> <span class="o">}</span>,
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>の設定を追加します</p>
 </div>
 
 
@@ -159,12 +196,12 @@ HEADの状態に戻したいことがあります。</p>
   
 
 
-<time datetime="2014-05-07T15:34:39+09:00" pubdate data-updated="true">2014-05-07</time>
+<time datetime="2014-11-28T08:48:43+09:00" pubdate data-updated="true">2014-11-28</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/git/'>Git</a>, <a class='category' href='/blog/categories/github/'>GitHub</a>
+    <a class='category' href='/blog/categories/sublime-text/'>Sublime Text</a>
   
 </span>
 
@@ -173,7 +210,7 @@ HEADの状態に戻したいことがあります。</p>
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.seak.jp.net/blog/2014/05/07/git-checkout-reset/" data-via="" data-counturl="http://blog.seak.jp.net/blog/2014/05/07/git-checkout-reset/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.seak.jp.net/blog/2014/11/28/sublimetext-japan/" data-via="" data-counturl="http://blog.seak.jp.net/blog/2014/11/28/sublimetext-japan/" >Tweet</a>
   
   
   
@@ -182,10 +219,8 @@ HEADの状態に戻したいことがあります。</p>
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2014/04/28/git-resolution-advanced-conflict/" title="Previous Post: 高度な競合の解決(ファイル単位で解決を行う)">&laquo; 高度な競合の解決(ファイル単位で解決を行う)</a>
+        <a class="basic-alignment left" href="/blog/2014/11/26/dev-octopress/" title="Previous Post: Octopressの環境移設">&laquo; Octopressの環境移設</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2014/05/09/linux-command-sed/" title="Next Post: sedあれこれ">sedあれこれ &raquo;</a>
       
     </p>
   </footer>
@@ -284,8 +319,8 @@ HEADの状態に戻したいことがあります。</p>
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://blog.seak.jp.net/blog/2014/05/07/git-checkout-reset/';
-        var disqus_url = 'http://blog.seak.jp.net/blog/2014/05/07/git-checkout-reset/';
+        var disqus_identifier = 'http://blog.seak.jp.net/blog/2014/11/28/sublimetext-japan/';
+        var disqus_url = 'http://blog.seak.jp.net/blog/2014/11/28/sublimetext-japan/';
         var disqus_script = 'embed.js';
       
     (function () {

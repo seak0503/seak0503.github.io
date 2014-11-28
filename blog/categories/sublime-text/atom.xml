@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Sublime Text | seak0503 Blog]]></title>
   <link href="http://blog.seak.jp.net/blog/categories/sublime-text/atom.xml" rel="self"/>
   <link href="http://blog.seak.jp.net/"/>
-  <updated>2014-11-28T08:26:19+09:00</updated>
+  <updated>2014-11-28T09:19:40+09:00</updated>
   <id>http://blog.seak.jp.net/</id>
   <author>
     <name><![CDATA[seak0503]]></name>
@@ -12,6 +12,92 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Ubunts環境のSublime Text3で日本語入力を可能にする]]></title>
+    <link href="http://blog.seak.jp.net/blog/2014/11/28/sublimetext-japan/"/>
+    <updated>2014-11-28T08:48:43+09:00</updated>
+    <id>http://blog.seak.jp.net/blog/2014/11/28/sublimetext-japan</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+
+
+<h2>目次</h2>
+
+
+<p><ul>
+ <li><a href="#L............">はじめに</a></li>
+ <li><a href="#L............">環境説明</a></li>
+ <li><a href="#L...........................">日本語入力対応方法</a></li>
+ <li><a href="#L..............................">キーバインド設定変更</a></li>
+</ul>
+
+</p>
+
+<a name="L............"></a>
+<h1>はじめに</h1>
+
+<p>Sublime TextはMac, Windows, Linuxに対応していますが、このうちWindowsとLinuxに関しては
+デフォルトでは日本語入力に対応していません。</p>
+
+<p>特にLinuxにおいては、パッケージ追加のみで対応できる内容になっていません。</p>
+
+<p>ここではLinuxにおける対応方法について解説します。</p>
+
+<p>ここで解説しているディストリビューションはUbuntsです。</p>
+
+<p>以前、CentOSでも試したことがありますが、mozcとemacs-mozcが標準リポジトリや拡張リポジトリ(epel)に
+含まれておらず、他のディストリビューションのrpmファイルを持ってきて<code>rpm</code>コマンドでインストールする
+ことになります。</p>
+
+<p>mozcのインストールは<code>rpm</code>コマンドでのインストールでもなんとかなりますが、emacs-mozcのインストールは
+依存関係地獄になり、あきらめました。</p>
+
+<p>なお、<a href="http://yasuyuky.github.io/SublimeMozcInput/">こちら</a>には、CentOSにmozcとemacs-mozcをインストール
+する場合に、<code>http://download.opensuse.org/repositories/home:/sawaa/</code>というリポジトリを追加して<code>yum install</code>が
+できることが書かれていますが、2014年11月に確認した時には、このリポジトリは存在していませんでした。</p>
+
+<a name="L............"></a>
+<h1>環境説明</h1>
+
+<ul>
+<li><p>OS: Ubuntu 14.04.1 LTS</p></li>
+<li><p>Sublime Text: Sublime Text3</p>
+
+<ul>
+<li>Sublime Text2では調査していません。</li>
+</ul>
+</li>
+</ul>
+
+
+<a name="L..........................."></a>
+<h1>日本語入力対応方法</h1>
+
+<p>mozcとemacs-mozcをインストールする
+<code>bash
+$ sudo yum install ibus-mozc emacs-mozc
+</code></p>
+
+<p>Sublime Textにてコマンドパレットを開き、<code>Package Control:Add Repository</code>を選択し、<code>https://github.com/yasuyuky/SublimeMozcInput</code>
+と入力してリポジトリを追加</p>
+
+<p>コマンドパレットから<code>Package Control:Install Package</code>で<code>SublimeMozcInput</code>を選択してインストール</p>
+
+<a name="L.............................."></a>
+<h1>キーバインド設定変更</h1>
+
+<p>日本語入力の切り替えは、<code>半角/全角</code>キーではなく、デフォルトでは<code>ctrl+\</code>です。</p>
+
+<p>例えばキーバインドを<code>ctrl+space</code>に変更するには、<code>Preferences -&gt; Key Bindings - User</code>を開き
+<code>
+{ "keys": ["ctrl+space"], "command": "toggle_mozc" },
+</code></p>
+
+<p>の設定を追加します</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Sublime Textから素早くiTermを開く]]></title>
